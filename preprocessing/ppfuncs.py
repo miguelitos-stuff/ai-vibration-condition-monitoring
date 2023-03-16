@@ -1,4 +1,6 @@
-
+#Import stuff
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 #Extracting the data
