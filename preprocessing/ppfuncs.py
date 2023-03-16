@@ -1,20 +1,39 @@
 #Import libraries
 import numpy as np
 import matplotlib.pyplot as plt
+import math
+import torch
 
 
 #Extracting the data
 
 
+def normalize(a, end = 255):
+    # Normalizing so al values are between 0 and end value
+    min = a.min()
+    a = a + -1 * min
+    max = a.max()
+    a = a * end / max
+    return a
 
 
-#Normalizing the data
+def create_matrix(vector):
+    # Create a normalized matrix of the sample vector
 
-def create_matrix():
-    pass
+    vector = normalize(vector)
 
-def normalize():
-    pass
+    a = torch.Tensor(np_a)
+    n = math.floor(a.size(dim=0) ** 0.5)
+    m = n
+    rest = a.size(dim=0) - n * m
+    if (rest != 0):
+        a_rest = torch.split(a, (n * m, rest))
+        a = a_rest[0]
+    matrix = torch.reshape(a, (n, m))
+
+    return matrix
+
+
 
 
 
