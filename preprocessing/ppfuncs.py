@@ -1,12 +1,25 @@
 #Import libraries
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.io
+import torch
 import math
 import torch
 import numpy as np
 
 
 #Extracting the data
+def extract_data(path, AN_beginning, AN_end, amount_of_data_points):
+    tensors = torch.empty(0,0)
+
+    for i in range(AN_beginning,AN_end+1):
+        mat_file = scipy.io.loadmat(path+str(i)+'.mat')
+        for n in range(AN_beginning,AN_end+1):
+            numpy_array = mat_file['AN'+str(n)]
+            numpy_array = numpy_array.flatten()
+            tensors.append(numpy_array)
+    return tensors
+print(extract_data('data/Damaged/D', 3,10,10))
 
 
 def normalize(a, end=255):
@@ -28,7 +41,6 @@ def create_matrix(a):
         a_rest = torch.split(a, (n*m, rest))
         a = a_rest[0]
     matrix = torch.reshape(a, (n, m))
-
     return matrix
 
 
