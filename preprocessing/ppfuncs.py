@@ -1,4 +1,4 @@
-#Import stuff
+#Import libraries
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -22,5 +22,6 @@ import matplotlib.pyplot as plt
 def visualize(data_matrix):
     plt.imshow(data_matrix)
     plt.show()
+    return
 
 
