@@ -1,4 +1,4 @@
-# import numpy as np
+# Import libraries
 import matplotlib.pyplot as plt
 import scipy.io
 import numpy as np
