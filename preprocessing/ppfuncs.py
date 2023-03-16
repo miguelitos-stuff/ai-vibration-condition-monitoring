@@ -22,13 +22,6 @@ def generate_sample():
     pass
 
 
-
-#Making the matrices
-
-
-
-
-
 # Visualizing the normlaized data
 def visualize(data_matrix):
     # Take the normalized data matrices (that have entries with values ranging from 0 to 255) and visualize these on a grey scale

@@ -63,7 +63,7 @@ model = CNN(numChannels=1, classes=num_classes).to(device)
 
 # Loss and optimizer
 loss_fn = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+optimizer = Adam(model.parameters(), lr=learning_rate)
 # adapt optimizer if needed
 
 # initialize a dictionary to store training history
