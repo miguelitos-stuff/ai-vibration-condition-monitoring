@@ -1,3 +1,8 @@
+#Import stuff
+import numpy as np
+import matplotlib.pyplot as plt
+
+
 #Extracting the data
 
 
@@ -17,6 +22,5 @@
 def visualize(data_matrix):
     plt.imshow(data_matrix)
     plt.show()
-    return
 
 
