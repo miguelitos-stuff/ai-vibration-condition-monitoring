@@ -9,10 +9,10 @@ import numpy as np
 #Extracting the data
 
 
-def normalize(a, end = 255):
+def normalize(a, end=255):
     # Normalizing so al values are between 0 and end value
     min = a.min()
-    a = a + -1 * min
+    a = a - min
     max = a.max()
     a = a * end / max
     return a
