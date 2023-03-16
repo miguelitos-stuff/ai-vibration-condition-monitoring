@@ -29,9 +29,9 @@ def generate_sample():
 
 
 
-#Visualizing the normlaized data
-#Take the normalized data matrices (that have entries with values ranging from 0 to 255) and visualize these on a grey scale
+# Visualizing the normlaized data
 def visualize(data_matrix):
+    # Take the normalized data matrices (that have entries with values ranging from 0 to 255) and visualize these on a grey scale
     plt.imshow(data_matrix)
     plt.show()
     return
