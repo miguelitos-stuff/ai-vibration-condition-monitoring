@@ -10,6 +10,9 @@ import matplotlib.pyplot as plt
 
 #Normalizing the data
 
+def create_matrix():
+    pass
+
 def normalize():
     pass
 
