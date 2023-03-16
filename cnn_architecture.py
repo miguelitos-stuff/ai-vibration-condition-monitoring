@@ -7,10 +7,10 @@ from torch.nn import LogSoftmax
 from torch import flatten
 
 
-class LeNet(Module):
+class CNN(Module):
 	def __init__(self, numChannels, classes):
 		# call the parent constructor
-		super(LeNet, self).__init__()
+		super(CNN, self).__init__()
 		# initialize first set of CONV => RELU => POOL layers
 		self.conv1 = Conv2d(in_channels=numChannels, out_channels=20,
 			kernel_size=(5, 5))
