@@ -6,15 +6,7 @@ import torch
 
 #Extracting the data
 def extract_data(path, AN_beginning, AN_end, amount_of_data_points):
-    tensors = torch.empty(0,0)
 
-    for i in range(AN_beginning,AN_end+1):
-        mat_file = scipy.io.loadmat(path+str(i)+'.mat')
-        for n in range(AN_beginning,AN_end+1):
-            numpy_array = mat_file['AN'+str(n)]
-            numpy_array = numpy_array.flatten()
-            tensors.append(numpy_array)
-    return tensors
 
 
 
