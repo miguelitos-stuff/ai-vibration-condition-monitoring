@@ -17,7 +17,6 @@
 def visualize(data_matrix):
     plt.imshow(data_matrix)
     plt.show()
-
     return
 
 
