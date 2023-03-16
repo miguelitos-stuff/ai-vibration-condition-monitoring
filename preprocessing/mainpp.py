@@ -3,6 +3,7 @@
 #Import libraries
 import matplotlib.pyplot as plt
 from ppfuncs import visualize
+from ppfuncs import extract_data
 import numpy as np
 
 
