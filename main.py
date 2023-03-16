@@ -19,7 +19,7 @@ te = int(t_end * 40000) + 60025
 
 y = np.array(sensor_mat[sensor])
 y = y.flatten()
-
+print(len(y))
 plt.figure()
 plt.plot(x[tb:te], y[tb:te])
 plt.show()

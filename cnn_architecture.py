@@ -7,6 +7,7 @@ from torch.nn import LogSoftmax
 from torch import flatten
 
 
+
 class CNN(Module):
 	def __init__(self, numChannels, classes):
 		# call the parent constructor
@@ -27,8 +28,8 @@ class CNN(Module):
 			kernel_size=(3, 3))
 		self.maxpool4 = MaxPool2d(kernel_size=(2), stride=(2, 2))
 
-		self.fc1 = Linear(in_features=400, out_features=400)
-		self.fc2 = Linear(in_features=200, out_features=200)
+		self.fc1 = Linear(in_features=7*7*20, out_features=400)
+		self.fc2 = Linear(in_features=400, out_features=200)
 		self.logSoftmax = LogSoftmax(dim=1)
 
 	def forward(self, x):
