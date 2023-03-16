@@ -30,11 +30,11 @@ class CNN(Module):
 		self.relu4 = ReLU()
 		self.maxpool4 = MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
 
-		self.fc1 = Linear(in_features=400, out_features=200)
+		self.fc1 = Linear(in_features=400, out_features=400)
 		self.relu5 = ReLU()
-		self.fc2 = Linear(in_features=200, out_features=2)
+		self.fc2 = Linear(in_features=200, out_features=200)
 		self.relu6 = ReLU()
-		self.logSoftmax = LogSoftmax(dim=2)
+		self.logSoftmax = LogSoftmax(dim=1)
 
 	def forward(self, x):
 		x = self.conv1(x)
