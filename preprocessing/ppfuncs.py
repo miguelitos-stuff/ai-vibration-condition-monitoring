@@ -17,12 +17,9 @@ def normalize(a, end = 255):
     return a
 
 
-def create_matrix(vector):
+def create_matrix(a):
     # Create a normalized matrix of the sample vector
-
-    vector = normalize(vector)
-
-    a = torch.Tensor(np_a)
+    a = normalize(a)
     n = math.floor(a.size(dim=0) ** 0.5)
     m = n
     rest = a.size(dim=0) - n * m
