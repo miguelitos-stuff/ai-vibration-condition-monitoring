@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io
-import torch
 import math
 import torch
 import numpy as np
@@ -38,7 +37,7 @@ def create_matrix(a):
     m = n
     rest = a.size(dim=0) - n * m
     if (rest != 0):
-        a_rest = torch.split(a, (n*m, rest))
+        a_rest = torch.split(a, (n * m, rest))
         a = a_rest[0]
     matrix = torch.reshape(a, (n, m))
     return matrix
