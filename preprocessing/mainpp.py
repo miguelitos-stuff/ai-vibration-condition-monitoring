@@ -11,9 +11,6 @@ import scipy.io
 
 from pathlib import Path
 
-#Visualize the data matrix
-test_matrix = np.random.randint(low=0, high=256, size=(224, 224))
-visualize(test_matrix)
 
 #Make an array with all of the file numbers
 datapath = Path('../data/')
@@ -24,7 +21,7 @@ for i in datapath.iterdir():
 ordered_list = sorted(filelist, key = lambda x: x.stem[-6:-5])
 print(filelist)
 
-
+if name = __main__:
 
 # Define import variables for both Healty and Damaged
 time_start = 1
