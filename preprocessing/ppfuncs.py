@@ -58,28 +58,32 @@ def create_matrix(a):
         a_rest = torch.split(a, (n*m, rest))
         a = a_rest[0]
     a = normalize(a)
-    matrix = torch.reshape(a, (n, m))
+    matrix = torch.reshape(a, (1, n, m))
     return matrix
 
 
 def generate_samples(sensor_data, n_samples, sample_size, spacing=False):
     # input is one minute of datapoints of one sensor [tensor]
-    samples = torch.empty(20)
+    samples_ = torch.Tensor([])
     if spacing:
         rest = sensor_data.shape[0] - n_samples * sample_size ** 2
         space = rest // n_samples
         b = 0
         e = sample_size**2
         for i in range(n_samples):
-            samples[i] = sensor_data[b:e]
+            samples_ = torch.cat((samples_, sensor_data[b:e]), 0)
             b = e + space
             e += (sample_size**2 + space)
     else:
         for i in range(n_samples):
-            samples[i] = sensor_data[(i * sample_size**2):((i + 1) * sample_size**2)]
+            sample_ = sensor_data[(i * sample_size**2):((i + 1) * sample_size**2)]
+            sample_ = sample_[None, :]
+            samples_ = torch.cat((samples_, sample_), 0)
+    samples_2 = torch.Tensor([])
     for j in range(n_samples):
-        samples[i] = create_matrix(samples[i])
-    return samples
+        sample_ = create_matrix(samples_[j])
+        samples_2 = torch.cat((samples_2, sample_), 0)
+    return samples_2
 
 
 def visualize(data_matrix):
@@ -94,8 +98,12 @@ if __name__ == '__main__':
     # test your functions here
 
     # Visualize the data matrix
-    test_matrix = np.random.randint(low=0, high=256, size=(224, 224))
-    visualize(test_matrix)
+    # test_matrix = np.random.randint(low=0, high=256, size=(224, 224))
+    # visualize(test_matrix)
 
-    
-    print(extract_data('data/Damaged/D', 3, 10, 10))
+    # test sample making
+    a = torch.randint(0, 10, (2400000,))
+    samples = generate_samples(a, 20, 244)
+    print(samples)
+    print(samples.shape)
+
