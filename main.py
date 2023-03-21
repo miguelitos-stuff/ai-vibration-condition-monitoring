@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import scipy.io
 import numpy as np
 
+
 # Make sure to put the file in the same directory as the pycharm project so the line below can operate smoothly.
 sensor_mat = scipy.io.loadmat('data/Damaged/D1.mat')
 x = np.linspace(0, 60, 40000*60)
