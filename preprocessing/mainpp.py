@@ -3,7 +3,7 @@
 #Import libraries
 import matplotlib.pyplot as plt
 from ppfuncs import visualize
-#from ppfuncs import extract_data
+from ppfuncs import extract_data
 import numpy as np
 from pathlib import Path
 
@@ -20,3 +20,10 @@ for i in datapath.iterdir():
 ordered_list = sorted(filelist, key = lambda x: x.stem[-6:-5])
 print(filelist)
 
+if name = __main__:
+
+    raw_data = extract_data()
+
+
+
+    pass
