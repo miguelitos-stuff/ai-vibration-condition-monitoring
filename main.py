@@ -1,4 +1,4 @@
-# import numpy as np
+# Import libraries
 import matplotlib.pyplot as plt
 import scipy.io
 import numpy as np
@@ -20,6 +20,7 @@ y = np.array(sensor_mat[sensor])
 y = y.flatten()
 print(y)
 print(sensor_mat)
+print(len(y))
 plt.figure()
 plt.plot(x[tb:te], y[tb:te])
 plt.show()
