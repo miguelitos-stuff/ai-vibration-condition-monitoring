@@ -2,7 +2,7 @@
 import matplotlib
 matplotlib.use("Agg")
 # import the necessary packages
-from pyimagesearch.lenet import LeNet
+from cnn_architecture2 import LeNet
 from sklearn.metrics import classification_report
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
@@ -17,13 +17,13 @@ import torch
 import time
 
 # construct the argument parser and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-m", "--model", type=str, required=True,
-	help="path to output trained model")
-ap.add_argument("-p", "--plot", type=str, required=True,
-	help="path to output loss/accuracy plot")
-args = vars(ap.parse_args())
-
+# ap = argparse.ArgumentParser()
+# ap.add_argument("-m", "--model", type=str, required=True,
+# 	help="path to output trained model")
+# ap.add_argument("-p", "--plot", type=str, required=True,
+# 	help="path to output loss/accuracy plot")
+# args = vars(ap.parse_args())
+# 
 # define training hyperparameters
 INIT_LR = 1e-3
 BATCH_SIZE = 64
