@@ -22,23 +22,13 @@ def extract_data(Damaged_or_Healthy, AN_beginning, AN_end, D_what):
         biggie_T[i-AN_beginning-1] = meow
     return biggie_T
 
-print(extract_data('Damaged',3,10,3))
-
 
 def extract_data_2(path, n, s):
     mat_file = scipy.io.loadmat(path+f'{n}.mat')
-    data_np = mat_file[f'AN{s}']
+    data_np = np.array(mat_file[f'AN{s}'])
     data_np = data_np.flatten()
     data_tensor = torch.tensor(data_np)
     return data_tensor
-
-def tensor_append(list, x):
-    if list == torch.Tensor([0]):
-        list = x
-    else:
-        list = torch.cat((list, x), 0)
-    return list
-
 
 
 def normalize(a, end=255, intit=True):
@@ -79,9 +69,11 @@ def generate_samples(sensor_data, n_samples, sample_size, spacing=False):
             e += (sample_size**2 + space)
     else:
         for i in range(n_samples):
+            print("sensor_data in", (i * sample_size**2), ((i + 1) * sample_size**2))
+            print(sensor_data.shape)
             samples[i] = sensor_data[(i * sample_size**2):((i + 1) * sample_size**2)]
     for j in range(n_samples):
-        samples[i] = create_matrix(samples[i])
+        samples[j] = create_matrix(samples[j])
     return samples
 
 
@@ -95,4 +87,5 @@ def visualize(data_matrix):
 
 if __name__ == '__main__':
     # test your functions here
-    print(extract_data('data/Damaged/D', 3, 10, 10))
+    # print(extract_data('data/Damaged/D', 3, 10, 10))
+    print("run functions")
