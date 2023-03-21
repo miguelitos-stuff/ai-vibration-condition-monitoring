@@ -92,4 +92,10 @@ def visualize(data_matrix):
 
 if __name__ == '__main__':
     # test your functions here
+
+    # Visualize the data matrix
+    test_matrix = np.random.randint(low=0, high=256, size=(224, 224))
+    visualize(test_matrix)
+
+    
     print(extract_data('data/Damaged/D', 3, 10, 10))
