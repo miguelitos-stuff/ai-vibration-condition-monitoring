@@ -13,8 +13,16 @@ from ppfuncs import visualize
 
 if __name__ == "__main__":
 
+    raw_data =
 
-    pass
+    matrix = create_matrix(raw_data)
+
+    normalized_data = normalize(matrix)
+
+    plot = visualize(normalized_data)
+
+
+    return normalized_data, plot
 
 
 
