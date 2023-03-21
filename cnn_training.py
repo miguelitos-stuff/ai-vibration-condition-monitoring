@@ -24,17 +24,17 @@ ap.add_argument("-p", "--plot", type=str, required=True,
 	help="path to output loss/accuracy plot")
 args = vars(ap.parse_args())
 
-#Hyperparameters
+#TODO edit Hyperparameters
 numChannels = 1 #1 for grayscale
 num_classes = 2
-learning_rate =
-batch_size =
-num_epochs =
+learning_rate = 0.01
+batch_size = 64
+num_epochs = 1000
 
 
 # define the train and val splits
-TRAIN_SPLIT = 0.75
-VAL_SPLIT = 1 - TRAIN_SPLIT
+train_split = 0.75
+val_split = 1 - train_split
 
 #importing data
 train_dataset = #import data
@@ -42,8 +42,8 @@ test_dataset = #Import data
 
 # splitting into train, test and valdation (still need to do that)
 print("[INFO] generating the train/validation split...")
-numTrainSamples = int(len(train_dataset) * TRAIN_SPLIT)
-numValSamples = int(len(train_dataset) * VAL_SPLIT)
+numTrainSamples = int(len(train_dataset) * train_split)
+numValSamples = int(len(train_dataset) * val_split)
 (train_dataset, val_dataset) = random_split(train_dataset,
 	[numTrainSamples, numValSamples],
 	generator=torch.Generator().manual_seed(42))
@@ -54,8 +54,8 @@ test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=Tr
 val_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
 
 # calculate steps per epoch for training and validation set
-trainSteps = len(train_loader.dataset) // BATCH_SIZE
-valSteps = len(val_loader.dataset) // BATCH_SIZE
+trainSteps = len(train_loader.dataset) // batch_size
+valSteps = len(val_loader.dataset) // batch_size
 
 # Initialze network
 print("[INFO] initializing the CNN model...")
@@ -79,7 +79,7 @@ print("[INFO] training the network...")
 startTime = time.time()
 
 # loop over our epochs
-for e in range(0, EPOCHS):
+for e in range(0, num_epochs):
 	# set the model in training mode
 	model.train()
 	# initialize the total training and validation loss
@@ -145,18 +145,18 @@ print("[INFO] total time taken to train the model: {:.2f}s".format(
 print("[INFO] evaluating network...")
 # turn off autograd for testing evaluation
 with torch.no_grad():
-    # set the model in evaluation mode
+# set the model in evaluation mode
     model.eval()
 
-    # initialize a list to store our predictions
+# initialize a list to store our predictions
     preds = []
-    # loop over the test set
+# loop over the test set
     for (x, y) in test_loader:
-        # send the input to the device
+		# send the input to the device
         x = x.to(device)
-        # make the predictions and add them to the list
+		# make the predictions and add them to the list
         pred = model(x)
-        preds.extend(pred.argmax(axis=1).cpu().numpy())
+		preds.extend(pred.argmax(axis=1).cpu().numpy())
 # generate a classification report
 print(classification_report(test_dataset.targets.cpu().numpy(),
                             np.array(preds), target_names=test_dataset.classes))

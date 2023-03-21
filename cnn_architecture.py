@@ -28,7 +28,7 @@ class CNN(Module):
 			kernel_size=(3, 3), padding=1)
 		self.maxpool4 = MaxPool2d(kernel_size=(2), stride=(2, 2))
 
-		self.fc1 = Linear(in_features=7*7*20, out_features=400)
+		self.fc1 = Linear(in_features=980, out_features=400)
 		self.fc2 = Linear(in_features=400, out_features=200)
 		self.logSoftmax = LogSoftmax(dim=1)
 
