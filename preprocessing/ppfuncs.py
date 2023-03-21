@@ -5,9 +5,10 @@ import scipy.io
 import math
 import torch
 
-
+#Extracting the data
 def extract_data(path, AN_beginning, AN_end, amount_of_data_points):
     tensors = torch.empty(0,0)
+
     for i in range(AN_beginning,AN_end+1):
         mat_file = scipy.io.loadmat(path+str(i)+'.mat')
         for n in range(AN_beginning,AN_end+1):
@@ -15,6 +16,24 @@ def extract_data(path, AN_beginning, AN_end, amount_of_data_points):
             numpy_array = numpy_array.flatten()
             tensors.append(numpy_array)
     return tensors
+
+
+def extract_data_2(path, n, s):
+    mat_file = scipy.io.loadmat(path+f'{n}.mat')
+    data_np = mat_file[f'AN{s}']
+    data_np = data_np.flatten()
+    data_tensor = torch.tensor(data_np)
+    return data_tensor
+
+def tensor_append(list, x):
+    if list == torch.Tensor([0]):
+        list = x
+    else:
+        list = torch.cat((list, x), 0)
+    return list
+
+
+print(extract_data('data/Damaged/D', 3,10,10))
 
 
 def normalize(a, end=255, intit=True):
@@ -61,8 +80,11 @@ def generate_samples(sensor_data, n_samples, sample_size, spacing=False):
     return samples
 
 
+
+# Visualizing the normlaized data
 def visualize(data_matrix):
     # Take the normalized data matrices (that have entries with values ranging from 0 to 255) and visualize these on a grey scale
+
     plt.imshow(data_matrix, cmap='viridis')
     plt.colorbar()
     plt.show()
