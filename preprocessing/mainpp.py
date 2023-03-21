@@ -21,7 +21,7 @@ for i in datapath.iterdir():
 ordered_list = sorted(filelist, key = lambda x: x.stem[-6:-5])
 print(filelist)
 
-if name = __main__:
+if name == __main__:
 
 # Define import variables for both Healty and Damaged
 time_start = 1
