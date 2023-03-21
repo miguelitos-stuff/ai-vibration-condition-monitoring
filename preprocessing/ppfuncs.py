@@ -4,9 +4,8 @@ import matplotlib.pyplot as plt
 import scipy.io
 import math
 import torch
-import os
 
-#Extracting the data
+
 def extract_data(Damaged_or_Healthy, AN_beginning, AN_end, D_what):
     biggie_T = torch.empty(10)
     print(biggie_T)
@@ -22,8 +21,6 @@ def extract_data(Damaged_or_Healthy, AN_beginning, AN_end, D_what):
         biggie_T[i-AN_beginning-1] = meow
     return biggie_T
 
-print(extract_data('Damaged',3,10,3))
-
 
 def extract_data_2(path, n, s):
     mat_file = scipy.io.loadmat(path+f'{n}.mat')
@@ -32,13 +29,13 @@ def extract_data_2(path, n, s):
     data_tensor = torch.tensor(data_np)
     return data_tensor
 
+
 def tensor_append(list, x):
     if list == torch.Tensor([0]):
         list = x
     else:
         list = torch.cat((list, x), 0)
     return list
-
 
 
 def normalize(a, end=255, intit=True):
