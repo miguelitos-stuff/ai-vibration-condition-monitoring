@@ -5,6 +5,8 @@ from torch.nn import MaxPool2d
 from torch.nn import ReLU
 from torch.nn import LogSoftmax
 from torch import flatten
+import torch
+import numpy as np
 
 
 
@@ -30,26 +32,53 @@ class CNN(Module):
 
 		self.fc1 = Linear(in_features=980, out_features=400)
 		self.fc2 = Linear(in_features=400, out_features=200)
+		self.fc3 = Linear(in_features=200, out_features=2)
 		self.logSoftmax = LogSoftmax(dim=1)
 
+
 	def forward(self, x):
+		print("Forward running")
 		x = self.conv1(x)
+		print(f"test 1{x.shape}")
 		x = self.relu(x)
 		x = self.maxpool1(x)
+		print(f"test 2{x.shape}")
 		x = self.conv2(x)
+		print(f"test 3{x.shape}")
 		x = self.relu(x)
 		x = self.maxpool2(x)
+		print(f"test 4{x.shape}")
 		x = self.conv3(x)
+		print(f"test 5{x.shape}")
 		x = self.relu(x)
 		x = self.maxpool3(x)
+		print(f"test 6{x.shape}")
 		x = self.conv4(x)
+		print(f"test 7{x.shape}")
 		x = self.relu(x)
 		x = self.maxpool4(x)
+		print(f"test 8{x.shape}")
 
 		x = flatten(x, 1)
 		x = self.fc1(x)
-		x = self.relu5(x)
+		print(f"test 9{x.shape}")
+		# x = self.relu(x)
 		x = self.fc2(x)
-		x = self.relu6(x)
+		print(f"test 10{x.shape}")
+		# x = self.relu(x)
+		x = self.fc3(x)
+		# x = self.relu(x)
+		print(f"test 11{x.shape}")
 		output = self.logSoftmax(x)
 		return output
+
+# 	Create matrix
+num_matrices = 1
+matrix_shape = (224, 224)
+ones_matrices = np.ones((num_matrices,) + matrix_shape)
+print(ones_matrices.shape)
+# initialize class
+cnn = CNN(numChannels=3, classes=10)
+x = torch.from_numpy(ones_matrices).float().unsqueeze(1).repeat(1, 3, 1, 1)
+output = cnn.forward(x)
+print(output)

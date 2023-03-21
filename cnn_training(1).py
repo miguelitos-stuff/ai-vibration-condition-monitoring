@@ -16,6 +16,7 @@ import argparse
 import torch
 import time
 
+
 # construct the argument parser and parse the arguments
 # ap = argparse.ArgumentParser()
 # ap.add_argument("-m", "--model", type=str, required=True,
