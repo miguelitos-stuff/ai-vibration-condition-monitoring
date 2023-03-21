@@ -1,33 +1,22 @@
-#Main file loop for preprocessing
+#Main file loop for preprocessin
 
 #Import libraries
 import matplotlib.pyplot as plt
-import numpy as np
-
-from ppfuncs import extract_data
-from ppfuncs import normalize
-from ppfuncs import create_matrix
-from ppfuncs import generate_sample
 from ppfuncs import visualize
+#from ppfuncs import extract_data
+import numpy as np
+from pathlib import Path
 
+#Visualize the data matrix
+test_matrix = np.random.randint(low=0, high=256, size=(224, 224))
+visualize(test_matrix)
 
-if __name__ == "__main__":
-
-    raw_data =
-
-    matrix = create_matrix(raw_data)
-
-    normalized_data = normalize(matrix)
-
-    plot = visualize(normalized_data)
-
-
-    return normalized_data, plot
-
-
-
-
-# #Visualize the data matrix
-# test_matrix = np.random.randint(low=0, high=256, size=(224, 224))
-# visualize(test_matrix)
+#Make an array with all of the file numbers
+datapath = Path('../data/')
+filelist = []
+for i in datapath.iterdir():
+    for datafile in i.iterdir():
+        filelist.append(datafile)
+ordered_list = sorted(filelist, key = lambda x: x.stem[-6:-5])
+print(filelist)
 
