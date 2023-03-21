@@ -1,5 +1,5 @@
 /data/
-/.idea/.gitignore
+/.idea/
 /.idea/ai-vibration-condition-monitoring.iml
 /local_data/Damaged/D1.mat
 /local_data/Damaged/D2.mat
