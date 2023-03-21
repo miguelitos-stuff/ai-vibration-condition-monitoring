@@ -6,21 +6,23 @@ import math
 import torch
 
 
-def extract_data(Damaged_or_Healthy, AN_beginning, AN_end, D_what):
+def extract_data(DamagedD_or_HealthyH, AN_beginning, AN_end, D_what):
     biggie_T = torch.empty(10)
     print(biggie_T)
-    path_to_data_file = os.path.join(os.path.dirname(__file__), '..', 'data', str(Damaged_or_Healthy), 'D' + str(D_what) + ".mat")
-    mat = scipy.io.loadmat(path_to_data_file)
+    print(biggie_T.dim())
+    mat = scipy.io.loadmat('data' + "\\" + str(DamagedD_or_HealthyH) + str(D_what) + ".mat")
 
     for i in range(AN_beginning, AN_end+1):
         rawr = np.array(mat['AN'+str(i)])
         rawr.flatten()
         meow = torch.tensor(rawr)
+        meow = torch.squeeze(meow)
         print(meow)
-        print(len(meow))
+        print(meow.dim())
         biggie_T[i-AN_beginning-1] = meow
     return biggie_T
 
+#print(extract_data('Damaged\\D', 3, 10, 10))
 
 def extract_data_2(path, n, s):
     mat_file = scipy.io.loadmat(path+f'{n}.mat')
@@ -98,4 +100,4 @@ if __name__ == '__main__':
     visualize(test_matrix)
 
     
-    print(extract_data('data/Damaged/D', 3, 10, 10))
+    print(extract_data('DamagedD', 3, 10, 10))
