@@ -2,7 +2,7 @@
 import matplotlib
 matplotlib.use("Agg")
 # import the necessary packages
-from cnn_architecture import CNN
+from outdated_scripts.cnn_architecture2 import LeNet
 from sklearn.metrics import classification_report
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
@@ -63,7 +63,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn):
 
 	# initialize the LeNet model
 	print("[INFO] initializing the LeNet model...")
-	model = CNN(
+	model = LeNet(
 		numChannels=1,
 		classes=len(trainData.dataset.classes)).to(device)
 	# initialize a dictionary to store training history
@@ -184,7 +184,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn):
 
 learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50,100,200,300,500]
-num_epochs = [20]
+num_epochs = [10,20,40,80]
 #optimizers = [Adam(model.parameters(), lr=learning_rate)]
 loss_functions = [nn.NLLLoss()]
 
