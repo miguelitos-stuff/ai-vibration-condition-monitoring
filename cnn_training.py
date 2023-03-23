@@ -9,6 +9,9 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor
 from torchvision.datasets import KMNIST
 from torch.optim import Adam
+from torch.optim import SGD
+from torch.optim import LBFGS
+from torch.optim import Adamax
 from torch import nn
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -74,7 +77,14 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn):
 		"val_loss": [],
 		"val_acc": []
 	}
-	opt = Adam(model.parameters(), lr=learning_rate)
+	if optm == 0:
+		opt = Adam(model.parameters(), lr=learning_rate)
+	elif optm == 1:
+		opt = SGD(model.parameters(), lr=learning_rate)
+	elif optm == 2:
+		opt = LBFGS(model.parameters(),lr=learning_rate)
+	elif optm == 3:
+		opt = Adamax(model.parameters(), lr=learning_rate)
 	# measure how long training is going to take
 	print("[INFO] training the network...")
 	startTime = time.time()
@@ -177,7 +187,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn):
 	plt.xlabel("Epoch #")
 	plt.ylabel("Loss/Accuracy")
 	plt.legend(loc="lower left")
-	plt.savefig(f"CNNModels/lr{INIT_LR}bs{BATCH_SIZE}ne{EPOCHS}lf{lossFn}")
+	plt.savefig(f"CNNModels/lr{INIT_LR}bs{BATCH_SIZE}ne{EPOCHS}lf{lossFn}.png")
 	print("plotteddaplot")
 	# serialize the model to disk
 	return model, (endTime - startTime), accuracy, loss
@@ -188,6 +198,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn):
 learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50,100,200,300,500]
 num_epochs = [10,20,40,80]
+num_optm = ['Adam','SGD', 'LBFGS', 'Adamax']
 #optimizers = [Adam(model.parameters(), lr=learning_rate)]
 loss_functions = [nn.NLLLoss()]
 
@@ -195,11 +206,12 @@ performance_history = []
 df = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
 count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
-	count +=1
-	model, training_time = one_iteration(learning_rate, batch_size, num_epoch, loss_function)
-	torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
-	new_row = {'model_num': count, 'batch_size': batch_size, 'num_epoch': num_epoch, 'loss_function': , 'accuracy': accuracy}
-	df2 = df.append(new_row, ignore_index=True)
+	for optm in range(len(num_optm)):
+		count +=1
+		model, training_time = one_iteration(learning_rate, batch_size, num_epoch, loss_function)
+		torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
+		new_row = {'model_num': count, 'batch_size': batch_size, 'num_epoch': num_epoch, 'loss_function': , 'accuracy': accuracy}
+		df2 = df.append(new_row, ignore_index=True)
 
 
 
