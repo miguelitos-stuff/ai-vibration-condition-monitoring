@@ -175,7 +175,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn):
 	plt.xlabel("Epoch #")
 	plt.ylabel("Loss/Accuracy")
 	plt.legend(loc="lower left")
-	plt.savefig(args["plot"])
+	plt.savefig(f"CNNModels/lr{INIT_LR}bs{BATCH_SIZE}ne{EPOCHS}lf{lossFn}")
 	# serialize the model to disk
 	return model
 
@@ -189,5 +189,5 @@ num_epochs = [10,20,40,80]
 loss_functions = [nn.NLLLoss()]
 
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
-	one_iteration(learning_rate, batch_size, num_epoch, loss_function)
-	torch.save(model, args["model"])
+	model = one_iteration(learning_rate, batch_size, num_epoch, loss_function)
+	torch.save(model, f"CNNModels/lr{INIT_LR}bs{BATCH_SIZE}ne{EPOCHS}lf{lossFn}")
