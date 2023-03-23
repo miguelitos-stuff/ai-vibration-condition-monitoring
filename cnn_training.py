@@ -190,4 +190,4 @@ loss_functions = [nn.NLLLoss()]
 
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
 	model = one_iteration(learning_rate, batch_size, num_epoch, loss_function)
-	torch.save(model, f"CNNModels/lr{INIT_LR}bs{BATCH_SIZE}ne{EPOCHS}lf{lossFn}")
+	torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{-num_epoch}lf{loss_function}")
