@@ -31,7 +31,7 @@ import time
 # 
 # define training hyperparameters
 
-def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn):
+def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm):
 	# define the train and val splits
 	TRAIN_SPLIT = 0.75
 	VAL_SPLIT = 1 - TRAIN_SPLIT
@@ -172,9 +172,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn):
 			pred = model(x)
 			preds.extend(pred.argmax(axis=1).cpu().numpy())
 	# generate a classification report
-	print(classification_report(testData.targets.cpu().numpy(),
-								np.array(preds), target_names=testData.classes))
-
+	print(classification_report(testData.targets.cpu().numpy(),np.array(preds), target_names=testData.classes))
 	# plot the training loss and accuracy
 	plt.clf()
 	plt.style.use("ggplot")
@@ -187,10 +185,10 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn):
 	plt.xlabel("Epoch #")
 	plt.ylabel("Loss/Accuracy")
 	plt.legend(loc="lower left")
-	plt.savefig(f"CNNModels/lr{INIT_LR}bs{BATCH_SIZE}ne{EPOCHS}lf{lossFn}.png")
+	plt.savefig(f"CNNModels/lr{INIT_LR}bs{BATCH_SIZE}ne{EPOCHS}lf{lossFn}")
 	print("plotteddaplot")
 	# serialize the model to disk
-	return model, (endTime - startTime), accuracy, loss
+	return model, (endTime - startTime), accuracy
 
 
 
@@ -198,20 +196,18 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn):
 learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50,100,200,300,500]
 num_epochs = [10,20,40,80]
-num_optm = ['Adam','SGD', 'LBFGS', 'Adamax']
 #optimizers = [Adam(model.parameters(), lr=learning_rate)]
 loss_functions = [nn.NLLLoss()]
 
-performance_history = []
-df = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
+performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
 count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
 	for optm in range(len(num_optm)):
-		count +=1
-		model, training_time = one_iteration(learning_rate, batch_size, num_epoch, loss_function)
-		torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
-		new_row = {'model_num': count, 'batch_size': batch_size, 'num_epoch': num_epoch, 'loss_function': , 'accuracy': accuracy}
-		df2 = df.append(new_row, ignore_index=True)
+	count +=1
+	model, training_time, accuracy = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm)
+	torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
+	new_row = {'model_num': count, 'batch_size': batch_size, 'num_epoch': num_epoch, 'loss_function': '', 'accuracy': accuracy}
+	performance_history = performance_history.append(new_row, ignore_index=True)
 
 
 
