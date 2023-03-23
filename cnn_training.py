@@ -10,6 +10,7 @@ from torchvision.transforms import ToTensor
 from torchvision.datasets import KMNIST
 from torch.optim import Adam
 from torch import nn
+import pandas as pd
 import matplotlib.pyplot as plt
 import itertools
 import numpy as np
@@ -179,7 +180,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn):
 	plt.savefig(f"CNNModels/lr{INIT_LR}bs{BATCH_SIZE}ne{EPOCHS}lf{lossFn}")
 	print("plotteddaplot")
 	# serialize the model to disk
-	return model
+	return model, (endTime - startTime), accuracy, loss
 
 
 
@@ -191,9 +192,15 @@ num_epochs = [10,20,40,80]
 loss_functions = [nn.NLLLoss()]
 
 performance_history = []
-df = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],[]])
+df = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
+count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
-	model = one_iteration(learning_rate, batch_size, num_epoch, loss_function)
-	torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{-num_epoch}lf{loss_function}")
+	count +=1
+	model, training_time = one_iteration(learning_rate, batch_size, num_epoch, loss_function)
+	torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
+	new_row = {'model_num': count, 'batch_size': batch_size, 'num_epoch': num_epoch, 'loss_function': , 'accuracy': accuracy}
+	df2 = df.append(new_row, ignore_index=True)
+
+
 
 

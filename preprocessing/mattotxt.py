@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 
 
-path = Path("../data/Healthy")
+path = Path("data/Healthy")
 
 for child in path.iterdir():
     np.append(patharray)
