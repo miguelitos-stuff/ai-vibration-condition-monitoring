@@ -7,7 +7,7 @@ import torch
 
 
 def extract_data(Damaged_or_Healthy, D_or_H, datafile_number):
-    lst=[]
+    lst = []
     mat = scipy.io.loadmat('data' + "\\" + str(Damaged_or_Healthy) + "\\"+ str(D_or_H) + str(datafile_number) + ".mat")
     for i in range(3,11):
         lst.append(0)
@@ -19,12 +19,11 @@ def extract_data(Damaged_or_Healthy, D_or_H, datafile_number):
     return biggie_T
 
 
-def extract_data_2(path, n, s):
+def extract_data_2(path, n, s, device):
     mat_file = scipy.io.loadmat(path+f'{n}.mat')
     data_np = mat_file[f'AN{s}']
     data_np = data_np.flatten()
-    data_tensor = torch.tensor(data_np)
-    data_tensor.to("cuda")
+    data_tensor = torch.tensor(data_np).to(device)
     return data_tensor
 
 
@@ -50,10 +49,9 @@ def create_matrix(vec):
     return matrix
 
 
-def generate_samples(sensor_data, n_samples, sample_size, spacing=False):
+def generate_samples(sensor_data, n_samples, sample_size, device, spacing=False):
     # input is one minute of datapoints of one sensor [tensor]
-    samples_ = torch.Tensor([])
-    samples_.to("cuda")
+    samples_ = torch.Tensor([]).to(device)
     if spacing:
         rest = sensor_data.shape[0] - n_samples * sample_size ** 2
         space = rest // n_samples
@@ -68,8 +66,7 @@ def generate_samples(sensor_data, n_samples, sample_size, spacing=False):
             sample_ = sensor_data[(i * sample_size ** 2):((i + 1) * sample_size ** 2)]
             sample_ = sample_[None, :]
             samples_ = torch.cat((samples_, sample_), 0)
-    samples_2 = torch.Tensor([])
-    samples_2.to("cuda")
+    samples_2 = torch.Tensor([]).to(device)
     for j in range(n_samples):
         sample_ = create_matrix(samples_[j])
         samples_2 = torch.cat((samples_2, sample_), 0)
@@ -97,9 +94,9 @@ def visualize_compare(data_healthy, data_damaged, n):
     return
 
 
-def save(zeros_list, ones_list):
-    labels_0 = torch.zeros(len(zeros_list)).to("cuda")
-    labels_1 = torch.ones(len(ones_list)).to("cuda")
+def save(zeros_list, ones_list, device):
+    labels_0 = torch.zeros(len(zeros_list)).to(device)
+    labels_1 = torch.ones(len(ones_list)).to(device)
     labels = torch.cat((labels_1, labels_0), 0)
     images = torch.cat((zeros_list, ones_list), 0)
     data_dict = {"data": images, "label": labels}
