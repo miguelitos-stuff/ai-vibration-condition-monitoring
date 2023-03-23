@@ -1,8 +1,5 @@
-# set the matplotlib backend so figures can be saved in the background
 import matplotlib
 matplotlib.use("Agg")
-# import the necessary packages
-from cnn_architecture2 import LeNet
 from sklearn.metrics import classification_report
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
@@ -16,56 +13,59 @@ import argparse
 import torch
 import time
 
+# Set device
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # construct the argument parser and parse the arguments
-# ap = argparse.ArgumentParser()
-# ap.add_argument("-m", "--model", type=str, required=True,
-# 	help="path to output trained model")
-# ap.add_argument("-p", "--plot", type=str, required=True,
-# 	help="path to output loss/accuracy plot")
-# args = vars(ap.parse_args())
-# 
-# define training hyperparameters
-INIT_LR = 1e-3
-BATCH_SIZE = 64
-EPOCHS = 10
-# define the train and val splits
-TRAIN_SPLIT = 0.75
-VAL_SPLIT = 1 - TRAIN_SPLIT
-# set the device we will be using to train the model
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+ap = argparse.ArgumentParser()
+ap.add_argument("-m", "--model", type=str, required=True,
+	help="path to output trained model")
+ap.add_argument("-p", "--plot", type=str, required=True,
+	help="path to output loss/accuracy plot")
+args = vars(ap.parse_args())
 
-# load the KMNIST dataset
-print("[INFO] loading the KMNIST dataset...")
-trainData = KMNIST(root="data", train=True, download=True,
-	transform=ToTensor())
-testData = KMNIST(root="data", train=False, download=True,
-	transform=ToTensor())
-# calculate the train/validation split
+#TODO edit Hyperparameters
+numChannels = 1 #1 for grayscale
+num_classes = 2
+learning_rate = 0.01
+batch_size = 64
+num_epochs = 1000
+
+
+# define the train and val splits
+train_split = 0.75
+val_split = 1 - train_split
+
+#importing data
+train_dataset = #import data
+test_dataset = #Import data
+
+# splitting into train, test and valdation (still need to do that)
 print("[INFO] generating the train/validation split...")
-numTrainSamples = int(len(trainData) * TRAIN_SPLIT)
-numValSamples = int(len(trainData) * VAL_SPLIT)
-(trainData, valData) = random_split(trainData,
+numTrainSamples = int(len(train_dataset) * train_split)
+numValSamples = int(len(train_dataset) * val_split)
+(train_dataset, val_dataset) = random_split(train_dataset,
 	[numTrainSamples, numValSamples],
 	generator=torch.Generator().manual_seed(42))
 
-# initialize the train, validation, and test data loaders
-trainDataLoader = DataLoader(trainData, shuffle=True,
-	batch_size=BATCH_SIZE)
-valDataLoader = DataLoader(valData, batch_size=BATCH_SIZE)
-testDataLoader = DataLoader(testData, batch_size=BATCH_SIZE)
-# calculate steps per epoch for training and validation set
-trainSteps = len(trainDataLoader.dataset) // BATCH_SIZE
-valSteps = len(valDataLoader.dataset) // BATCH_SIZE
+# Load Data
+train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
+val_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
 
-# initialize the LeNet model
-print("[INFO] initializing the LeNet model...")
-model = LeNet(
-	numChannels=1,
-	classes=len(trainData.dataset.classes)).to(device)
-# initialize our optimizer and loss function
-opt = Adam(model.parameters(), lr=INIT_LR)
-lossFn = nn.NLLLoss()
+# calculate steps per epoch for training and validation set
+trainSteps = len(train_loader.dataset) // batch_size
+valSteps = len(val_loader.dataset) // batch_size
+
+# Initialze network
+print("[INFO] initializing the CNN model...")
+model = CNN(numChannels=1, classes=num_classes).to(device)
+
+# Loss and optimizer
+loss_fn = nn.CrossEntropyLoss()
+optimizer = Adam(model.parameters(), lr=learning_rate)
+# adapt optimizer if needed
+
 # initialize a dictionary to store training history
 H = {
 	"train_loss": [],
@@ -73,12 +73,13 @@ H = {
 	"val_loss": [],
 	"val_acc": []
 }
+
 # measure how long training is going to take
 print("[INFO] training the network...")
 startTime = time.time()
 
 # loop over our epochs
-for e in range(0, EPOCHS):
+for e in range(0, num_epochs):
 	# set the model in training mode
 	model.train()
 	# initialize the total training and validation loss
@@ -89,12 +90,12 @@ for e in range(0, EPOCHS):
 	trainCorrect = 0
 	valCorrect = 0
 	# loop over the training set
-	for (x, y) in trainDataLoader:
+	for (x, y) in train_loader:
 		# send the input to the device
 		(x, y) = (x.to(device), y.to(device))
 		# perform a forward pass and calculate the training loss
 		pred = model(x)
-		loss = lossFn(pred, y)
+		loss = loss_fn(pred, y)
 		# zero out the gradients, perform the backpropagation step,
 		# and update the weights
 		opt.zero_grad()
@@ -105,40 +106,37 @@ for e in range(0, EPOCHS):
 		totalTrainLoss += loss
 		trainCorrect += (pred.argmax(1) == y).type(
 			torch.float).sum().item()
-
 	# switch off autograd for evaluation
 	with torch.no_grad():
 		# set the model in evaluation mode
 		model.eval()
 		# loop over the validation set
-		for (x, y) in valDataLoader:
+		for (x, y) in val_loader:
 			# send the input to the device
 			(x, y) = (x.to(device), y.to(device))
 			# make the predictions and calculate the validation loss
 			pred = model(x)
-			totalValLoss += lossFn(pred, y)
+			totalValLoss += loss_fn(pred, y)
 			# calculate the number of correct predictions
 			valCorrect += (pred.argmax(1) == y).type(
 				torch.float).sum().item()
-
 	# calculate the average training and validation loss
 	avgTrainLoss = totalTrainLoss / trainSteps
 	avgValLoss = totalValLoss / valSteps
 	# calculate the training and validation accuracy
-	trainCorrect = trainCorrect / len(trainDataLoader.dataset)
-	valCorrect = valCorrect / len(valDataLoader.dataset)
+	trainCorrect = trainCorrect / len(train_loader.dataset)
+	valCorrect = valCorrect / len(val_loader.dataset)
 	# update our training history
 	H["train_loss"].append(avgTrainLoss.cpu().detach().numpy())
 	H["train_acc"].append(trainCorrect)
 	H["val_loss"].append(avgValLoss.cpu().detach().numpy())
 	H["val_acc"].append(valCorrect)
 	# print the model training and validation information
-	print("[INFO] EPOCH: {}/{}".format(e + 1, EPOCHS))
+	print("[INFO] EPOCH: {}/{}".format(e + 1, num_epochs))
 	print("Train loss: {:.6f}, Train accuracy: {:.4f}".format(
 		avgTrainLoss, trainCorrect))
 	print("Val loss: {:.6f}, Val accuracy: {:.4f}\n".format(
 		avgValLoss, valCorrect))
-
 # finish measuring how long training took
 endTime = time.time()
 print("[INFO] total time taken to train the model: {:.2f}s".format(
@@ -147,22 +145,21 @@ print("[INFO] total time taken to train the model: {:.2f}s".format(
 print("[INFO] evaluating network...")
 # turn off autograd for testing evaluation
 with torch.no_grad():
-    # set the model in evaluation mode
+# set the model in evaluation mode
     model.eval()
 
-    # initialize a list to store our predictions
+# initialize a list to store our predictions
     preds = []
-    # loop over the test set
-    for (x, y) in testDataLoader:
-        # send the input to the device
+# loop over the test set
+    for (x, y) in test_loader:
+		# send the input to the device
         x = x.to(device)
-        # make the predictions and add them to the list
+		# make the predictions and add them to the list
         pred = model(x)
-        preds.extend(pred.argmax(axis=1).cpu().numpy())
+		preds.extend(pred.argmax(axis=1).cpu().numpy())
 # generate a classification report
-print(classification_report(testData.targets.cpu().numpy(),
-                            np.array(preds), target_names=testData.classes))
-
+print(classification_report(test_dataset.targets.cpu().numpy(),
+                            np.array(preds), target_names=test_dataset.classes))
 # plot the training loss and accuracy
 plt.style.use("ggplot")
 plt.figure()
@@ -177,3 +174,5 @@ plt.legend(loc="lower left")
 plt.savefig(args["plot"])
 # serialize the model to disk
 torch.save(model, args["model"])
+
+
