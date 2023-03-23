@@ -18,7 +18,6 @@ def extract_data(Damaged_or_Healthy, D_or_H, datafile_number):
     biggie_T = torch.stack((lst[0],lst[1],lst[2],lst[3],lst[4],lst[5],lst[6],lst[7]), 0)
     return biggie_T
 
-print(extract_data('Damaged', 'D', 3))
 
 def extract_data_2(path, n, s):
     mat_file = scipy.io.loadmat(path+f'{n}.mat')
