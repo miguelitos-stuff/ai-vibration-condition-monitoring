@@ -72,17 +72,18 @@ class CNN(Module):
 		output = self.logSoftmax(x)
 		return output
 
-# 	Create matrix
-num_matrices = 1
-matrix_shape = (224, 224)
-ones_matrices = np.ones((num_matrices,) + matrix_shape)
-print(ones_matrices.shape)
-random_matrices = np.random.randint(0,255, (num_matrices,) + matrix_shape)
-# initialize class
-cnn = CNN(numChannels=1, classes=2)
-x = torch.from_numpy(ones_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
-x2 = torch.from_numpy(random_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
-output = cnn.forward(x)
-output2 = cnn.forward(x2)
-print(output)
-print(output2)
+if __name__ == "__main__":
+	# 	Create matrix
+	num_matrices = 1
+	matrix_shape = (224, 224)
+	ones_matrices = np.ones((num_matrices,) + matrix_shape)
+	print(ones_matrices.shape)
+	random_matrices = np.random.randint(0,255, (num_matrices,) + matrix_shape)
+	# initialize class
+	cnn = CNN(numChannels=1, classes=2)
+	x = torch.from_numpy(ones_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
+	x2 = torch.from_numpy(random_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
+	output = cnn.forward(x)
+	output2 = cnn.forward(x2)
+	print(output)
+	print(output2)
