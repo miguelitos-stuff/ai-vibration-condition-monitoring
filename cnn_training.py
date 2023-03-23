@@ -2,7 +2,7 @@
 import matplotlib
 matplotlib.use("Agg")
 # import the necessary packages
-from cnn_architecture2 import LeNet
+from cnn_architecture import CNN
 from sklearn.metrics import classification_report
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
@@ -60,7 +60,7 @@ valSteps = len(valDataLoader.dataset) // BATCH_SIZE
 
 # initialize the LeNet model
 print("[INFO] initializing the LeNet model...")
-model = LeNet(
+model = CNN(
 	numChannels=1,
 	classes=len(trainData.dataset.classes)).to(device)
 # initialize our optimizer and loss function
