@@ -19,8 +19,10 @@ if __name__ == '__main__':
     time_end = 10
     sen_start = 3
     sen_end = 10
-
-    # Define image variables for both Healthy and Damaged
+    # set the device we will be using to train the model
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print("Pytorch CUDA Version is available:", torch.cuda.is_available())
+    # Define image variables for both Healty and Damaged
     n_images_sensor = 20
     images_size = 224
 
