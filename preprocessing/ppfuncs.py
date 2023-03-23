@@ -31,12 +31,6 @@ def extract_data_2(path, n, s):
     return data_tensor
 
 
-def tensor_append(lst, x):
-    if lst == torch.Tensor([0]):
-        lst = x
-    else:
-        lst = torch.cat((lst, x), 0)
-    return lst
 
 
 def normalize(a, end=255, intit=True):
@@ -45,8 +39,6 @@ def normalize(a, end=255, intit=True):
     a = a - min_
     max_ = a.max()
     a = a * end / max_
-    if intit:
-        a = a.type(torch.int16)
     return a
 
 
@@ -94,13 +86,37 @@ def visualize(data_matrix):
     plt.show()
     return
 
+def visualize_compare(data_healthy, data_damaged, n):
+    fig, axs = plt.subplots(2, n)
+    for i in range(0,n):
+        axs[0, i].imshow(data_healthy[i], cmap='viridis')
+        axs[1, i].imshow(data_damaged[i], cmap='viridis')
+    plt.show()
+    return
+
+def save(zeros_list, ones_list):
+    labels_0 = torch.zeros(len(zeros_list))
+    labels_1 = torch.ones(len(ones_list))
+    labels = torch.cat((labels_1, labels_0),0)
+    images = torch.cat((zeros_list, ones_list),0)
+    data_dict = {"data": images, "label": labels}
+    torch.save(data_dict, "data_dict.pt")
+    return
+
+
+
 
 if __name__ == '__main__':
     # test your functions here
 
     # Visualize the data matrix
-    # test_matrix = np.random.randint(low=0, high=256, size=(224, 224))
-    # visualize(test_matrix)
+    test_matrix = np.random.randint(low=0, high=256, size=(224, 224))
+    test_matrix = torch.Tensor(test_matrix)
+    test_matrix = test_matrix.numpy()
+    print(test_matrix)
+
+    torch.Tensor.ndim = property(lambda self: len(self.shape))
+    visualize(test_matrix)
 
     # test sample making
     a = torch.randint(0, 10, (2400000,))
