@@ -165,7 +165,6 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn):
 								np.array(preds), target_names=testData.classes))
 
 	# plot the training loss and accuracy
-	plt.clf()
 	plt.style.use("ggplot")
 	plt.figure()
 	plt.plot(H["train_loss"], label="train_loss")
@@ -176,24 +175,18 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn):
 	plt.xlabel("Epoch #")
 	plt.ylabel("Loss/Accuracy")
 	plt.legend(loc="lower left")
-	plt.savefig(f"CNNModels/lr{INIT_LR}bs{BATCH_SIZE}ne{EPOCHS}lf{lossFn}")
-	print("plotteddaplot")
+	plt.savefig(f"CNNModels/lr{INIT_LR}bs{BATCH_SIZE}ne{EPOCHS}lf{lossFn}.png")
 	# serialize the model to disk
 	return model
 
 
 
 
-learning_rates = [0.00001,0.0001,0.001,0.01]
-batch_sizes = [50,100,200,300,500]
-num_epochs = [10,20,40,80]
+learning_rates = [0.1]
+batch_sizes = [500]
+num_epochs = [5]
 #optimizers = [Adam(model.parameters(), lr=learning_rate)]
 loss_functions = [nn.NLLLoss()]
 
-performance_history = []
-df = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],[]])
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
 	model = one_iteration(learning_rate, batch_size, num_epoch, loss_function)
-	torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{-num_epoch}lf{loss_function}")
-
-
