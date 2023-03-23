@@ -28,27 +28,25 @@ def extract_data_2(path, n, s):
     return data_tensor
 
 
-
-
-def normalize(a, end=255, intit=True):
+def normalize(a_, end=255):
     # Normalizing so al values are between 0 and end value
-    min_ = a.min()
-    a = a - min_
-    max_ = a.max()
-    a = a * end / max_
-    return a
+    min_ = a_.min()
+    a_ = a_ - min_
+    max_ = a_.max()
+    a_ = a_ * end / max_
+    return a_
 
 
-def create_matrix(a):
+def create_matrix(vec):
     # Create a normalized matrix of the sample vector
-    n = math.floor(a.size(dim=0) ** 0.5)
+    n = math.floor(vec.size(dim=0) ** 0.5)
     m = n
-    rest = a.size(dim=0) - n * m
+    rest = vec.size(dim=0) - n * m
     if rest != 0:
-        a_rest = torch.split(a, (n * m, rest))
-        a = a_rest[0]
-    a = normalize(a)
-    matrix = torch.reshape(a, (1, n, m))
+        vec_rest = torch.split(vec, [n*m, rest])
+        vec = vec_rest[0]
+    vec = normalize(vec)
+    matrix = torch.reshape(vec, (1, n, m))
     return matrix
 
 
@@ -79,34 +77,34 @@ def generate_samples(sensor_data, n_samples, sample_size, spacing=False):
 
 
 def visualize(data_matrix):
-    # Take the normalized data matrices (that have entries with values ranging from 0 to 255) and visualize these on a grey scale
+    # Take the normalized data matrices and visualize
     plt.imshow(data_matrix, cmap='viridis')
     plt.colorbar()
     plt.show()
     return
+
 
 def visualize_compare(data_healthy, data_damaged, n):
     fig, axs = plt.subplots(2, n)
     n_2 = int(n/2-0.4)
     axs[0, n_2].set_title('Healthy')
     axs[1, n_2].set_title('Damaged')
-    for i in range(0,n):
+    for i in range(0, n):
         axs[0, i].imshow(data_healthy[i], cmap='viridis')
         axs[1, i].imshow(data_damaged[i], cmap='viridis')
     plt.setp(axs, xticks=[], yticks=[])
     plt.show()
     return
 
+
 def save(zeros_list, ones_list):
     labels_0 = torch.zeros(len(zeros_list)).to("cuda")
     labels_1 = torch.ones(len(ones_list)).to("cuda")
-    labels = torch.cat((labels_1, labels_0),0)
-    images = torch.cat((zeros_list, ones_list),0)
+    labels = torch.cat((labels_1, labels_0), 0)
+    images = torch.cat((zeros_list, ones_list), 0)
     data_dict = {"data": images, "label": labels}
     torch.save(data_dict, "data_dict.pt")
     return
-
-
 
 
 if __name__ == '__main__':
