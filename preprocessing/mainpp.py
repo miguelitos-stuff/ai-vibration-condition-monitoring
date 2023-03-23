@@ -23,11 +23,13 @@ from pathlib import Path
 
 if __name__ == '__main__':
 
+    print_ = True
+
     # Define import variables for both Healty and Damaged
-    time_start = 6
-    time_end = 6
+    time_start = 1
+    time_end = 10
     sen_start = 3
-    sen_end = 3
+    sen_end = 10
 
     # Define image variables for both Healty and Damaged
     n_images_sensor = 20
@@ -35,26 +37,34 @@ if __name__ == '__main__':
 
     # Create list of healthy images, by extracting data and creating images with above defined variables
     healthy_image_list = torch.Tensor([])
+    healthy_image_list.to("cuda")
     path = "data/Healthy/H"
+    if print_: print("Start on healthy data")
     for i in range(time_start, time_end+1):
         for j in range(sen_start, sen_end+1):
             data = pp.extract_data_2(path, i, j)
             images = pp.generate_samples(data, n_images_sensor, images_size)
             healthy_image_list = torch.cat((healthy_image_list, images), 0)
+        if print_: print(f"\tHealthy data at time {i}: Completed")
+    if print_: print("Healthy data: Completed \n\nStart on Damaged data")
 
     # Create list of damaged images, by extracting data and creating images with above defined variables
     damaged_image_list = torch.Tensor([])
+    damaged_image_list.to("cuda")
     path = "data/Damaged/D"
     for i in range(time_start, time_end+1):
         for j in range(sen_start, sen_end+1):
             data = pp.extract_data_2(path, i, j)
             images = pp.generate_samples(data, n_images_sensor, images_size)
             damaged_image_list = torch.cat((damaged_image_list, images), 0)
+        if print_: print(f"\tDamaged data at time {i}: Completed")
+    if print_: print("Damaged data: Completed \n\nStart on saving data")
 
 
 
 
-    # pp.visualize_compare(healthy_image_list.numpy(), damaged_image_list.numpy(), 8)
+    # pp.visualize_compare(healthy_image_list.numpy(), damaged_image_list.numpy(), 6)
 
     pp.save(healthy_image_list, damaged_image_list)
+    if print_: print("Saving data: Completed")
 

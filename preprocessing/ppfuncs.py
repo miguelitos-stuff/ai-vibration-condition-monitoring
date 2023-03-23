@@ -28,6 +28,7 @@ def extract_data_2(path, n, s):
     data_np = mat_file[f'AN{s}']
     data_np = data_np.flatten()
     data_tensor = torch.tensor(data_np)
+    data_tensor.to("cuda")
     return data_tensor
 
 
@@ -58,6 +59,7 @@ def create_matrix(a):
 def generate_samples(sensor_data, n_samples, sample_size, spacing=False):
     # input is one minute of datapoints of one sensor [tensor]
     samples_ = torch.Tensor([])
+    samples_.to("cuda")
     if spacing:
         rest = sensor_data.shape[0] - n_samples * sample_size ** 2
         space = rest // n_samples
@@ -73,6 +75,7 @@ def generate_samples(sensor_data, n_samples, sample_size, spacing=False):
             sample_ = sample_[None, :]
             samples_ = torch.cat((samples_, sample_), 0)
     samples_2 = torch.Tensor([])
+    samples_2.to("cuda")
     for j in range(n_samples):
         sample_ = create_matrix(samples_[j])
         samples_2 = torch.cat((samples_2, sample_), 0)
@@ -95,8 +98,8 @@ def visualize_compare(data_healthy, data_damaged, n):
     return
 
 def save(zeros_list, ones_list):
-    labels_0 = torch.zeros(len(zeros_list))
-    labels_1 = torch.ones(len(ones_list))
+    labels_0 = torch.zeros(len(zeros_list)).to("cuda")
+    labels_1 = torch.ones(len(ones_list)).to("cuda")
     labels = torch.cat((labels_1, labels_0),0)
     images = torch.cat((zeros_list, ones_list),0)
     data_dict = {"data": images, "label": labels}
