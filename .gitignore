@@ -28,3 +28,4 @@
 /.idea/vcs.xml
 /local_data/Vibration Condition Monitoring Benchmarking Datasets.pdf
 /local_data/WindTurbineConditionMonitoringLicenseInfo.txt
+__pycache__/
