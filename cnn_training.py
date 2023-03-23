@@ -196,18 +196,19 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm):
 learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50,100,200,300,500]
 num_epochs = [10,20,40,80]
-#optimizers = [Adam(model.parameters(), lr=learning_rate)]
 loss_functions = [nn.NLLLoss()]
+num_optm = 4
 
 performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
 count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
-	for optm in range(len(num_optm)):
-	count +=1
-	model, training_time, accuracy = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm)
-	torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
-	new_row = {'model_num': count, 'batch_size': batch_size, 'num_epoch': num_epoch, 'loss_function': '', 'accuracy': accuracy}
-	performance_history = performance_history.append(new_row, ignore_index=True)
+	for optm in range(4):
+		count +=1
+		model, training_time, accuracy = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm)
+		torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
+		new_row = {'model_num': count, 'batch_size': batch_size, 'num_epoch': num_epoch, 'loss_function': '', 'accuracy': accuracy}
+		performance_history = performance_history.append(new_row, ignore_index=True)
+
 
 
 
