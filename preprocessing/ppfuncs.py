@@ -98,12 +98,13 @@ def visualize(data_matrix):
 if __name__ == '__main__':
     # test your functions here
 
-    # Visualize the data matrix
-    # test_matrix = np.random.randint(low=0, high=256, size=(224, 224))
-    # visualize(test_matrix)
-
     # test sample making
     a = torch.randint(0, 10, (2400000,))
     samples = generate_samples(a, 20, 244)
     print(samples)
     print(samples.shape)
+
+    # Visualize the data matrix
+    sample = samples[17]
+    sample = sample.numpy()
+    visualize(sample)
