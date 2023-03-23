@@ -30,7 +30,9 @@ if __name__ == '__main__':
     time_end = 10
     sen_start = 3
     sen_end = 10
-
+    # set the device we will be using to train the model
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print("Pytorch CUDA Version is available:", torch.cuda.is_available())
     # Define image variables for both Healty and Damaged
     n_images_sensor = 20
     images_size = 224
@@ -63,7 +65,7 @@ if __name__ == '__main__':
 
 
 
-    # pp.visualize_compare(healthy_image_list.numpy(), damaged_image_list.numpy(), 6)
+    pp.visualize_compare(healthy_image_list.numpy(), damaged_image_list.numpy(), 6)
 
     pp.save(healthy_image_list, damaged_image_list)
     if print_: print("Saving data: Completed")
