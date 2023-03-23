@@ -32,7 +32,7 @@ class CNN(Module):
 
 		self.fc1 = Linear(in_features=980, out_features=400)
 		self.fc2 = Linear(in_features=400, out_features=200)
-		self.fc3 = Linear(in_features=200, out_features=2)
+		self.fc3 = Linear(in_features=200, out_features=classes)
 		self.logSoftmax = LogSoftmax(dim=1)
 
 
@@ -77,8 +77,12 @@ num_matrices = 1
 matrix_shape = (224, 224)
 ones_matrices = np.ones((num_matrices,) + matrix_shape)
 print(ones_matrices.shape)
+random_matrices = np.random.randint(0,255, (num_matrices,) + matrix_shape)
 # initialize class
-cnn = CNN(numChannels=3, classes=10)
-x = torch.from_numpy(ones_matrices).float().unsqueeze(1).repeat(1, 3, 1, 1)
+cnn = CNN(numChannels=1, classes=2)
+x = torch.from_numpy(ones_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
+x2 = torch.from_numpy(random_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
 output = cnn.forward(x)
+output2 = cnn.forward(x2)
 print(output)
+print(output2)

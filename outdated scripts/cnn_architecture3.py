@@ -32,7 +32,7 @@ class CNN(Module):
 
 		self.fc1 = Linear(in_features=980, out_features=400)
 		self.fc2 = Linear(in_features=400, out_features=200)
-		self.fc3 = Linear(in_features=200, out_features=classes)
+		self.fc3 = Linear(in_features=200, out_features=2)
 		self.logSoftmax = LogSoftmax(dim=1)
 
 
