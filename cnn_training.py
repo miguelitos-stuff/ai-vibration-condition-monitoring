@@ -3,6 +3,8 @@ import matplotlib
 matplotlib.use("Agg")
 # import the necessary packages
 from outdated_scripts.cnn_architecture2 import LeNet
+from cnn_architecture import CNN
+#from preprocessing import 'data_dict.pt'
 from sklearn.metrics import classification_report
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
@@ -31,6 +33,15 @@ import time
 # 
 # define training hyperparameters
 
+allData = torch.load('preprocessing\data_dict.pt')
+TRAINDATA_SPLIT = 0.90
+TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
+numTraindataSamples = int(len(allData) * TRAINDATA_SPLIT)
+numTestSamples = int(len(allData) * TESTDATA_SPLIT)
+(trainData, testData) = random_split(allData,
+	[numTraindataSamples, numTestSamples],
+	generator=torch.Generator().manual_seed(42))
+
 def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm):
 	# define the train and val splits
 	TRAIN_SPLIT = 0.75
@@ -40,11 +51,11 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm):
 	print("Pytorch CUDA Version is available:", torch.cuda.is_available())
 
 	# load the KMNIST dataset
-	print("[INFO] loading the KMNIST dataset...")
-	trainData = KMNIST(root="data", train=True, download=True,
-		transform=ToTensor())
-	testData = KMNIST(root="data", train=False, download=True,
-		transform=ToTensor())
+	print("[INFO] loading the dataset...")
+	#trainData = KMNIST(root="data", train=True, download=True,
+		#transform=ToTensor())
+	#testData = KMNIST(root="data", train=False, download=True,
+		#transform=ToTensor())
 
 	# Change this to load the tensors
 
@@ -67,7 +78,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm):
 
 	# initialize the LeNet model
 	print("[INFO] initializing the LeNet model...")
-	model = LeNet(
+	model = CNN(
 		numChannels=1,
 		classes=len(trainData.dataset.classes)).to(device)
 	# initialize a dictionary to store training history
