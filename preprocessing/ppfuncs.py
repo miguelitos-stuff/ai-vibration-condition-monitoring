@@ -87,9 +87,13 @@ def visualize(data_matrix):
 
 def visualize_compare(data_healthy, data_damaged, n):
     fig, axs = plt.subplots(2, n)
+    n_2 = int(n/2-0.4)
+    axs[0, n_2].set_title('Healthy')
+    axs[1, n_2].set_title('Damaged')
     for i in range(0,n):
         axs[0, i].imshow(data_healthy[i], cmap='viridis')
         axs[1, i].imshow(data_damaged[i], cmap='viridis')
+    plt.setp(axs, xticks=[], yticks=[])
     plt.show()
     return
 
