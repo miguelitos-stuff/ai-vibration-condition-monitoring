@@ -42,7 +42,7 @@ numTestSamples = int(len(allData) * TESTDATA_SPLIT)
 	[numTraindataSamples, numTestSamples],
 	generator=torch.Generator().manual_seed(42))
 
-def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm):
+def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData):
 	# define the train and val splits
 	TRAIN_SPLIT = 0.75
 	VAL_SPLIT = 1 - TRAIN_SPLIT
@@ -215,7 +215,7 @@ count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
 	for optm in range(4):
 		count +=1
-		model, training_time, accuracy = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm)
+		model, training_time, accuracy = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, trainData, testData)
 		torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
 		new_row = {'model_num': count, 'batch_size': batch_size, 'num_epoch': num_epoch, 'loss_function': '', 'accuracy': accuracy}
 		performance_history = performance_history.append(new_row, ignore_index=True)
