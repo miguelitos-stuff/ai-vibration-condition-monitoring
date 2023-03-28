@@ -6,19 +6,6 @@ import math
 import torch
 
 
-def extract_data(Damaged_or_Healthy, D_or_H, datafile_number):
-    lst = []
-    mat = scipy.io.loadmat('data' + "\\" + str(Damaged_or_Healthy) + "\\"+ str(D_or_H) + str(datafile_number) + ".mat")
-    for i in range(3,11):
-        lst.append(0)
-        rawr = np.array(mat['AN'+str(i)])
-        rawr.flatten()
-        meow = torch.tensor(rawr)
-        lst[-1] = torch.squeeze(meow)
-    biggie_T = torch.stack((lst[0],lst[1],lst[2],lst[3],lst[4],lst[5],lst[6],lst[7]), 0)
-    return biggie_T
-
-
 def extract_data_2(path, n, s, device):
     mat_file = scipy.io.loadmat(path+f'{n}.mat')
     data_np = mat_file[f'AN{s}']
@@ -117,7 +104,22 @@ if __name__ == '__main__':
     visualize(test_matrix)
 
     # test sample making
-    a = torch.randint(0, 10, (2400000,))
-    samples = generate_samples(a, 20, 244)
-    print(samples)
-    print(samples.shape)
+    # a = torch.randint(0, 10, (2400000,))
+    # samples = generate_samples(a, 20, 244, device='cpu')
+    # print(samples)
+    # print(samples.shape)
+
+    # calculating average
+    # device = "cpu"
+    # path = "../data/Healthy/H"
+    # data = extract_data_2(path, 1, 3, device=device)
+    # images = generate_samples(data, 20, 244, device=device)
+    # test_matrix = images[1].numpy()
+    # print(np.average(test_matrix))
+    # visualize(test_matrix)
+    # test_matrix = test_matrix.flatten()
+    # new_matrix = np.array([])
+    # for i in range(len(test_matrix)):
+    #     if i / 2 == 0:
+    #         new_matrix = np.append(new_matrix, test_matrix[i])
+    # print(np.average(new_matrix))
