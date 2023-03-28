@@ -19,8 +19,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import itertools
 import numpy as np
+import json
 import torch
 import time
+import os
 
 
 # construct the argument parser and parse the arguments
@@ -33,12 +35,16 @@ import time
 # 
 # define training hyperparameters
 
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 allData = torch.load('preprocessing\data_dict.pt')
 all_images = allData["data"]
 all_labels = allData["label"]
-allData = torch.cat((all_images, all_labels), 1)
+all_images = all_images.unsqueeze(1) # Add a new dimension with size 1
+all_labels = all_labels.unsqueeze(1).unsqueeze(2).unsqueeze(3)
+combined_tensor = torch.stack([all_images, all_labels], dim=1)
+print(combined_tensor.shape)
 TRAINDATA_SPLIT = 0.90
 TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
 print(len(allData))
@@ -175,6 +181,8 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	# we can now evaluate the network on the test set
 	print("[INFO] evaluating network...")
 	# turn off autograd for testing evaluation
+	testCorrect = 0
+	totalTestLoss = 0
 	with torch.no_grad():
 		# set the model in evaluation mode
 		model.eval()
@@ -188,24 +196,16 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 			# make the predictions and add them to the list
 			pred = model(x)
 			preds.extend(pred.argmax(axis=1).cpu().numpy())
+			totalTestLoss += lossFn(pred, y)
+			testCorrect += (pred.argmax(1) == y).type(
+				torch.float).sum().item()
+		test_acc = testCorrect / len(testDataLoader.dataset)
+		testSteps = len(testDataLoader.dataset)
+		avgTestLoss = totalTestLoss / testSteps
 	# generate a classification report
-	print(classification_report(testData.targets.cpu().numpy(),np.array(preds), target_names=testData.classes))
-	# plot the training loss and accuracy
-	plt.clf()
-	plt.style.use("ggplot")
-	plt.figure()
-	plt.plot(H["train_loss"], label="train_loss")
-	plt.plot(H["val_loss"], label="val_loss")
-	plt.plot(H["train_acc"], label="train_acc")
-	plt.plot(H["val_acc"], label="val_acc")
-	plt.title("Training Loss and Accuracy on Dataset")
-	plt.xlabel("Epoch #")
-	plt.ylabel("Loss/Accuracy")
-	plt.legend(loc="lower left")
-	plt.savefig(f"CNNModels/lr{INIT_LR}bs{BATCH_SIZE}ne{EPOCHS}lf{lossFn}")
-	print("plotteddaplot")
-	# serialize the model to disk
-	return model, (endTime - startTime), accuracy
+	test_results = classification_report(testData.targets.cpu().numpy(),np.array(preds), target_names=testData.classes)
+	H["test_results"] = test_results
+	return model, (endTime - startTime), accuracy, H
 
 
 
@@ -221,10 +221,45 @@ count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
 	for optm in range(4):
 		count +=1
-		model, training_time, accuracy = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, trainData, testData, device)
+		model, training_time, accuracy, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, trainData, testData, device)
+		# What to store on each model: model itself(With parameters), training/validation history and testing result
 		torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
-		new_row = {'model_num': count, 'batch_size': batch_size, 'num_epoch': num_epoch, 'loss_function': '', 'accuracy': accuracy}
-		performance_history = performance_history.append(new_row, ignore_index=True)
+		with open(f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}.json", 'w') as f:
+			json.dump(history, f)
+
+
+def ranking_system():
+	# assign directory
+	directory = 'CNNModels'
+
+	for filename in os.listdir(directory):
+		f = os.path.join(directory, filename)
+		# checking if it is a file
+		if os.path.isfile(f):
+			print(f)
+
+def graph_model_losses(filenames, figure_name):
+	plt.clf()
+	plt.style.use("ggplot")
+	plt.figure()
+	for filename in filenames:
+		history = open(filename)
+		plt.plot(history["train_loss"], label="train_loss")
+		plt.plot(history["val_loss"], label="val_loss")
+		plt.plot(history["train_acc"], label="train_acc")
+		plt.plot(history["val_acc"], label="val_acc")
+
+	plt.title("Training Loss and Accuracy on Dataset")
+	plt.ylabel("Loss/Accuracy")
+	plt.legend(loc="lower left")
+	plt.savefig(figure_name)
+	return
+
+
+
+
+
+
 
 
 
