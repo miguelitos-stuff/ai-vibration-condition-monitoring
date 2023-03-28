@@ -6,19 +6,6 @@ import math
 import torch
 
 
-def extract_data(Damaged_or_Healthy, D_or_H, datafile_number):
-    lst = []
-    mat = scipy.io.loadmat('data' + "\\" + str(Damaged_or_Healthy) + "\\"+ str(D_or_H) + str(datafile_number) + ".mat")
-    for i in range(3,11):
-        lst.append(0)
-        rawr = np.array(mat['AN'+str(i)])
-        rawr.flatten()
-        meow = torch.tensor(rawr)
-        lst[-1] = torch.squeeze(meow)
-    biggie_T = torch.stack((lst[0],lst[1],lst[2],lst[3],lst[4],lst[5],lst[6],lst[7]), 0)
-    return biggie_T
-
-
 def extract_data_2(path, n, s, device):
     mat_file = scipy.io.loadmat(path+f'{n}.mat')
     data_np = mat_file[f'AN{s}']
@@ -118,6 +105,6 @@ if __name__ == '__main__':
 
     # test sample making
     a = torch.randint(0, 10, (2400000,))
-    samples = generate_samples(a, 20, 244)
+    samples = generate_samples(a, 20, 244, device='cpu')
     print(samples)
     print(samples.shape)
