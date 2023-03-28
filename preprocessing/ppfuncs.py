@@ -105,6 +105,6 @@ if __name__ == '__main__':
 
     # test sample making
     a = torch.randint(0, 10, (2400000,))
-    samples = generate_samples(a, 20, 244)
+    samples = generate_samples(a, 20, 244, device='cpu')
     print(samples)
     print(samples.shape)
