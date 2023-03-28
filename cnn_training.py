@@ -34,6 +34,9 @@ import time
 # define training hyperparameters
 
 allData = torch.load('preprocessing\data_dict.pt')
+all_images = allData["data"]
+all_labels = allData["label"]
+allData = torch.cat((all_images, all_labels), 1)
 TRAINDATA_SPLIT = 0.90
 TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
 numTraindataSamples = int(len(allData) * TRAINDATA_SPLIT)
