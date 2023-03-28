@@ -33,24 +33,26 @@ import time
 # 
 # define training hyperparameters
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 allData = torch.load('preprocessing\data_dict.pt')
 all_images = allData["data"]
 all_labels = allData["label"]
 allData = torch.cat((all_images, all_labels), 1)
 TRAINDATA_SPLIT = 0.90
 TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
+print(len(allData))
 numTraindataSamples = int(len(allData) * TRAINDATA_SPLIT)
 numTestSamples = int(len(allData) * TESTDATA_SPLIT)
 (trainData, testData) = random_split(allData,
 	[numTraindataSamples, numTestSamples],
 	generator=torch.Generator().manual_seed(42))
 
-def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData):
+def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData, device):
 	# define the train and val splits
 	TRAIN_SPLIT = 0.75
 	VAL_SPLIT = 1 - TRAIN_SPLIT
 	# set the device we will be using to train the model
-	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 	print("Pytorch CUDA Version is available:", torch.cuda.is_available())
 
 	# load the KMNIST dataset
@@ -75,6 +77,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		batch_size=BATCH_SIZE)
 	valDataLoader = DataLoader(valData, batch_size=BATCH_SIZE)
 	testDataLoader = DataLoader(testData, batch_size=BATCH_SIZE)
+
 	# calculate steps per epoch for training and validation set
 	trainSteps = len(trainDataLoader.dataset) // BATCH_SIZE
 	valSteps = len(valDataLoader.dataset) // BATCH_SIZE
@@ -83,7 +86,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	print("[INFO] initializing the LeNet model...")
 	model = CNN(
 		numChannels=1,
-		classes=len(trainData.dataset.classes)).to(device)
+		classes=2).to(device)
 	# initialize a dictionary to store training history
 	H = {
 		"train_loss": [],
@@ -218,7 +221,7 @@ count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
 	for optm in range(4):
 		count +=1
-		model, training_time, accuracy = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, trainData, testData)
+		model, training_time, accuracy = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, trainData, testData, device)
 		torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
 		new_row = {'model_num': count, 'batch_size': batch_size, 'num_epoch': num_epoch, 'loss_function': '', 'accuracy': accuracy}
 		performance_history = performance_history.append(new_row, ignore_index=True)
