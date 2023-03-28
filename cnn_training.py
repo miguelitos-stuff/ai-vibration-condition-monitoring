@@ -4,8 +4,9 @@ matplotlib.use("Agg")
 # import the necessary packages
 from outdated_scripts.cnn_architecture2 import LeNet
 from cnn_architecture import CNN
+import cnn_architecture as arc
 #from preprocessing import 'data_dict.pt'
-from sklearn.metrics import classification_report
+# from sklearn.metrics import classification_report
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor
@@ -33,17 +34,22 @@ import time
 # 
 # define training hyperparameters
 
+
+
 allData = torch.load('preprocessing\data_dict.pt')
-all_images = allData["data"]
-all_labels = allData["label"]
-allData = torch.cat((all_images, all_labels), 1)
+all_images = allData["data"].float()
+all_labels = allData["label"][:, None]
+all_idx = torch.arange(len(all_images)).to("cuda")[:, None]
+all_labels = torch.cat((all_idx, all_labels), 1)
 TRAINDATA_SPLIT = 0.90
 TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
-numTraindataSamples = int(len(allData) * TRAINDATA_SPLIT)
-numTestSamples = int(len(allData) * TESTDATA_SPLIT)
-(trainData, testData) = random_split(allData,
+numTraindataSamples = int(round(len(all_labels) * TRAINDATA_SPLIT, 0))
+numTestSamples = int(round(len(all_labels) * TESTDATA_SPLIT, 0))
+(train_labels, test_labels) = random_split(all_labels,
 	[numTraindataSamples, numTestSamples],
 	generator=torch.Generator().manual_seed(42))
+train_data = arc.CreateDataset(train_labels, all_images)
+test_data = arc.CreateDataset(test_labels, all_images)
 
 def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData):
 	# define the train and val splits
@@ -66,9 +72,12 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	print("[INFO] generating the train/validation split...")
 	numTrainSamples = int(len(trainData) * TRAIN_SPLIT)
 	numValSamples = int(len(trainData) * VAL_SPLIT)
-	(trainData, valData) = random_split(trainData,
+	all_images, all_train_labels = trainData.get_all()
+	(train_labels, val_labels) = random_split(all_train_labels,
 		[numTrainSamples, numValSamples],
 		generator=torch.Generator().manual_seed(42))
+	trainData = arc.CreateDataset(train_labels, all_images)
+	valData = arc.CreateDataset(val_labels, all_images)
 
 	# initialize the train, validation, and test data loaders
 	trainDataLoader = DataLoader(trainData, shuffle=True,
@@ -83,7 +92,8 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	print("[INFO] initializing the LeNet model...")
 	model = CNN(
 		numChannels=1,
-		classes=len(trainData.dataset.classes)).to(device)
+		classes=2
+		).to(device)
 	# initialize a dictionary to store training history
 	H = {
 		"train_loss": [],
@@ -218,7 +228,7 @@ count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
 	for optm in range(4):
 		count +=1
-		model, training_time, accuracy = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, trainData, testData)
+		model, training_time, accuracy = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, test_data)
 		torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
 		new_row = {'model_num': count, 'batch_size': batch_size, 'num_epoch': num_epoch, 'loss_function': '', 'accuracy': accuracy}
 		performance_history = performance_history.append(new_row, ignore_index=True)
