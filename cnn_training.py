@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 import itertools
 import numpy as np
 import json
+import pickle
 import torch
 import time
 import os
@@ -76,9 +77,9 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		opt = Adam(model.parameters(), lr=learning_rate)
 	elif optm == 1:
 		opt = SGD(model.parameters(), lr=learning_rate)
-	elif optm == 2:
-		opt = LBFGS(model.parameters(),lr=learning_rate)
-	elif optm == 3:
+	#elif optm == 2:
+	#	opt = LBFGS(model.parameters(),lr=learning_rate)
+	elif optm == 2 or optm == 3:
 		opt = Adamax(model.parameters(), lr=learning_rate)
 	# measure how long training is going to take
 	print("[INFO] training the network...")
@@ -179,6 +180,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		testSteps = len(testDataLoader.dataset)
 		avgTestLoss = totalTestLoss / testSteps
 	# generate a classification report
+	print(f"Test loss: {avgTestLoss}, Test accuracy: {test_acc}")
 	#test_results = classification_report(testData.targets.cpu().numpy(),np.array(preds), target_names=testData.classes)
 	test_results = [test_acc, avgTestLoss]
 	H["test_results"] = test_results
@@ -234,21 +236,22 @@ trainData = train_data
 testData = test_data
 
 learning_rates = [0.00001,0.0001,0.001,0.01]
-batch_sizes = [50,100,200,300,500]
-num_epochs = [10,20,40,80]
+batch_sizes = [50]
+num_epochs = [10,20]
 loss_functions = [nn.NLLLoss()]
 num_optm = 4
 
 performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
 count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
-	for optm in range(4):
+	for optm in range(num_optm):
+		print(f"lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}")
 		count +=1
 		model, training_time, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, test_data, device)
 		# What to store on each model: model itself(With parameters), training/validation history and testing result
-		torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
-		#with open(f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}.json", 'w') as f:
-		#	json.dump(history, f)
+		torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}")
+		with open(f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}.pickle", 'wb') as f:
+			pickle.dump(history, f)
 
 
 
