@@ -43,9 +43,9 @@ def ranking_system():
 				opt = re.search(r'opt(\d)', filename[:-7]).group(1)
 				ranking.append([acc, precs, recs, f1s, lr, bs, ne, lf, opt])
 	ranking = sorted(ranking, key=lambda x: x[0], reverse=True)
-	ranking_df = pd.DataFrame(ranking, columns = ['accuracy', 'precisions', 'recalls', 'f1-scores' 'learning rate', 'batch size', 'number epochs', 'loss function', 'optimizer'])
+	ranking_df = pd.DataFrame(ranking, columns = ['accuracy', 'precisions', 'recalls', 'f1-scores', 'learning rate', 'batch size', 'number epochs', 'loss function', 'optimizer'])
 	ranking_df.index = ranking_df.index +1
-	print(ranking_df)
+	print(ranking_df.to_string())
 	return
 
 ranking_system()
