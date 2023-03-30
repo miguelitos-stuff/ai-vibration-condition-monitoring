@@ -5,7 +5,7 @@ import numpy as np
 
 
 # Make sure to put the file in the same directory as the pycharm project so the line below can operate smoothly.
-sensor_mat = scipy.io.loadmat('preprocessing/data/Damaged/D1.mat')
+sensor_mat = scipy.io.loadmat('data/Damaged/D1.mat')
 x = np.linspace(0, 60, 40000*60)
 # Choose the time interval you want to see and which sensor
 # time interval: 0 - 60 (seconds)

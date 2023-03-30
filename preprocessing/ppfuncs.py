@@ -104,7 +104,22 @@ if __name__ == '__main__':
     visualize(test_matrix)
 
     # test sample making
-    a = torch.randint(0, 10, (2400000,))
-    samples = generate_samples(a, 20, 244, device='cpu')
-    print(samples)
-    print(samples.shape)
+    # a = torch.randint(0, 10, (2400000,))
+    # samples = generate_samples(a, 20, 244, device='cpu')
+    # print(samples)
+    # print(samples.shape)
+
+    # calculating average
+    # device = "cpu"
+    # path = "../data/Healthy/H"
+    # data = extract_data_2(path, 1, 3, device=device)
+    # images = generate_samples(data, 20, 244, device=device)
+    # test_matrix = images[1].numpy()
+    # print(np.average(test_matrix))
+    # visualize(test_matrix)
+    # test_matrix = test_matrix.flatten()
+    # new_matrix = np.array([])
+    # for i in range(len(test_matrix)):
+    #     if i / 2 == 0:
+    #         new_matrix = np.append(new_matrix, test_matrix[i])
+    # print(np.average(new_matrix))

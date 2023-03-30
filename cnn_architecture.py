@@ -4,10 +4,36 @@ from torch.nn import Linear
 from torch.nn import MaxPool2d
 from torch.nn import ReLU
 from torch.nn import LogSoftmax
+from torch.utils.data import Dataset
 from torch import flatten
 import torch
 import numpy as np
 
+
+class CreateDataset(Dataset):
+	def __init__(self, label_tens, img_tens, transform=None, target_transform=None):
+		self.img_labels = label_tens
+		self.img_tens = img_tens
+		self.transform = transform
+		self.target_transform = target_transform
+
+	def __len__(self):
+		return len(self.img_labels)
+
+	def __getitem__(self, idx):
+		img_idx = int(self.img_labels[idx][0])
+		image = self.img_tens[img_idx]
+		label = self.img_labels[idx][1]
+		if self.transform:
+			image = self.transform(image)
+		if self.target_transform:
+			label = self.target_transform(label)
+		return image, label
+
+	def get_all(self):
+		all_images = self.img_tens
+		all_labels = self.img_labels
+		return all_images, all_labels
 
 
 class CNN(Module):
@@ -35,29 +61,28 @@ class CNN(Module):
 		self.fc3 = Linear(in_features=200, out_features=classes)
 		self.logSoftmax = LogSoftmax(dim=1)
 
-
 	def forward(self, x):
-		#print("Forward running")
+		# print("Forward running")
 		x = self.conv1(x)
-		#print(f"test 1{x.shape}")
+		# print(f"test 1{x.shape}")
 		x = self.relu(x)
 		x = self.maxpool1(x)
-		#print(f"test 2{x.shape}")
+		# print(f"test 2{x.shape}")
 		x = self.conv2(x)
-		#print(f"test 3{x.shape}")
+		# print(f"test 3{x.shape}")
 		x = self.relu(x)
 		x = self.maxpool2(x)
-		#print(f"test 4{x.shape}")
+		# print(f"test 4{x.shape}")
 		x = self.conv3(x)
-		#print(f"test 5{x.shape}")
+		# print(f"test 5{x.shape}")
 		x = self.relu(x)
 		x = self.maxpool3(x)
-		#print(f"test 6{x.shape}")
+		# print(f"test 6{x.shape}")
 		x = self.conv4(x)
-		#print(f"test 7{x.shape}")
+		# print(f"test 7{x.shape}")
 		x = self.relu(x)
 		x = self.maxpool4(x)
-		#print(f"test 8{x.shape}")
+		# print(f"test 8{x.shape}")
 
 		x = flatten(x, 1)
 		x = self.fc1(x)
