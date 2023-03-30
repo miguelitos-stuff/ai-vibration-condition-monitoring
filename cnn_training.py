@@ -35,10 +35,10 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 
 	# load the KMNIST dataset
 	print("[INFO] loading the dataset...")
-	#trainData = KMNIST(root="data", train=True, download=True,
-		#transform=ToTensor())
-	#testData = KMNIST(root="data", train=False, download=True,
-		#transform=ToTensor())
+	trainData = KMNIST(root="data", train=True, download=True,
+		transform=ToTensor())
+	testData = KMNIST(root="data", train=False, download=True,
+		transform=ToTensor())
 
 	# Change this to load the tensors
 
@@ -98,6 +98,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		# loop over the training set
 		for (x, y) in trainDataLoader:
 			# send the input to the device
+			print(x, y)
 			(x, y) = (x.to(device), y.to(device))
 			# perform a forward pass and calculate the training loss
 			pred = model(x)
@@ -213,20 +214,19 @@ def graph_model_losses(filenames, figure_name):
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 allData = torch.load('preprocessing\data_dict.pt')
-all_images = allData["data"]
-all_labels = allData["label"]
-all_images = all_images.unsqueeze(1) # Add a new dimension with size 1
-all_labels = all_labels.unsqueeze(1).unsqueeze(2).unsqueeze(3)
-combined_tensor = torch.stack([all_images, all_labels], dim=1)
-print(combined_tensor.shape)
+all_images = allData["data"].float()
+all_labels = allData["label"][:, None]
+all_idx = torch.arange(len(all_images)).to("cuda")[:, None]
+all_labels = torch.cat((all_idx, all_labels), 1)
 TRAINDATA_SPLIT = 0.90
 TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
-print(len(allData))
-numTraindataSamples = int(len(allData) * TRAINDATA_SPLIT)
-numTestSamples = int(len(allData) * TESTDATA_SPLIT)
-(trainData, testData) = random_split(allData,
+numTraindataSamples = int(round(len(all_labels) * TRAINDATA_SPLIT, 0))
+numTestSamples = int(round(len(all_labels) * TESTDATA_SPLIT, 0))
+(train_labels, test_labels) = random_split(all_labels,
 	[numTraindataSamples, numTestSamples],
 	generator=torch.Generator().manual_seed(42))
+train_data = arc.CreateDataset(train_labels, all_images)
+test_data = arc.CreateDataset(test_labels, all_images)
 
 learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50,100,200,300,500]
