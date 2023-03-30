@@ -2,15 +2,15 @@
 import matplotlib
 matplotlib.use("Agg")
 # import the necessary packages
-from outdated_scripts.cnn_architecture2 import LeNet
+#from outdated_scripts.cnn_architecture2 import LeNet
 from cnn_architecture import CNN
 import cnn_architecture as arc
 #from preprocessing import 'data_dict.pt'
 from sklearn.metrics import classification_report
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
-from torchvision.transforms import ToTensor
-from torchvision.datasets import KMNIST
+#from torchvision.transforms import ToTensor
+#from torchvision.datasets import KMNIST
 from torch.optim import Adam
 from torch.optim import SGD
 from torch.optim import LBFGS
@@ -33,12 +33,12 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	# set the device we will be using to train the model
 	print("Pytorch CUDA Version is available:", torch.cuda.is_available())
 
-	# load the KMNIST dataset
-	print("[INFO] loading the dataset...")
-	trainData = KMNIST(root="data", train=True, download=True,
-		transform=ToTensor())
-	testData = KMNIST(root="data", train=False, download=True,
-		transform=ToTensor())
+	# # load the KMNIST dataset
+	# print("[INFO] loading the dataset...")
+	# trainData = KMNIST(root="data", train=True, download=True,
+	# 	transform=ToTensor())
+	# testData = KMNIST(root="data", train=False, download=True,
+	# 	transform=ToTensor())
 
 	# Change this to load the tensors
 
@@ -62,7 +62,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 
 	# initialize the CNN model
 	print("[INFO] initializing the CNN model...")
-	model = LeNet(
+	model = CNN(
 		numChannels=1,
 		classes=2).to(device)
 	# initialize a dictionary to store training history
@@ -98,7 +98,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		# loop over the training set
 		for (x, y) in trainDataLoader:
 			# send the input to the device
-			#print(x, y)
+			print(x, y)
 			(x, y) = (x.to(device), y.to(device))
 			# perform a forward pass and calculate the training loss
 			pred = model(x)
@@ -191,6 +191,8 @@ def ranking_system():
 		if os.path.isfile(f):
 			print(f)
 
+ranking_system()
+
 def graph_model_losses(filenames, figure_name):
 	plt.clf()
 	plt.style.use("ggplot")
@@ -216,15 +218,15 @@ all_images = allData["data"].float()
 all_labels = allData["label"][:, None]
 all_idx = torch.arange(len(all_images)).to("cuda")[:, None]
 all_labels = torch.cat((all_idx, all_labels), 1)
+all_data = arc.CreateDataset(all_labels, all_images)
+
 TRAINDATA_SPLIT = 0.90
 TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
-numTraindataSamples = int(round(len(all_labels) * TRAINDATA_SPLIT, 0))
-numTestSamples = int(round(len(all_labels) * TESTDATA_SPLIT, 0))
-(train_labels, test_labels) = random_split(all_labels,
+numTraindataSamples = int(round(len(all_data) * TRAINDATA_SPLIT, 0))
+numTestSamples = int(round(len(all_data) * TESTDATA_SPLIT, 0))
+(train_data, test_data) = random_split(all_data,
 	[numTraindataSamples, numTestSamples],
 	generator=torch.Generator().manual_seed(42))
-train_data = arc.CreateDataset(train_labels, all_images)
-test_data = arc.CreateDataset(test_labels, all_images)
 
 learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50,100,200,300,500]
@@ -237,7 +239,7 @@ count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
 	for optm in range(4):
 		count +=1
-		model, training_time, accuracy, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, test_data, device)
+		model, training_time, accuracy, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, trainData, testData, device)
 		# What to store on each model: model itself(With parameters), training/validation history and testing result
 		torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
 		with open(f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}.json", 'w') as f:
