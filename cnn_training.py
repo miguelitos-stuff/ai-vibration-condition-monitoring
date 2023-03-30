@@ -214,7 +214,8 @@ def graph_model_losses(filenames, figure_name):
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 allData = torch.load('preprocessing\data_dict.pt')
-all_images = allData["data"].float()
+all_images = allData["data"].float()[:,None,:,:]
+print(all_images.size())
 all_labels = allData["label"][:, None]
 all_idx = torch.arange(len(all_images)).to("cuda")[:, None]
 all_labels = torch.cat((all_idx, all_labels), 1)
@@ -227,6 +228,9 @@ numTestSamples = int(round(len(all_data) * TESTDATA_SPLIT, 0))
 (train_data, test_data) = random_split(all_data,
 	[numTraindataSamples, numTestSamples],
 	generator=torch.Generator().manual_seed(42))
+
+trainData = train_data
+testData = test_data
 
 learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50,100,200,300,500]
