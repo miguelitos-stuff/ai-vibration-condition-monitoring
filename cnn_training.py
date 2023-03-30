@@ -2,15 +2,15 @@
 import matplotlib
 matplotlib.use("Agg")
 # import the necessary packages
-#from outdated_scripts.cnn_architecture2 import LeNet
+from outdated_scripts.cnn_architecture2 import LeNet
 from cnn_architecture import CNN
 import cnn_architecture as arc
 #from preprocessing import 'data_dict.pt'
 from sklearn.metrics import classification_report
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
-#from torchvision.transforms import ToTensor
-#from torchvision.datasets import KMNIST
+from torchvision.transforms import ToTensor
+from torchvision.datasets import KMNIST
 from torch.optim import Adam
 from torch.optim import SGD
 from torch.optim import LBFGS
@@ -62,7 +62,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 
 	# initialize the CNN model
 	print("[INFO] initializing the CNN model...")
-	model = CNN(
+	model = LeNet(
 		numChannels=1,
 		classes=2).to(device)
 	# initialize a dictionary to store training history
@@ -98,7 +98,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		# loop over the training set
 		for (x, y) in trainDataLoader:
 			# send the input to the device
-			print(x, y)
+			#print(x, y)
 			(x, y) = (x.to(device), y.to(device))
 			# perform a forward pass and calculate the training loss
 			pred = model(x)
@@ -191,8 +191,6 @@ def ranking_system():
 		if os.path.isfile(f):
 			print(f)
 
-ranking_system()
-
 def graph_model_losses(filenames, figure_name):
 	plt.clf()
 	plt.style.use("ggplot")
@@ -239,7 +237,7 @@ count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
 	for optm in range(4):
 		count +=1
-		model, training_time, accuracy, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, trainData, testData, device)
+		model, training_time, accuracy, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, test_data, device)
 		# What to store on each model: model itself(With parameters), training/validation history and testing result
 		torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
 		with open(f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}.json", 'w') as f:
