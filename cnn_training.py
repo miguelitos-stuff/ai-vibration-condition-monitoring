@@ -182,7 +182,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	#test_results = classification_report(testData.targets.cpu().numpy(),np.array(preds), target_names=testData.classes)
 	test_results = [test_acc, avgTestLoss]
 	H["test_results"] = test_results
-	return model, (endTime - startTime), accuracy, H
+	return model, (endTime - startTime), H
 
 
 def ranking_system():
@@ -244,11 +244,11 @@ count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
 	for optm in range(4):
 		count +=1
-		model, training_time, accuracy, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, test_data, device)
+		model, training_time, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, test_data, device)
 		# What to store on each model: model itself(With parameters), training/validation history and testing result
 		torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}")
-		with open(f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}.json", 'w') as f:
-			json.dump(history, f)
+		#with open(f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}.json", 'w') as f:
+		#	json.dump(history, f)
 
 
 
