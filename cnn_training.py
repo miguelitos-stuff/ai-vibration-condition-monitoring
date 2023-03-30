@@ -186,35 +186,6 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	H["test_results"] = test_results
 	return model, (endTime - startTime), H
 
-
-def ranking_system():
-	# assign directory
-	directory = 'CNNModels'
-
-	for filename in os.listdir(directory):
-		f = os.path.join(directory, filename)
-		# checking if it is a file
-		if os.path.isfile(f):
-			print(f)
-
-def graph_model_losses(filenames, figure_name):
-	plt.clf()
-	plt.style.use("ggplot")
-	plt.figure()
-	for filename in filenames:
-		history = open(filename)
-		plt.plot(history["train_loss"], label="train_loss")
-		plt.plot(history["val_loss"], label="val_loss")
-		plt.plot(history["train_acc"], label="train_acc")
-		plt.plot(history["val_acc"], label="val_acc")
-
-	plt.title("Training Loss and Accuracy on Dataset")
-	plt.ylabel("Loss/Accuracy")
-	plt.legend(loc="lower left")
-	plt.savefig(figure_name)
-	return
-
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 allData = torch.load('preprocessing\data_dict.pt')
@@ -245,7 +216,7 @@ performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_e
 count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
 	for optm in range(num_optm):
-		print(f"lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}")
+		print(f"Learning rate: {learning_rate}, Batch size: {batch_size}, Number epochs: {num_epoch}, Loss function{loss_function}, Optimizer: {optm}")
 		count +=1
 		model, training_time, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, test_data, device)
 		# What to store on each model: model itself(With parameters), training/validation history and testing result
