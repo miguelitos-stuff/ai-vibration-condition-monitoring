@@ -33,7 +33,7 @@ def ranking_system():
 			with open(f, 'rb') as data:
 				loaded_data = pickle.load(data)
 				acc = loaded_data["test_results"][0]
-				lr = re.search(r'lr(\d+e-\d+)', filename[:-7]).group(1)
+				lr = re.search(r'lr(\d+\.\d+)', filename[:-7]).group(1)
 				bs = re.search(r'bs(\d+)', filename[:-7]).group(1)
 				ne = re.search(r'ne(\d+)', filename[:-7]).group(1)
 				lf = re.search(r'lf(.+?)opt', filename[:-7]).group(1)

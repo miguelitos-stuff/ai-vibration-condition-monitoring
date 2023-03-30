@@ -186,6 +186,25 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	H["test_results"] = test_results
 	return model, (endTime - startTime), H
 
+def transform_lr(num):
+	# Find the exponent
+	exp = int(abs(num) // 1)
+	if exp == 0:
+		exp_str = ''
+	else:
+		exp_str = f'*1e-{exp:02d}'
+
+	# Find the coefficient
+	coeff = abs(num) / (10 ** exp)
+	coeff_str = f'{coeff:.5f}'
+
+	# Combine the coefficient and exponent strings
+	if num < 0:
+		output_str = '-' + coeff_str + exp_str
+	else:
+		output_str = coeff_str + exp_str
+	return output_str
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 allData = torch.load('preprocessing\data_dict.pt')
@@ -220,8 +239,8 @@ for learning_rate, batch_size, num_epoch, loss_function in itertools.product(lea
 		count +=1
 		model, training_time, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, test_data, device)
 		# What to store on each model: model itself(With parameters), training/validation history and testing result
-		torch.save(model, f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}")
-		with open(f"CNNModels/lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}.pickle", 'wb') as f:
+		torch.save(model, f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}")
+		with open(f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}.pickle", 'wb') as f:
 			pickle.dump(history, f)
 
 
