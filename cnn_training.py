@@ -25,35 +25,6 @@ import time
 import os
 
 
-# construct the argument parser and parse the arguments
-# ap = argparse.ArgumentParser()
-# ap.add_argument("-m", "--model", type=str, required=True,
-# 	help="path to output trained model")
-# ap.add_argument("-p", "--plot", type=str, required=True,
-# 	help="path to output loss/accuracy plot")
-# args = vars(ap.parse_args())
-# 
-# define training hyperparameters
-
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-allData = torch.load('preprocessing\data_dict.pt')
-all_images = allData["data"]
-all_labels = allData["label"]
-all_images = all_images.unsqueeze(1) # Add a new dimension with size 1
-all_labels = all_labels.unsqueeze(1).unsqueeze(2).unsqueeze(3)
-combined_tensor = torch.stack([all_images, all_labels], dim=1)
-print(combined_tensor.shape)
-TRAINDATA_SPLIT = 0.90
-TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
-print(len(allData))
-numTraindataSamples = int(len(allData) * TRAINDATA_SPLIT)
-numTestSamples = int(len(allData) * TESTDATA_SPLIT)
-(trainData, testData) = random_split(allData,
-	[numTraindataSamples, numTestSamples],
-	generator=torch.Generator().manual_seed(42))
-
 def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData, device):
 	# define the train and val splits
 	TRAIN_SPLIT = 0.75
@@ -208,7 +179,53 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	return model, (endTime - startTime), accuracy, H
 
 
+def ranking_system():
+	# assign directory
+	directory = 'CNNModels'
 
+	for filename in os.listdir(directory):
+		f = os.path.join(directory, filename)
+		# checking if it is a file
+		if os.path.isfile(f):
+			print(f)
+
+ranking_system()
+
+def graph_model_losses(filenames, figure_name):
+	plt.clf()
+	plt.style.use("ggplot")
+	plt.figure()
+	for filename in filenames:
+		history = open(filename)
+		plt.plot(history["train_loss"], label="train_loss")
+		plt.plot(history["val_loss"], label="val_loss")
+		plt.plot(history["train_acc"], label="train_acc")
+		plt.plot(history["val_acc"], label="val_acc")
+
+	plt.title("Training Loss and Accuracy on Dataset")
+	plt.ylabel("Loss/Accuracy")
+	plt.legend(loc="lower left")
+	plt.savefig(figure_name)
+	return
+
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+allData = torch.load('preprocessing\data_dict.pt')
+all_images = allData["data"]
+all_labels = allData["label"]
+all_images = all_images.unsqueeze(1) # Add a new dimension with size 1
+all_labels = all_labels.unsqueeze(1).unsqueeze(2).unsqueeze(3)
+combined_tensor = torch.stack([all_images, all_labels], dim=1)
+print(combined_tensor.shape)
+TRAINDATA_SPLIT = 0.90
+TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
+print(len(allData))
+numTraindataSamples = int(len(allData) * TRAINDATA_SPLIT)
+numTestSamples = int(len(allData) * TESTDATA_SPLIT)
+(trainData, testData) = random_split(allData,
+	[numTraindataSamples, numTestSamples],
+	generator=torch.Generator().manual_seed(42))
 
 learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50,100,200,300,500]
@@ -228,32 +245,7 @@ for learning_rate, batch_size, num_epoch, loss_function in itertools.product(lea
 			json.dump(history, f)
 
 
-def ranking_system():
-	# assign directory
-	directory = 'CNNModels'
 
-	for filename in os.listdir(directory):
-		f = os.path.join(directory, filename)
-		# checking if it is a file
-		if os.path.isfile(f):
-			print(f)
-
-def graph_model_losses(filenames, figure_name):
-	plt.clf()
-	plt.style.use("ggplot")
-	plt.figure()
-	for filename in filenames:
-		history = open(filename)
-		plt.plot(history["train_loss"], label="train_loss")
-		plt.plot(history["val_loss"], label="val_loss")
-		plt.plot(history["train_acc"], label="train_acc")
-		plt.plot(history["val_acc"], label="val_acc")
-
-	plt.title("Training Loss and Accuracy on Dataset")
-	plt.ylabel("Loss/Accuracy")
-	plt.legend(loc="lower left")
-	plt.savefig(figure_name)
-	return
 
 
 
