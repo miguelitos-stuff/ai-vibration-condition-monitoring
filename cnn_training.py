@@ -98,7 +98,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		# loop over the training set
 		for (x, y) in trainDataLoader:
 			# send the input to the device
-			print(x.size(), y.size())
+			y=y.type(torch.LongTensor)
 			(x, y) = (x.to(device), y.to(device))
 			# perform a forward pass and calculate the training loss
 			pred = model(x)
@@ -121,6 +121,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 			# loop over the validation set
 			for (x, y) in valDataLoader:
 				# send the input to the device
+				y=y.type(torch.LongTensor)
 				(x, y) = (x.to(device), y.to(device))
 				# make the predictions and calculate the validation loss
 				pred = model(x)
@@ -166,6 +167,8 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		for (x, y) in testDataLoader:
 			# send the input to the device
 			x = x.to(device)
+			y=y.type(torch.LongTensor)
+			y=y.to(device)
 			# make the predictions and add them to the list
 			pred = model(x)
 			preds.extend(pred.argmax(axis=1).cpu().numpy())
@@ -176,7 +179,8 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		testSteps = len(testDataLoader.dataset)
 		avgTestLoss = totalTestLoss / testSteps
 	# generate a classification report
-	test_results = classification_report(testData.targets.cpu().numpy(),np.array(preds), target_names=testData.classes)
+	#test_results = classification_report(testData.targets.cpu().numpy(),np.array(preds), target_names=testData.classes)
+	test_results = [test_acc, avgTestLoss]
 	H["test_results"] = test_results
 	return model, (endTime - startTime), accuracy, H
 
