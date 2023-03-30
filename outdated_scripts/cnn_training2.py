@@ -17,12 +17,12 @@ import time
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # construct the argument parser and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-m", "--model", type=str, required=True,
-	help="path to output trained model")
-ap.add_argument("-p", "--plot", type=str, required=True,
-	help="path to output loss/accuracy plot")
-args = vars(ap.parse_args())
+#ap = argparse.ArgumentParser()
+#ap.add_argument("-m", "--model", type=str, required=True,
+	#help="path to output trained model")
+#ap.add_argument("-p", "--plot", type=str, required=True,
+	#help="path to output loss/accuracy plot")
+#args = vars(ap.parse_args())
 
 #TODO edit Hyperparameters
 numChannels = 1 #1 for grayscale
@@ -37,16 +37,20 @@ train_split = 0.75
 val_split = 1 - train_split
 
 #importing data
-train_dataset = #import data
-test_dataset = #Import data
+print("[INFO] loading the dataset...")
+trainData = KMNIST(root="data", train=True, download=True,
+	transform=ToTensor())
+test_dataset = KMNIST(root="data", train=False, download=True,
+	transform=ToTensor())
 
 # splitting into train, test and valdation (still need to do that)
 print("[INFO] generating the train/validation split...")
-numTrainSamples = int(len(train_dataset) * train_split)
-numValSamples = int(len(train_dataset) * val_split)
-(train_dataset, val_dataset) = random_split(train_dataset,
+numTrainSamples = int(len(trainData) * train_split)
+numValSamples = int(len(trainData) * val_split)
+(train_dataset, val_dataset) = random_split(trainData,
 	[numTrainSamples, numValSamples],
 	generator=torch.Generator().manual_seed(42))
+print(type(train_dataset))
 
 # Load Data
 train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
@@ -148,19 +152,7 @@ with torch.no_grad():
 # set the model in evaluation mode
     model.eval()
 
-# initialize a list to store our predictions
-    preds = []
-# loop over the test set
-    for (x, y) in test_loader:
-		# send the input to the device
-        x = x.to(device)
-		# make the predictions and add them to the list
-        pred = model(x)
-		preds.extend(pred.argmax(axis=1).cpu().numpy())
-# generate a classification report
-print(classification_report(test_dataset.targets.cpu().numpy(),
-                            np.array(preds), target_names=test_dataset.classes))
-# plot the training loss and accuracy
+## plot the training loss and accuracy
 plt.style.use("ggplot")
 plt.figure()
 plt.plot(H["train_loss"], label="train_loss")

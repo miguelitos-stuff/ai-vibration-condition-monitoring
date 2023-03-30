@@ -2,15 +2,15 @@
 import matplotlib
 matplotlib.use("Agg")
 # import the necessary packages
-from outdated_scripts.cnn_architecture2 import LeNet
+#from outdated_scripts.cnn_architecture2 import LeNet
 from cnn_architecture import CNN
 import cnn_architecture as arc
 #from preprocessing import 'data_dict.pt'
 from sklearn.metrics import classification_report
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
-from torchvision.transforms import ToTensor
-from torchvision.datasets import KMNIST
+#from torchvision.transforms import ToTensor
+#from torchvision.datasets import KMNIST
 from torch.optim import Adam
 from torch.optim import SGD
 from torch.optim import LBFGS
@@ -36,7 +36,6 @@ import os
 # 
 # define training hyperparameters
 
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 allData = torch.load('preprocessing\data_dict.pt')
@@ -59,7 +58,6 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	TRAIN_SPLIT = 0.75
 	VAL_SPLIT = 1 - TRAIN_SPLIT
 	# set the device we will be using to train the model
-	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 	print("Pytorch CUDA Version is available:", torch.cuda.is_available())
 
 	# load the KMNIST dataset
@@ -89,8 +87,8 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	trainSteps = len(trainDataLoader.dataset) // BATCH_SIZE
 	valSteps = len(valDataLoader.dataset) // BATCH_SIZE
 
-	# initialize the LeNet model
-	print("[INFO] initializing the LeNet model...")
+	# initialize the CNN model
+	print("[INFO] initializing the CNN model...")
 	model = CNN(
 		numChannels=1,
 		classes=2).to(device)
