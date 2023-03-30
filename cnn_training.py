@@ -78,9 +78,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		opt = Adam(model.parameters(), lr=learning_rate)
 	elif optm == 1:
 		opt = SGD(model.parameters(), lr=learning_rate)
-	#elif optm == 2:
-	#	opt = LBFGS(model.parameters(),lr=learning_rate)
-	elif optm == 2 or optm == 3:
+	elif optm == 2:
 		opt = Adamax(model.parameters(), lr=learning_rate)
 	# measure how long training is going to take
 	print("[INFO] training the network...")
@@ -235,7 +233,7 @@ learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50]
 num_epochs = [2,20]
 loss_functions = [nn.NLLLoss()]
-num_optm = 4
+num_optm = 3
 
 performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
 count = 0
