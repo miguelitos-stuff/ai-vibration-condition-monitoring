@@ -7,6 +7,7 @@ from cnn_architecture import CNN
 import cnn_architecture as arc
 #from preprocessing import 'data_dict.pt'
 from sklearn.metrics import classification_report
+from sklearn.metrics import precision_recall_fscore_support
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
 #from torchvision.transforms import ToTensor
@@ -164,6 +165,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 
 		# initialize a list to store our predictions
 		preds = []
+		targets = []
 		# loop over the test set
 		for (x, y) in testDataLoader:
 			# send the input to the device
@@ -176,13 +178,17 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 			totalTestLoss += lossFn(pred, y)
 			testCorrect += (pred.argmax(1) == y).type(
 				torch.float).sum().item()
+			targets.extend(y.cpu().numpy())
 		test_acc = testCorrect / len(testDataLoader.dataset)
 		testSteps = len(testDataLoader.dataset)
 		avgTestLoss = totalTestLoss / testSteps
 	# generate a classification report
 	print(f"Test loss: {avgTestLoss}, Test accuracy: {test_acc}")
-	#test_results = classification_report(testData.targets.cpu().numpy(),np.array(preds), target_names=testData.classes)
-	test_results = [test_acc, avgTestLoss]
+	test_results = classification_report(targets,np.array(preds), target_names=[str(i) for i in range(2)])
+	print(test_results)
+	precision, recall, fscore, support = precision_recall_fscore_support(targets, np.array(preds))
+	print(precision, recall, fscore, support)
+	test_results = [test_acc, precision, recall, fscore, support]
 	H["test_results"] = test_results
 	return model, (endTime - startTime), H
 
@@ -227,7 +233,7 @@ testData = test_data
 
 learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50]
-num_epochs = [10,20]
+num_epochs = [2,20]
 loss_functions = [nn.NLLLoss()]
 num_optm = 4
 

@@ -33,18 +33,19 @@ def ranking_system():
 			with open(f, 'rb') as data:
 				loaded_data = pickle.load(data)
 				acc = loaded_data["test_results"][0]
+				precs = loaded_data["test_results"][1]
+				recs = loaded_data["test_results"][2]
+				f1s = loaded_data["test_results"][3]
 				lr = re.search(r'lr(\d+\.\d+)', filename[:-7]).group(1)
 				bs = re.search(r'bs(\d+)', filename[:-7]).group(1)
 				ne = re.search(r'ne(\d+)', filename[:-7]).group(1)
 				lf = re.search(r'lf(.+?)opt', filename[:-7]).group(1)
 				opt = re.search(r'opt(\d)', filename[:-7]).group(1)
-				ranking.append([acc, lr, bs, ne, lf, opt])
+				ranking.append([acc, precs, recs, f1s, lr, bs, ne, lf, opt])
 	ranking = sorted(ranking, key=lambda x: x[0], reverse=True)
-	ranking_df = pd.DataFrame(ranking, columns = ['accuracy', 'learning rate', 'batch size', 'number epochs', 'loss function', 'optimizer'])
+	ranking_df = pd.DataFrame(ranking, columns = ['accuracy', 'precisions', 'recalls', 'f1-scores' 'learning rate', 'batch size', 'number epochs', 'loss function', 'optimizer'])
 	ranking_df.index = ranking_df.index +1
 	print(ranking_df)
 	return
 
 ranking_system()
-
-1e-5
