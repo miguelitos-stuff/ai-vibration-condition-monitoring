@@ -2,31 +2,36 @@ import os
 import pickle
 import re
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
-def graph_model_losses(filenames, figure_name):
+def graph_model_losses():
 	plt.clf()
 	plt.style.use("ggplot")
 	plt.figure()
-	for filename in filenames:
-		history = open(filename)
-		plt.plot(history["train_loss"], label="train_loss")
-		plt.plot(history["val_loss"], label="val_loss")
-		plt.plot(history["train_acc"], label="train_acc")
-		plt.plot(history["val_acc"], label="val_acc")
-
-	plt.title("Training Loss and Accuracy on Dataset")
+	# assign directory
+	directory = 'CNNModels'
+	ranking = []
+	for counter, filename in enumerate(os.listdir(directory)):
+		f = os.path.join(directory, filename)
+		if "pickle" in str(f):
+			with open(f, 'rb') as data:
+				history = pickle.load(data)
+				#plt.plot(history["train_loss"], label="train_loss")
+				#plt.plot(history["val_loss"], label="val_loss")
+				plt.plot(history["train_acc"], label=f"model{counter}_train")
+				plt.plot(history["val_acc"], label=f"model{counter}_valid")
+	plt.title("Training/Validation Loss")
 	plt.ylabel("Loss/Accuracy")
 	plt.legend(loc="lower left")
-	plt.savefig(figure_name)
+	plt.savefig('plottet')
 	return
 
+graph_model_losses()
 def ranking_system():
 	# assign directory
 	directory = 'CNNModels'
 	ranking = []
-
-
 	for filename in os.listdir(directory):
 		f = os.path.join(directory, filename)
 		if "pickle" in str(f):
@@ -47,5 +52,3 @@ def ranking_system():
 	ranking_df.index = ranking_df.index +1
 	print(ranking_df.to_string())
 	return
-
-ranking_system()

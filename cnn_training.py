@@ -182,7 +182,8 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		avgTestLoss = totalTestLoss / testSteps
 	# generate a classification report
 	print(f"Test loss: {avgTestLoss}, Test accuracy: {test_acc}")
-	#test_results = classification_report(targets,np.array(preds), target_names=[str(i) for i in range(2)])
+	#metrics.f1_score(y_test, y_pred)
+	#metrics.accuracy_score(y_test, y_pred)
 	precision, recall, fscore, support = precision_recall_fscore_support(targets, np.array(preds))
 	int_res = [precision, recall, fscore, support]
 	int_res = [[round(num, 4) for num in sublist] for sublist in int_res]
@@ -230,8 +231,8 @@ trainData = train_data
 testData = test_data
 
 learning_rates = [0.00001,0.0001,0.001,0.01]
-batch_sizes = [50]
-num_epochs = [2,20]
+batch_sizes = [50,100,150]
+num_epochs = [10,20,30]
 loss_functions = [nn.NLLLoss()]
 num_optm = 3
 
