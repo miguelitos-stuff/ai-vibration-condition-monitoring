@@ -52,3 +52,6 @@ def ranking_system():
 	ranking_df.index = ranking_df.index +1
 	print(ranking_df.to_string())
 	return
+
+
+# Make sure the plots have the same range and domain, do one model per plot

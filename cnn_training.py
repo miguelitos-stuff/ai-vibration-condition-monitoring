@@ -163,25 +163,30 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 
 		# initialize a list to store our predictions
 		preds = []
+		targets = []
 		# loop over the test set
 		for (x, y) in testDataLoader:
 			# send the input to the device
 			x = x.to(device)
-			y=y.type(torch.LongTensor)
-			y=y.to(device)
+			y = y.type(torch.LongTensor)
+			y = y.to(device)
 			# make the predictions and add them to the list
 			pred = model(x)
 			preds.extend(pred.argmax(axis=1).cpu().numpy())
 			totalTestLoss += lossFn(pred, y)
 			testCorrect += (pred.argmax(1) == y).type(
 				torch.float).sum().item()
+			targets.extend(y.cpu().numpy())
 		test_acc = testCorrect / len(testDataLoader.dataset)
 		testSteps = len(testDataLoader.dataset)
 		avgTestLoss = totalTestLoss / testSteps
 	# generate a classification report
 	print(f"Test loss: {avgTestLoss}, Test accuracy: {test_acc}")
-	#test_results = classification_report(testData.targets.cpu().numpy(),np.array(preds), target_names=testData.classes)
-	test_results = [test_acc, avgTestLoss]
+	# test_results = classification_report(targets,np.array(preds), target_names=[str(i) for i in range(2)])
+	precision, recall, fscore, support = precision_recall_fscore_support(targets, np.array(preds))
+	int_res = [precision, recall, fscore, support]
+	int_res = [[round(num, 4) for num in sublist] for sublist in int_res]
+	test_results = [test_acc, int_res[0], int_res[1], int_res[2]]
 	H["test_results"] = test_results
 	return model, (endTime - startTime), H
 
