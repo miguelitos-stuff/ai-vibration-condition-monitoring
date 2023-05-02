@@ -8,6 +8,7 @@ from torch.utils.data import Dataset
 from torch import flatten
 import torch
 import numpy as np
+from functools import reduce
 
 
 class CreateDataset(Dataset):
@@ -102,7 +103,7 @@ if __name__ == "__main__":
 	num_matrices = 1
 	matrix_shape = (224, 224)
 	ones_matrices = np.ones((num_matrices,) + matrix_shape)
-	print(ones_matrices.shape)
+	print(f"shape of matrix {reduce((lambda x, y: x * y), ones_matrices.shape)}")
 	random_matrices = np.random.randint(0,255, (num_matrices,) + matrix_shape)
 	# initialize class
 	cnn = newCNN(numChannels=1, classes=2)
