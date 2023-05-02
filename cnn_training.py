@@ -231,7 +231,7 @@ testData = test_data
 
 learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50]
-num_epochs = [2,20]
+num_epochs = [10,20,30]
 loss_functions = [nn.NLLLoss()]
 num_optm = 3
 
