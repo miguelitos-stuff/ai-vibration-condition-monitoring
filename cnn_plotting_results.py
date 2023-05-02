@@ -19,27 +19,15 @@ def graph_model_losses():
 			plt.figure()
 			with open(f, 'rb') as data:
 				history = pickle.load(data)
-				plt.plot(history["train_loss"], label="train")
-				plt.plot(history["val_loss"], label="validation")
-			plt.ylabel("Loss")
+				plt.plot(history["train_loss"], label="train_loss")
+				plt.plot(history["val_loss"], label="validation_loss")
+				plt.plot(history["train_acc"], label=f"train_accuracy")
+				plt.plot(history["val_acc"], label=f"validation_accuracy")
+			plt.ylabel("Accuracy/Loss")
 			plt.xlabel("Epochs")
 			plt.legend(loc="lower left")
 			plt.ylim([0, 1])
-			plt.savefig(f'plot_loss_{num}')
-
-			plt.clf()
-			plt.style.use("ggplot")
-			plt.figure()
-			f = os.path.join(directory, filename)
-			with open(f, 'rb') as data:
-				history = pickle.load(data)
-				plt.plot(history["train_acc"], label=f"train")
-				plt.plot(history["val_acc"], label=f"validation")
-			plt.ylabel("Accuracy")
-			plt.xlabel("Epochs")
-			plt.legend(loc="lower left")
-			plt.ylim([0, 1])
-			plt.savefig(f'plot_accuracy_{num}')
+			plt.savefig(f'plot_{num}')
 	return
 def ranking_system():
 	# assign directory
@@ -70,8 +58,8 @@ def ranking_system():
 	ranking_df = ranking_df.sort_index(ascending=True)
 	print(ranking_df.to_string())
 	return
-#graph_model_losses()
-ranking_system()
+graph_model_losses()
+#ranking_system()
 
 # Make sure the plots have the same range and domain, do one model per plot
 
