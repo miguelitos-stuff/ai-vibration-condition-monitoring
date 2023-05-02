@@ -37,12 +37,12 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	# set the device we will be using to train the model
 	print("Pytorch CUDA Version is available:", torch.cuda.is_available())
 
-	## load the KMNIST dataset
-	#print("[INFO] loading the dataset...")
-	#trainData = KMNIST(root="data", train=True, download=True,
-	#	transform=ToTensor())
-	#testData = KMNIST(root="data", train=False, download=True,
-	#	transform=ToTensor())
+	# # load the KMNIST dataset
+	# print("[INFO] loading the dataset...")
+	# trainData = KMNIST(root="data", train=True, download=True,
+	# 	transform=ToTensor())
+	# testData = KMNIST(root="data", train=False, download=True,
+	# 	transform=ToTensor())
 
 	# Change this to load the tensors
 
@@ -125,7 +125,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 			# loop over the validation set
 			for (x, y) in valDataLoader:
 				# send the input to the device
-				y=y.type(torch.LongTensor)
+				y = y.type(torch.LongTensor)
 				(x, y) = (x.to(device), y.to(device))
 				# make the predictions and calculate the validation loss
 				pred = model(x)

@@ -86,14 +86,14 @@ class CNN(Module):
 
 		x = flatten(x, 1)
 		x = self.fc1(x)
-		#print(f"test 9{x.shape}")
+		# print(f"test 9{x.shape}")
 		# x = self.relu(x)
 		x = self.fc2(x)
-		#print(f"test 10{x.shape}")
+		# print(f"test 10{x.shape}")
 		# x = self.relu(x)
 		x = self.fc3(x)
 		# x = self.relu(x)
-		#print(f"test 11{x.shape}")
+		# print(f"test 11{x.shape}")
 		output = self.logSoftmax(x)
 		return output
 
