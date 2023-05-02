@@ -238,8 +238,8 @@ for learning_rate, batch_size, num_epoch, loss_function in itertools.product(lea
 		count +=1
 		model, training_time, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, test_data, device)
 		# What to store on each model: model itself(With parameters), training/validation history and testing result
-		torch.save(model, f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}")
-		with open(f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}.pickle", 'wb') as f:
+		torch.save(model, f"CNNModels/newcnnlr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}")
+		with open(f"CNNModels/newcnnlr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}.pickle", 'wb') as f:
 			pickle.dump(history, f)
 
 
