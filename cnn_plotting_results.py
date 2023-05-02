@@ -27,6 +27,7 @@ def graph_model_losses():
 			plt.xlabel("Epochs")
 			plt.legend(loc="lower left")
 			plt.ylim([0, 1])
+			plt.title(f'plot_{num}')
 			plt.savefig(f'plot_{num}')
 	return
 def ranking_system():
@@ -57,6 +58,7 @@ def ranking_system():
 	ranking_df = ranking_df.set_index('plot')
 	ranking_df = ranking_df.sort_index(ascending=True)
 	print(ranking_df.to_string())
+	ranking_df.to_csv('ranking_system.csv')
 	return
 graph_model_losses()
 #ranking_system()
