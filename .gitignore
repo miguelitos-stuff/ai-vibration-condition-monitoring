@@ -29,3 +29,5 @@
 /preprocessing/local_data/Vibration Condition Monitoring Benchmarking Datasets.pdf
 /preprocessing/local_data/WindTurbineConditionMonitoringLicenseInfo.txt
 __pycache__/
+/CNNModels/
+/data/
