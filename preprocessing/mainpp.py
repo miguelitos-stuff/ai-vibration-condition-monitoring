@@ -12,7 +12,7 @@ import ppfuncs as pp
 # set the device we will be using to train the model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Code will be executed on:", device)
-
+# device = torch.device('cuda')
 
 if __name__ == '__main__':
     # Set to False if you don't want to print the proces
@@ -25,8 +25,16 @@ if __name__ == '__main__':
     sen_end = 10
 
     # Define image variables for both Healthy and Damaged
-    n_images_sensor = 20
+    max_images = True
+
     images_size = 224
+    if max_images:
+        count_datapoints = 60 * 40 * 1000
+        n_images_sensor = int( count_datapoints / ( images_size**2 ) )
+    else:
+        n_images_sensor = 20
+
+    print(n_images_sensor)
 
     # Create list of healthy images, by extracting data and creating images with above defined variables
     healthy_image_list = torch.Tensor([]).to(device)
@@ -56,8 +64,10 @@ if __name__ == '__main__':
     if print_:
         print("Damaged data: Completed \n\nStart on saving data")
 
-    # pp.visualize_compare(healthy_image_list.numpy(), damaged_image_list.numpy(), 6)
+    # pp.visualize_compare(healthy_image_list.numpy(), damaged_image_list.numpy(), 8)
 
-    pp.save(healthy_image_list, damaged_image_list, device=device)
+    print(healthy_image_list.device)
+
+    # pp.save(healthy_image_list, damaged_image_list, device=device)
     if print_:
         print("Saving data: Completed")

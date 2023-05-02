@@ -25,6 +25,8 @@ import pickle
 import torch
 import time
 import os
+import datasetfuncs as dsf
+
 
 
 def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData, device):
@@ -61,6 +63,8 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	trainSteps = len(trainDataLoader.dataset) // BATCH_SIZE
 	valSteps = len(valDataLoader.dataset) // BATCH_SIZE
 
+	print("len training data", len(trainData))
+
 	# initialize the CNN model
 	print("[INFO] initializing the CNN model...")
 	model = CNN(
@@ -73,13 +77,13 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		"val_loss": [],
 		"val_acc": []
 	}
-	if optm == 0:
+	if optm == 2:
 		opt = Adam(model.parameters(), lr=learning_rate)
 	elif optm == 1:
 		opt = SGD(model.parameters(), lr=learning_rate)
 	#elif optm == 2:
 	#	opt = LBFGS(model.parameters(),lr=learning_rate)
-	elif optm == 2 or optm == 3:
+	elif optm == 0:
 		opt = Adamax(model.parameters(), lr=learning_rate)
 	# measure how long training is going to take
 	print("[INFO] training the network...")
@@ -97,7 +101,10 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		trainCorrect = 0
 		valCorrect = 0
 		# loop over the training set
+		counting_ii = 0
 		for (x, y) in trainDataLoader:
+			print(counting_ii)
+			counting_ii += 1
 			# send the input to the device
 			y=y.type(torch.LongTensor)
 			(x, y) = (x.to(device), y.to(device))
@@ -165,7 +172,9 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		# initialize a list to store our predictions
 		preds = []
 		# loop over the test set
+		print("check")
 		for (x, y) in testDataLoader:
+			print(x.size())
 			# send the input to the device
 			x = x.to(device)
 			y=y.type(torch.LongTensor)
@@ -215,14 +224,21 @@ def graph_model_losses(filenames, figure_name):
 	return
 
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-allData = torch.load('preprocessing\data_dict.pt')
-all_images = allData["data"].float()[:,None,:,:]
-all_labels = allData["label"][:, None]
-all_idx = torch.arange(len(all_images)).to("cuda")[:, None]
-all_labels = torch.cat((all_idx, all_labels), 1)
-all_data = arc.CreateDataset(all_labels, all_images)
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+data_set = 1
+if data_set == 1:
+	allData = torch.load('preprocessing\data_dict.pt')
+	all_images = allData["data"].float()[:,None,:,:]
+	all_labels = allData["label"][:, None]
+	all_idx = torch.arange(len(all_images)).to("cuda")[:, None]
+	all_labels = torch.cat((all_idx, all_labels), 1)
+	all_data = arc.CreateDataset(all_labels, all_images)
+else:
+	all_data = dsf.CreateDataset("preprocessing", "preprocessing/images/img_labels.cvs")
+
+
 
 TRAINDATA_SPLIT = 0.90
 TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
@@ -235,11 +251,11 @@ numTestSamples = int(round(len(all_data) * TESTDATA_SPLIT, 0))
 trainData = train_data
 testData = test_data
 
-learning_rates = [0.00001,0.0001,0.001,0.01]
-batch_sizes = [50]
-num_epochs = [10,20]
+learning_rates = [0.0001]
+batch_sizes = [100]
+num_epochs = [2]
 loss_functions = [nn.NLLLoss()]
-num_optm = 4
+num_optm = 1
 
 performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
 count = 0

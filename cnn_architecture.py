@@ -13,7 +13,7 @@ import numpy as np
 class CreateDataset(Dataset):
 	def __init__(self, label_tens, img_tens, transform=None, target_transform=None):
 		self.img_labels = label_tens
-		self.img_tens = img_tens
+		self.img_tens = img_tens.float()
 		self.transform = transform
 		self.target_transform = target_transform
 
