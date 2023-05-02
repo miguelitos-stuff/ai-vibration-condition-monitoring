@@ -59,11 +59,12 @@ def ranking_system():
 				bs = re.search(r'bs(\d+)', filename[:-7]).group(1)
 				ne = re.search(r'ne(\d+)', filename[:-7]).group(1)
 				lf = re.search(r'lf(.+?)opt', filename[:-7]).group(1)
-				opt = re.search(r'opt(\d)', filename[:-7]).group(1)
+				opt = re.search(r'opt(\d+)', filename[:-7]).group(1)
+				conv = re.search(r'conv(\d)', filename[:-7]).group(1)
 				num += 1
-				ranking.append([num, acc, precs, recs, f1s, lr, bs, ne, lf, opt, '4'])
+				ranking.append([num, acc, precs, recs, f1s, lr, bs, ne, lf, opt, conv])
 	ranking = sorted(ranking, key=lambda x: x[0], reverse=True)
-	ranking_df = pd.DataFrame(ranking, columns = ['plot', 'accuracy', 'precisions', 'recalls', 'f1-scores', 'learning rate', 'batch size', 'number epochs', 'loss function', 'optimizer', 'convolution layers'])
+	ranking_df = pd.DataFrame(ranking, columns = ['plot', 'accuracy', 'precisions', 'recalls', 'f1-scores', 'learning rate', 'batch size', 'number epochs', 'loss function', 'optimizer', 'convolutional layers'])
 	ranking_df.index = ranking_df.index +1
 	ranking_df = ranking_df.set_index('plot')
 	ranking_df = ranking_df.sort_index(ascending=True)
