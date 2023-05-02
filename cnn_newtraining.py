@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use("Agg")
 # import the necessary packages
 #from outdated_scripts.cnn_architecture2 import LeNet
-from cnn_architecture import CNN
+from cnn_newarchitecture import newCNN
 import cnn_architecture as arc
 #from preprocessing import 'data_dict.pt'
 from sklearn.metrics import classification_report
@@ -26,8 +26,6 @@ import pickle
 import torch
 import time
 import os
-import datasetfuncs as dsf
-
 
 
 def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData, device):
@@ -66,7 +64,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 
 	# initialize the CNN model
 	print("[INFO] initializing the CNN model...")
-	model = CNN(
+	model = newCNN(
 		numChannels=1,
 		classes=2).to(device)
 	# initialize a dictionary to store training history
@@ -80,9 +78,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		opt = Adam(model.parameters(), lr=learning_rate)
 	elif optm == 1:
 		opt = SGD(model.parameters(), lr=learning_rate)
-	#elif optm == 2:
-	#	opt = LBFGS(model.parameters(),lr=learning_rate)
-	elif optm == 2 or optm == 3:
+	elif optm == 2:
 		opt = Adamax(model.parameters(), lr=learning_rate)
 	# measure how long training is going to take
 	print("[INFO] training the network...")
@@ -209,18 +205,13 @@ def transform_lr(num):
 	return output_str
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-data_set = 1
-if data_set == 1:
-	allData = torch.load('preprocessing\data_dict.pt')
-	all_images = allData["data"].float()[:,None,:,:]
-	all_labels = allData["label"][:, None]
-	all_idx = torch.arange(len(all_images)).to("cuda")[:, None]
-	all_labels = torch.cat((all_idx, all_labels), 1)
-	all_data = arc.CreateDataset(all_labels, all_images)
-else:
-	all_data = dsf.CreateDataset("preprocessing", "preprocessing/images/img_labels.cvs")
 
-
+allData = torch.load('preprocessing\data_dict.pt')
+all_images = allData["data"].float()[:,None,:,:]
+all_labels = allData["label"][:, None]
+all_idx = torch.arange(len(all_images)).to("cuda")[:, None]
+all_labels = torch.cat((all_idx, all_labels), 1)
+all_data = arc.CreateDataset(all_labels, all_images)
 
 TRAINDATA_SPLIT = 0.90
 TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
@@ -233,11 +224,11 @@ numTestSamples = int(round(len(all_data) * TESTDATA_SPLIT, 0))
 trainData = train_data
 testData = test_data
 
-learning_rates = [0.00001,0.0001,0.001,0.01]
+learning_rates = [0.00001,0.0001,0.001]
 batch_sizes = [50]
-num_epochs = [10,20]
+num_epochs = [20,40]
 loss_functions = [nn.NLLLoss()]
-num_optm = 4
+num_optm = 3
 
 performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
 count = 0
