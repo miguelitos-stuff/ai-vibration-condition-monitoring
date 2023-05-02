@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use("Agg")
 # import the necessary packages
 #from outdated_scripts.cnn_architecture2 import LeNet
-from cnn_architecture import CNN
+from cnn_newarchitecture import newCNN
 import cnn_architecture as arc
 #from preprocessing import 'data_dict.pt'
 from sklearn.metrics import classification_report
@@ -64,7 +64,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 
 	# initialize the CNN model
 	print("[INFO] initializing the CNN model...")
-	model = CNN(
+	model = newCNN(
 		numChannels=1,
 		classes=2).to(device)
 	# initialize a dictionary to store training history
@@ -224,9 +224,9 @@ numTestSamples = int(round(len(all_data) * TESTDATA_SPLIT, 0))
 trainData = train_data
 testData = test_data
 
-learning_rates = [0.00001,0.0001,0.001,0.01]
+learning_rates = [0.00001,0.0001,0.001]
 batch_sizes = [50]
-num_epochs = [2,20]
+num_epochs = [20,40]
 loss_functions = [nn.NLLLoss()]
 num_optm = 3
 
