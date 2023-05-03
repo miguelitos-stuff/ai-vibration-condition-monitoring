@@ -27,7 +27,7 @@ class CreateDataset(Dataset):
 
 
 if __name__ == '__main__':
-	SPLIT_BY_SENSORS = True
+	SPLIT_BY_SENSORS = False
 	if SPLIT_BY_SENSORS:
 		TRAIN_SENSORS = [3, 4, 5, 6, 7]
 		TRAIN_SPLIT = 0.65
@@ -61,16 +61,24 @@ if __name__ == '__main__':
 	test_dataloader = DataLoader(test_data, batch_size=num_test, shuffle=True)
 
 	train_features, train_labels = next(iter(train_dataloader))
+	train_ind = torch.arange(0, len(train_features))
+	train_labels = torch.stack((train_labels, train_ind))
 	train_data_dict = {"data": train_features, "label": train_labels}
 	torch.save(train_data_dict, "train_data_dict.pt")
 
 	val_features, val_labels = next(iter(val_dataloader))
+	val_ind = torch.arange(0, len(val_features))
+	val_labels = torch.stack((val_labels, val_ind))
 	val_data_dict = {"data": val_features, "label": val_labels}
 	torch.save(val_data_dict, "val_data_dict.pt")
 
 	test_features, test_labels = next(iter(test_dataloader))
+	test_ind = torch.arange(0, len(test_features))
+	test_labels = torch.stack((test_labels, test_ind))
 	test_data_dict = {"data": test_features, "label": test_labels}
 	torch.save(test_data_dict, "test_data_dict.pt")
+
+	print(test_data_dict["label"])
 
 
 

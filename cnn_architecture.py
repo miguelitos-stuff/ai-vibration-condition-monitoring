@@ -11,11 +11,9 @@ import numpy as np
 
 
 class CreateDataset(Dataset):
-	def __init__(self, label_tens, img_tens, transform=None, target_transform=None):
+	def __init__(self, label_tens, img_tens):
 		self.img_labels = label_tens
 		self.img_tens = img_tens.float()
-		self.transform = transform
-		self.target_transform = target_transform
 
 	def __len__(self):
 		return len(self.img_labels)
@@ -24,16 +22,7 @@ class CreateDataset(Dataset):
 		img_idx = int(self.img_labels[idx][0])
 		image = self.img_tens[img_idx]
 		label = self.img_labels[idx][1]
-		if self.transform:
-			image = self.transform(image)
-		if self.target_transform:
-			label = self.target_transform(label)
 		return image, label
-
-	def get_all(self):
-		all_images = self.img_tens
-		all_labels = self.img_labels
-		return all_images, all_labels
 
 
 class CNN(Module):
