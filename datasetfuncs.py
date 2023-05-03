@@ -28,6 +28,7 @@ class CreateDataset(Dataset):
 
 if __name__ == '__main__':
 	SPLIT_BY_SENSORS = False
+	print("Split by sensor is", SPLIT_BY_SENSORS)
 	if SPLIT_BY_SENSORS:
 		TRAIN_SENSORS = [3, 4, 5, 6, 7]
 		TRAIN_SPLIT = 0.65
@@ -38,8 +39,10 @@ if __name__ == '__main__':
 		VAL_SPLIT = 0.20
 		TEST_SPLIT = 0.15
 
+	print("[INFO] Read image list")
 	all_img_label_list = pd.read_csv("preprocessing/images/img_labels.cvs")
 
+	print("[INFO] Split list")
 	if SPLIT_BY_SENSORS:
 		train_img_label_list = all_img_label_list[all_img_label_list['sensors'].isin(TRAIN_SENSORS)]
 		test_img_label_list = all_img_label_list[all_img_label_list['sensors'].isin(TEST_SENSORS)]
@@ -56,25 +59,29 @@ if __name__ == '__main__':
 		num_test = int(round(len(all_data) * TEST_SPLIT, 0))
 		(train_data, val_data, test_data) = random_split(all_data,[num_train, num_val, num_test], generator=torch.Generator().manual_seed(42))
 
+	print("[INFO] Load dataLoader")
+
 	train_dataloader = DataLoader(train_data, batch_size=num_train, shuffle=True)
 	val_dataloader = DataLoader(val_data, batch_size=num_val, shuffle=True)
 	test_dataloader = DataLoader(test_data, batch_size=num_test, shuffle=True)
 
+	print(f"[INFO] Save datasets (this takes a while because it has to open and read 7520 files")
+
 	train_features, train_labels = next(iter(train_dataloader))
 	train_ind = torch.arange(0, len(train_features))
-	train_labels = torch.stack((train_labels, train_ind))
+	train_labels = torch.stack((train_labels, train_ind), -1)
 	train_data_dict = {"data": train_features, "label": train_labels}
 	torch.save(train_data_dict, "train_data_dict.pt")
 
 	val_features, val_labels = next(iter(val_dataloader))
 	val_ind = torch.arange(0, len(val_features))
-	val_labels = torch.stack((val_labels, val_ind))
+	val_labels = torch.stack((val_labels, val_ind), -1)
 	val_data_dict = {"data": val_features, "label": val_labels}
 	torch.save(val_data_dict, "val_data_dict.pt")
 
 	test_features, test_labels = next(iter(test_dataloader))
 	test_ind = torch.arange(0, len(test_features))
-	test_labels = torch.stack((test_labels, test_ind))
+	test_labels = torch.stack((test_labels, test_ind), -1)
 	test_data_dict = {"data": test_features, "label": test_labels}
 	torch.save(test_data_dict, "test_data_dict.pt")
 

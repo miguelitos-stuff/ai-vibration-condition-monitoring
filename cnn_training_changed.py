@@ -204,17 +204,23 @@ def transform_lr(num):
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Loading in the training and validation dataset
-train_data = torch.load('preprocessing\train_data_dict.pt')
-train_data = arc.CreateDataset(train_data["label"], train_data["data"].float()[:,None,:,:])
+train_data = torch.load('train_data_dict.pt')
+print(train_data["data"].shape)
+train_data = arc.CreateDataset(train_data["label"], train_data["data"])
+print("Size of test dataset:", len(train_data))
 
-val_data = torch.load('preprocessing\val_data_dict.pt')
-val_data = arc.CreateDataset(val_data["label"], val_data["data"].float()[:,None,:,:])
+val_data = torch.load('val_data_dict.pt')
+val_data = arc.CreateDataset(val_data["label"], val_data["data"])
+print("Size of validation dataset:", len(val_data))
 
 learning_rates = [0.0001]
 batch_sizes = [50]
 num_epochs = [20]
 loss_functions = [nn.NLLLoss()]
 num_optm = 3
+
+# Just so no error accurs
+layers = 12
 
 performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
 count = 0
