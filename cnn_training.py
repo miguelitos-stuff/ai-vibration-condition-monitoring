@@ -37,12 +37,12 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	# set the device we will be using to train the model
 	print("Pytorch CUDA Version is available:", torch.cuda.is_available())
 
-	# # load the KMNIST dataset
-	# print("[INFO] loading the dataset...")
-	# trainData = KMNIST(root="data", train=True, download=True,
-	# 	transform=ToTensor())
-	# testData = KMNIST(root="data", train=False, download=True,
-	# 	transform=ToTensor())
+	## load the KMNIST dataset
+	#print("[INFO] loading the dataset...")
+	#trainData = KMNIST(root="data", train=True, download=True,
+	#	transform=ToTensor())
+	#testData = KMNIST(root="data", train=False, download=True,
+	#	transform=ToTensor())
 
 	# Change this to load the tensors
 
@@ -80,9 +80,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		opt = Adam(model.parameters(), lr=learning_rate)
 	elif optm == 1:
 		opt = SGD(model.parameters(), lr=learning_rate)
-	#elif optm == 2:
-	#	opt = LBFGS(model.parameters(),lr=learning_rate)
-	elif optm == 2 or optm == 3:
+	elif optm == 2:
 		opt = Adamax(model.parameters(), lr=learning_rate)
 	# measure how long training is going to take
 	print("[INFO] training the network...")
@@ -167,25 +165,30 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 
 		# initialize a list to store our predictions
 		preds = []
+		targets = []
 		# loop over the test set
 		for (x, y) in testDataLoader:
 			# send the input to the device
 			x = x.to(device)
-			y=y.type(torch.LongTensor)
-			y=y.to(device)
+			y = y.type(torch.LongTensor)
+			y = y.to(device)
 			# make the predictions and add them to the list
 			pred = model(x)
 			preds.extend(pred.argmax(axis=1).cpu().numpy())
 			totalTestLoss += lossFn(pred, y)
 			testCorrect += (pred.argmax(1) == y).type(
 				torch.float).sum().item()
+			targets.extend(y.cpu().numpy())
 		test_acc = testCorrect / len(testDataLoader.dataset)
 		testSteps = len(testDataLoader.dataset)
 		avgTestLoss = totalTestLoss / testSteps
 	# generate a classification report
 	print(f"Test loss: {avgTestLoss}, Test accuracy: {test_acc}")
-	#test_results = classification_report(testData.targets.cpu().numpy(),np.array(preds), target_names=testData.classes)
-	test_results = [test_acc, avgTestLoss]
+	# test_results = classification_report(targets,np.array(preds), target_names=[str(i) for i in range(2)])
+	precision, recall, fscore, support = precision_recall_fscore_support(targets, np.array(preds))
+	int_res = [precision, recall, fscore, support]
+	int_res = [[round(num, 4) for num in sublist] for sublist in int_res]
+	test_results = [test_acc, int_res[0], int_res[1], int_res[2]]
 	H["test_results"] = test_results
 	return model, (endTime - startTime), H
 
@@ -209,18 +212,13 @@ def transform_lr(num):
 	return output_str
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-data_set = 1
-if data_set == 1:
-	allData = torch.load('preprocessing\data_dict.pt')
-	all_images = allData["data"].float()[:,None,:,:]
-	all_labels = allData["label"][:, None]
-	all_idx = torch.arange(len(all_images)).to("cuda")[:, None]
-	all_labels = torch.cat((all_idx, all_labels), 1)
-	all_data = arc.CreateDataset(all_labels, all_images)
-else:
-	all_data = dsf.CreateDataset("preprocessing", "preprocessing/images/img_labels.cvs")
 
-
+allData = torch.load('preprocessing\data_dict.pt')
+all_images = allData["data"].float()[:,None,:,:]
+all_labels = allData["label"][:, None]
+all_idx = torch.arange(len(all_images)).to("cuda")[:, None]
+all_labels = torch.cat((all_idx, all_labels), 1)
+all_data = arc.CreateDataset(all_labels, all_images)
 
 TRAINDATA_SPLIT = 0.90
 TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
@@ -235,9 +233,9 @@ testData = test_data
 
 learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50]
-num_epochs = [10,20]
+num_epochs = [2,20]
 loss_functions = [nn.NLLLoss()]
-num_optm = 4
+num_optm = 3
 
 performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
 count = 0
@@ -247,8 +245,8 @@ for learning_rate, batch_size, num_epoch, loss_function in itertools.product(lea
 		count +=1
 		model, training_time, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, test_data, device)
 		# What to store on each model: model itself(With parameters), training/validation history and testing result
-		torch.save(model, f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}")
-		with open(f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}.pickle", 'wb') as f:
+		torch.save(model, f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}")
+		with open(f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}.pickle", 'wb') as f:
 			pickle.dump(history, f)
 
 
