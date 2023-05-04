@@ -65,27 +65,29 @@ if __name__ == '__main__':
 	val_dataloader = DataLoader(val_data, batch_size=num_val, shuffle=True)
 	test_dataloader = DataLoader(test_data, batch_size=num_test, shuffle=True)
 
-	print(f"[INFO] Save datasets (this takes a while because it has to open and read 7520 files")
+	print("[INFO] Save datasets (this takes a while because it has to open and read 7520 files)")
 
 	train_features, train_labels = next(iter(train_dataloader))
 	train_ind = torch.arange(0, len(train_features))
-	train_labels = torch.stack((train_labels, train_ind), -1)
+	train_labels = torch.stack((train_ind, train_labels), -1)
 	train_data_dict = {"data": train_features, "label": train_labels}
 	torch.save(train_data_dict, "train_data_dict.pt")
+	print("[INFO] Saving training dataset complete")
 
 	val_features, val_labels = next(iter(val_dataloader))
 	val_ind = torch.arange(0, len(val_features))
-	val_labels = torch.stack((val_labels, val_ind), -1)
+	val_labels = torch.stack((val_ind, val_labels), -1)
 	val_data_dict = {"data": val_features, "label": val_labels}
 	torch.save(val_data_dict, "val_data_dict.pt")
+	print("[INFO] Saving validating dataset complete")
 
 	test_features, test_labels = next(iter(test_dataloader))
 	test_ind = torch.arange(0, len(test_features))
-	test_labels = torch.stack((test_labels, test_ind), -1)
+	test_labels = torch.stack((test_ind, test_labels), -1)
 	test_data_dict = {"data": test_features, "label": test_labels}
 	torch.save(test_data_dict, "test_data_dict.pt")
+	print("[INFO] Saving testing dataset complete")
 
-	print(test_data_dict["label"])
 
 
 
