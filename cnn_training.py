@@ -5,6 +5,7 @@ matplotlib.use("Agg")
 #from outdated_scripts.cnn_architecture2 import LeNet
 from cnn_architecture import CNN
 import cnn_architecture as arc
+from cnn_newarchitecture import newCNN
 #from preprocessing import 'data_dict.pt'
 from sklearn.metrics import classification_report
 from sklearn.metrics import precision_recall_fscore_support
@@ -30,7 +31,7 @@ import datasetfuncs as dsf
 
 
 
-def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData, testData, device):
+def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData, device):
 	# set the device we will be using to train the model
 	print("Pytorch CUDA Version is available:", torch.cuda.is_available())
 
@@ -47,7 +48,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 	trainDataLoader = DataLoader(trainData, shuffle=True,
 		batch_size=BATCH_SIZE)
 	valDataLoader = DataLoader(valData, batch_size=BATCH_SIZE)
-	testDataLoader = DataLoader(testData, batch_size=BATCH_SIZE)
+	#testDataLoader = DataLoader(testData, batch_size=BATCH_SIZE)
 
 	# calculate steps per epoch for training and validation set
 	trainSteps = len(trainDataLoader.dataset) // BATCH_SIZE
@@ -55,7 +56,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 
 	# initialize the CNN model
 	print("[INFO] initializing the CNN model...")
-	model = CNN(
+	model = newCNN(
 		numChannels=1,
 		classes=2).to(device)
 	# initialize a dictionary to store training history
@@ -67,9 +68,9 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 	}
 	if optm == 0:
 		opt = Adam(model.parameters(), lr=learning_rate)
+	#elif optm == 1:
+		#opt = SGD(model.parameters(), lr=learning_rate)
 	elif optm == 1:
-		opt = SGD(model.parameters(), lr=learning_rate)
-	elif optm == 2:
 		opt = Adamax(model.parameters(), lr=learning_rate)
 	# measure how long training is going to take
 	print("[INFO] training the network...")
@@ -88,7 +89,6 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 		valCorrect = 0
 		# loop over the training set
 		for (x, y) in trainDataLoader:
-			print(x)
 			# send the input to the device
 			y=y.type(torch.LongTensor)
 			(x, y) = (x.to(device), y.to(device))
@@ -221,11 +221,12 @@ test_data = torch.load('test_data_dict.pt')
 test_data = arc.CreateDataset(test_data["label"], test_data["data"])
 print("Size of testing dataset:", len(test_data))
 
-learning_rates = [0.0001]
+learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50]
-num_epochs = [20]
+num_epochs = [30]
 loss_functions = [nn.NLLLoss()]
-num_optm = 3
+num_optm = 2
+layers = 3
 
 performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
 count = 0
@@ -233,7 +234,7 @@ for learning_rate, batch_size, num_epoch, loss_function in itertools.product(lea
 	for optm in range(num_optm):
 		print(f"Learning rate: {learning_rate}, Batch size: {batch_size}, Number epochs: {num_epoch}, Loss function{loss_function}, Optimizer: {optm}")
 		count +=1
-		model, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, test_data, device)
+		model, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, val_data, device)
 		# What to store on each model: model itself(With parameters), training/validation history and testing result
 		torch.save(model, f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}")
 		with open(f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}.pickle", 'wb') as f:
