@@ -147,8 +147,8 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 	# we can now evaluate the network on the test set
 	print("[INFO] evaluating network...")
 	# turn off autograd for testing evaluation
-	testCorrect = 0
-	totalTestLoss = 0
+	valCorrect = 0
+	totalValLoss = 0
 	with torch.no_grad():
 		# set the model in evaluation mode
 		model.eval()
@@ -157,7 +157,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 		preds = []
 		targets = []
 		# loop over the test set
-		for (x, y) in testDataLoader:
+		for (x, y) in valDataLoader:
 			# send the input to the device
 			x = x.to(device)
 			y = y.type(torch.LongTensor)
@@ -165,21 +165,21 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 			# make the predictions and add them to the list
 			pred = model(x)
 			preds.extend(pred.argmax(axis=1).cpu().numpy())
-			totalTestLoss += lossFn(pred, y)
-			testCorrect += (pred.argmax(1) == y).type(
+			totalValLoss += lossFn(pred, y)
+			valCorrect += (pred.argmax(1) == y).type(
 				torch.float).sum().item()
 			targets.extend(y.cpu().numpy())
-		test_acc = testCorrect / len(testDataLoader.dataset)
-		testSteps = len(testDataLoader.dataset)
-		avgTestLoss = totalTestLoss / testSteps
+		val_acc = valCorrect / len(valDataLoader.dataset)
+		valSteps = len(valDataLoader.dataset)
+		avgValLoss = totalValLoss / valSteps
 	# generate a classification report
-	print(f"Test loss: {avgTestLoss}, Test accuracy: {test_acc}")
-	# test_results = classification_report(targets,np.array(preds), target_names=[str(i) for i in range(2)])
+	print(f"Val loss: {avgValLoss}, Val accuracy: {val_acc}")
+	# val_results = classification_report(targets,np.array(preds), target_names=[str(i) for i in range(2)])
 	precision, recall, fscore, _ = precision_recall_fscore_support(np.array(targets), np.array(preds), average = 'binary')
 	int_res = [precision, recall, fscore]
 	#int_res = [[round(num, 4) for num in sublist] for sublist in int_res]
-	test_results = [test_acc, int_res[0], int_res[1], int_res[2]]
-	H["test_results"] = test_results
+	val_results = [val_acc, int_res[0], int_res[1], int_res[2]]
+	H["val_results"] = val_results
 	return model, (endTime - startTime), H
 
 def transform_lr(num):
