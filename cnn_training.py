@@ -179,6 +179,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 	int_res = [precision, recall, fscore]
 	#int_res = [[round(num, 4) for num in sublist] for sublist in int_res]
 	val_results = [val_acc, int_res[0], int_res[1], int_res[2]]
+	print(val_results)
 	H["val_results"] = val_results
 	return model, (endTime - startTime), H
 
