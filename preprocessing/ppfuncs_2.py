@@ -20,60 +20,44 @@ def create_samples(sensor_data, n_samples, sample_size, device, spacing=False):
         pass
     else:
         for i in range(n_samples):
-            sample_val = sensor_data[(i * sample_size):((i + 1) * sample_size)]
-            sample_val = sample_val[None, :]
-            sample_time = torch.arange(0, (sample_size / 40000), 1/40000).to(device)
-            sample_time = sample_time[None, :]
-            sample_ = torch.cat((sample_val, sample_time), 0)
+            sample_ = sensor_data[(i * sample_size):((i + 1) * sample_size)]
             sample_ = sample_[None, :]
             samples_ = torch.cat((samples_, sample_), 0)
     return samples_
 
 
-def plot_spectrogram_2():
-    pass
-
-
-def plot_spectrogram():
-    # Define the list of frequencies
-    frequencies = np.arange(5, 105, 5)
-    sampling_frequency = 400
-
-    s1 = np.empty([0])  # For samples
-    s2 = np.empty([0])  # For signal
-
-    # Start and Stop Value of the sample
-    start = 1
-    stop = sampling_frequency + 1
-
-    for frequency in frequencies:
-        sub1 = np.arange(start, stop, 1)
-        # Signal - Sine wave with varying frequency + Noise
-        sub2 = np.sin(2 * np.pi * sub1 * frequency * 1 / sampling_frequency) + np.random.randn(len(sub1))
-        s1 = np.append(s1, sub1)
-        s2 = np.append(s2, sub2)
-        start = stop + 1
-        stop = start + sampling_frequency
-
-    # Plot the signal
-    plt.subplot(211)
-    plt.plot(s1, s2)
-    plt.xlabel('Sample')
-    plt.ylabel('Amplitude')
-
-    # Plot the spectrogram
-    plt.subplot(212)
-    power_spectrum, frequencies_found, time, image_axis = plt.specgram(s2, Fs=sampling_frequency)
+def plot_spectrogram_2(sample_val_array):
+    sample_ = sample_val_array.detach().cpu().numpy()
+    sampling_frequency = 40000
+    power_spectrum, frequencies_found, time, image_axis = plt.specgram(sample_, Fs=sampling_frequency)
     plt.xlabel('Time')
     plt.ylabel('Frequency')
     plt.show()
 
 
+def visualize_compare(data_healthy, data_damaged, n):
+    samples_healthy = data_healthy.detach().cpu().numpy()
+    samples_damaged = data_damaged.detach().cpu().numpy()
+    sampling_frequency = 40000
+    fig, axs = plt.subplots(2, n)
+    n_2 = int(n/2-0.4)
+    axs[0, n_2].set_title('Healthy')
+    axs[1, n_2].set_title('Damaged')
+    for i in range(0, n):
+        power_spectrum_h, frequencies_found_h, time_h, image_axis_h = axs[0, i].specgram(samples_healthy[i], Fs=sampling_frequency)
+        power_spectrum_d, frequencies_found_d, time_d, image_axis_d = axs[1, i].specgram(samples_damaged[i], Fs=sampling_frequency)
+    plt.setp(axs, xticks=[], yticks=[])
+    plt.show()
+    return
+
+
 if __name__ == '__main__':
     # test your functions here
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    path = "data/Healthy/H"
-    sensor_data = extract_data_2(path, '2', 4, device=device)
-    sensor_samples = create_samples(sensor_data, 5, 40000, device=device)
-    print(sensor_samples)
+    sensor_data_damaged = extract_data_2("data/Damaged/D", '2', 4, device=device)
+    sensor_data_healthy = extract_data_2("data/Healthy/H", '2', 4, device=device)
+    sensor_samples_damaged = create_samples(sensor_data_damaged, 10, 40000, device=device)
+    sensor_samples_healthy = create_samples(sensor_data_healthy, 10, 40000, device=device)
+    visualize_compare(sensor_samples_healthy, sensor_samples_damaged, 5)
+    # plot_spectrogram_2(sensor_samples_damaged[0])
     # plot_spectrogram()
