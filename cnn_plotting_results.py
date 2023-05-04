@@ -60,8 +60,8 @@ def ranking_system():
 	print(ranking_df.to_string())
 	ranking_df.to_csv('ranking_system.csv')
 	return
-graph_model_losses()
-#ranking_system()
+#graph_model_losses()
+ranking_system()
 
 # Make sure the plots have the same range and domain, do one model per plot
 
