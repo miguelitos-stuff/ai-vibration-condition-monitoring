@@ -25,7 +25,7 @@ def create_file_name(lab, ti, se, ii):
 
 def save_image(list_, img_, label_, time_, sen_, i_):
     file_name = create_file_name(label_, time_, sen_, i_)
-    path_ = f'images2\{file_name}.pt'
+    path_ = f'images\{file_name}.pt'
     torch.save(img_, path_)
     img_label = np.array([[path_, label_, sen_]])
     list_img_label_ = np.append(list_, img_label, axis=0)
