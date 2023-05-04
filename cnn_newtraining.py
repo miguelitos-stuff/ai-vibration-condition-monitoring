@@ -17,6 +17,7 @@ from torch.optim import SGD
 from torch.optim import LBFGS
 from torch.optim import Adamax
 from torch import nn
+import torch.optim
 import pandas as pd
 import matplotlib.pyplot as plt
 import itertools
@@ -27,7 +28,18 @@ import torch
 import time
 import os
 
+def get_current_lr(optimizer, group_idx, parameter_idx):
+    # Adam has different learning rates for each paramter. So we need to pick the
+    # group and paramter first.
+    group = optimizer.param_groups[group_idx]
+    p = group['params'][parameter_idx]
 
+    beta1, _ = group['betas']
+    state = optimizer.state[p]
+
+    bias_correction1 = 1 - beta1 ** state['step']
+    current_lr = group['lr'] / bias_correction1
+    return current_lr
 def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData, device):
 	# define the train and val splits
 	TRAIN_SPLIT = 0.75
@@ -81,6 +93,8 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	elif optm == 2:
 		opt = Adamax(model.parameters(), lr=learning_rate)
 	# measure how long training is going to take
+	lambda1 = lambda epoch: factor ** epoch
+	scheduler = torch.optim.lr_scheduler.LambdaLR(opt, lr_lambda=lambda1)
 	print("[INFO] training the network...")
 	startTime = time.time()
 
@@ -113,7 +127,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 			totalTrainLoss += loss
 			trainCorrect += (pred.argmax(1) == y).type(
 				torch.float).sum().item()
-
+		scheduler.step()
 		# switch off autograd for evaluation
 		with torch.no_grad():
 			# set the model in evaluation mode
@@ -147,6 +161,9 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 			avgTrainLoss, trainCorrect))
 		print("Val loss: {:.6f}, Val accuracy: {:.4f}\n".format(
 			avgValLoss, valCorrect))
+		group_idx, param_idx = 0, 0
+		current_lr = get_current_lr(opt, group_idx, param_idx)
+		print('Current learning rate (g:%d, p:%d): %.4f | Loss: %.4f'%(group_idx, param_idx, current_lr, loss.item()))
 
 	# finish measuring how long training took
 	endTime = time.time()
@@ -224,11 +241,12 @@ numTestSamples = int(round(len(all_data) * TESTDATA_SPLIT, 0))
 trainData = train_data
 testData = test_data
 
-learning_rates = [0.00001,0.0001,0.001]
-batch_sizes = [50]
+learning_rates = [0.0001]
+batch_sizes = [100]
 num_epochs = [20,40]
 loss_functions = [nn.NLLLoss()]
-num_optm = 3
+num_optm = 1
+factor = 1
 
 performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
 count = 0
