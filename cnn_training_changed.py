@@ -33,12 +33,12 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 	# set the device we will be using to train the model
 	print("Pytorch CUDA Version is available:", torch.cuda.is_available())
 
-	## load the KMNIST dataset
-	#print("[INFO] loading the dataset...")
-	#trainData = KMNIST(root="data", train=True, download=True,
-	#	transform=ToTensor())
-	#testData = KMNIST(root="data", train=False, download=True,
-	#	transform=ToTensor())
+	# # load the KMNIST dataset
+	# print("[INFO] loading the dataset...")
+	# trainData = KMNIST(root="data", train=True, download=True,
+	# 	transform=ToTensor())
+	# testData = KMNIST(root="data", train=False, download=True,
+	# 	transform=ToTensor())
 
 	# Change this to load the tensors
 

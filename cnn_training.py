@@ -99,6 +99,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 		valCorrect = 0
 		# loop over the training set
 		for (x, y) in trainDataLoader:
+			print(x)
 			# send the input to the device
 			y=y.type(torch.LongTensor)
 			(x, y) = (x.to(device), y.to(device))
@@ -213,12 +214,16 @@ def transform_lr(num):
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-allData = torch.load('preprocessing\data_dict.pt')
-all_images = allData["data"].float()[:,None,:,:]
-all_labels = allData["label"][:, None]
+# Loading in the training and validation dataset
+train_data = torch.load('preprocessing\data_dict.pt')
+all_images = train_data["data"].float()[:,None,:,:]
+all_labels = train_data["label"][:, None]
 all_idx = torch.arange(len(all_images)).to("cuda")[:, None]
 all_labels = torch.cat((all_idx, all_labels), 1)
 all_data = arc.CreateDataset(all_labels, all_images)
+
+print(all_labels.shape)
+
 
 TRAINDATA_SPLIT = 0.90
 TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
@@ -231,9 +236,9 @@ numTestSamples = int(round(len(all_data) * TESTDATA_SPLIT, 0))
 trainData = train_data
 testData = test_data
 
-learning_rates = [0.00001,0.0001,0.001,0.01]
+learning_rates = [0.0001]
 batch_sizes = [50]
-num_epochs = [2,20]
+num_epochs = [20]
 loss_functions = [nn.NLLLoss()]
 num_optm = 3
 
