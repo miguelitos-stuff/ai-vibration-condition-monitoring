@@ -30,29 +30,18 @@ import datasetfuncs as dsf
 
 
 
-def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData, device):
-	# define the train and val splits
-	TRAIN_SPLIT = 0.75
-	VAL_SPLIT = 1 - TRAIN_SPLIT
+def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData, testData, device):
 	# set the device we will be using to train the model
 	print("Pytorch CUDA Version is available:", torch.cuda.is_available())
 
-	## load the KMNIST dataset
-	#print("[INFO] loading the dataset...")
-	#trainData = KMNIST(root="data", train=True, download=True,
-	#	transform=ToTensor())
-	#testData = KMNIST(root="data", train=False, download=True,
-	#	transform=ToTensor())
+	# # load the KMNIST dataset
+	# print("[INFO] loading the dataset...")
+	# trainData = KMNIST(root="data", train=True, download=True,
+	# 	transform=ToTensor())
+	# testData = KMNIST(root="data", train=False, download=True,
+	# 	transform=ToTensor())
 
 	# Change this to load the tensors
-
-	# calculate the train/validation split
-	print("[INFO] generating the train/validation split...")
-	numTrainSamples = int(len(trainData) * TRAIN_SPLIT)
-	numValSamples = int(len(trainData) * VAL_SPLIT)
-	(trainData, valData) = random_split(trainData,
-		[numTrainSamples, numValSamples],
-		generator=torch.Generator().manual_seed(42))
 
 	# initialize the train, validation, and test data loaders
 	trainDataLoader = DataLoader(trainData, shuffle=True,
@@ -215,26 +204,17 @@ def transform_lr(num):
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Loading in the training and validation dataset
-train_data = torch.load('preprocessing\data_dict.pt')
-all_images = train_data["data"].float()[:,None,:,:]
-all_labels = train_data["label"][:, None]
-all_idx = torch.arange(len(all_images)).to("cuda")[:, None]
-all_labels = torch.cat((all_idx, all_labels), 1)
-all_data = arc.CreateDataset(all_labels, all_images)
+train_data = torch.load('train_data_dict.pt')
+train_data = arc.CreateDataset(train_data["label"], train_data["data"])
+print("Size of test dataset:", len(train_data))
 
-print(all_labels.shape)
+val_data = torch.load('val_data_dict.pt')
+val_data = arc.CreateDataset(val_data["label"], val_data["data"])
+print("Size of validation dataset:", len(val_data))
 
-
-TRAINDATA_SPLIT = 0.90
-TESTDATA_SPLIT = 1 - TRAINDATA_SPLIT
-numTraindataSamples = int(round(len(all_data) * TRAINDATA_SPLIT, 0))
-numTestSamples = int(round(len(all_data) * TESTDATA_SPLIT, 0))
-(train_data, test_data) = random_split(all_data,
-	[numTraindataSamples, numTestSamples],
-	generator=torch.Generator().manual_seed(42))
-
-trainData = train_data
-testData = test_data
+test_data = torch.load('test_data_dict.pt')
+test_data = arc.CreateDataset(test_data["label"], test_data["data"])
+print("Size of testing dataset:", len(test_data))
 
 learning_rates = [0.0001]
 batch_sizes = [50]
@@ -248,7 +228,7 @@ for learning_rate, batch_size, num_epoch, loss_function in itertools.product(lea
 	for optm in range(num_optm):
 		print(f"Learning rate: {learning_rate}, Batch size: {batch_size}, Number epochs: {num_epoch}, Loss function{loss_function}, Optimizer: {optm}")
 		count +=1
-		model, training_time, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, test_data, device)
+		model, training_time, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, val_data, test_data, device)
 		# What to store on each model: model itself(With parameters), training/validation history and testing result
 		torch.save(model, f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}")
 		with open(f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}.pickle", 'wb') as f:
