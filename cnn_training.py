@@ -116,7 +116,10 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 				y = y.type(torch.LongTensor)
 				(x, y) = (x.to(device), y.to(device))
 				# make the predictions and calculate the validation loss
+				start_compute = time.time()
 				pred = model(x)
+				end_compute = time.time()
+				avg_compute_time = (end_compute - start_compute)/(len(x))
 				totalValLoss += lossFn(pred, y)
 				# calculate the number of correct predictions
 				valCorrect += (pred.argmax(1) == y).type(
@@ -178,10 +181,11 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 	precision, recall, fscore, _ = precision_recall_fscore_support(np.array(targets), np.array(preds), average = 'binary')
 	int_res = [precision, recall, fscore]
 	#int_res = [[round(num, 4) for num in sublist] for sublist in int_res]
+	H["time_taken"] = [(endTime - startTime), avg_compute_time]
 	val_results = [val_acc, int_res[0], int_res[1], int_res[2]]
 	print(val_results)
 	H["val_results"] = val_results
-	return model, (endTime - startTime), H
+	return model, H
 
 def transform_lr(num):
 	# Find the exponent
@@ -229,7 +233,7 @@ for learning_rate, batch_size, num_epoch, loss_function in itertools.product(lea
 	for optm in range(num_optm):
 		print(f"Learning rate: {learning_rate}, Batch size: {batch_size}, Number epochs: {num_epoch}, Loss function{loss_function}, Optimizer: {optm}")
 		count +=1
-		model, training_time, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, val_data, test_data, device)
+		model, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, test_data, device)
 		# What to store on each model: model itself(With parameters), training/validation history and testing result
 		torch.save(model, f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}")
 		with open(f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}.pickle", 'wb') as f:
