@@ -3,6 +3,7 @@
 import torch
 import numpy as np
 import pandas as pd
+import ppfuncs as pp
 
 # set the device we will be using to train the model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -22,10 +23,10 @@ def create_file_name(lab, ti, se, ii):
     return file_name
 
 
-def save_image(list_, label_, time_, sen_, i_):
+def save_image(list_, img_, label_, time_, sen_, i_):
     file_name = create_file_name(label_, time_, sen_, i_)
     path_ = f'images\{file_name}.pt'
-    # torch.save(img, path)
+    torch.save(img, path)
     img_label = np.array([[path_, label_, sen_]])
 
     list_img_label_ = np.append(list_, img_label, axis=0)
@@ -68,10 +69,11 @@ if __name__ == '__main__':
         for time in range(time_start, time_end + 1):
             for sen in range(sen_start, sen_end + 1):
 
-                # data = pp.extract_data_2(path, time, sen, device=device)
-                # images_list = pp.generate_samples(data, n_images_sensor, images_size, device=device)
+                data = pp.extract_data_2(path, time, sen, device=device)
+                images_list = pp.generate_samples(data, n_images_sensor, images_size, device=device)
                 for i in range(n_images_sensor):
-                    img_label_list = save_image(img_label_list, label, time, sen, i)
+                    img = images_list[i]
+                    img_label_list = save_image(img_label_list, img, label, time, sen, i)
 
             if print_:
                 print(f"\t{name} data at time {time}: Completed")
