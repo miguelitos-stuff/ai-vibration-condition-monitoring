@@ -30,25 +30,28 @@ def create_samples(sensor_data, n_samples, sample_size, device, spacing=False):
 
 
 def amplitude_frequency_plotting(samples_):
-    sample_ = samples_.detach().cpu().numpy()
+    samples_ = samples_.detach().cpu().numpy()
     sampling_rate = 40000 #[Hz]
     time = 1*60
     n_samples = sampling_rate * time
 
-    data_fft = scipy.fftpack.fft(sample_)
-    data_amp = 2 / n_samples * np.abs(data_fft)
-    data_freq = np.abs(scipy.fftpack.fftfreq(n_samples, 1/40000))
+    # data_fft = scipy.fftpack.fft(sample_)
+    # data_amp = 2 / n_samples * np.abs(data_fft)
+    # data_freq = np.abs(scipy.fftpack.fftfreq(n_samples, 1/40000))
+
+    data_amplitude = np.abs(np.fft.fft(samples_))
+    data_freqs = np.fft.fftfreq(len(data_amplitude), d=1.0 / sampling_rate)
 
 
     #Plot amplitude vs. frequency
-    # plt.plot(data_freq, data_amp)
-    # plt.xlabel('Frequency (Hz)')
-    # plt.ylabel('Magnitude')
-    # plt.show()
+    plt.plot(data_freqs, data_amplitude)
+    plt.xlabel('Frequency (Hz)')
+    plt.ylabel('Magnitude')
+    plt.show()
 
     #Make images with pixels representing the magnitude at a certain frequency
 
-    amplitude_norm = normalize(data_amp)
+    amplitude_norm = normalize(data_amplitude)
     images = np.reshape(amplitude_norm, (200,200))
 
     return images
@@ -80,4 +83,5 @@ if __name__ == '__main__':
 
     #Visualize
     visualize(Damaged_images)
+
     print(Damaged_images)
