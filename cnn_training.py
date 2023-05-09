@@ -7,28 +7,20 @@ from cnn_architecture import CNN
 import cnn_architecture as arc
 from cnn_newarchitecture import newCNN
 #from preprocessing import 'data_dict.pt'
-from sklearn.metrics import classification_report
 from sklearn.metrics import precision_recall_fscore_support
-from torch.utils.data import random_split
 from torch.utils.data import DataLoader
 #from torchvision.transforms import ToTensor
 #from torchvision.datasets import KMNIST
 from torch.optim import Adam
 from torch.optim import SGD
-from torch.optim import LBFGS
 from torch.optim import Adamax
 from torch import nn
 import pandas as pd
-import matplotlib.pyplot as plt
 import itertools
 import numpy as np
-import json
 import pickle
 import torch
 import time
-import os
-import datasetfuncs as dsf
-
 
 
 def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData, device):
@@ -116,9 +108,9 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 				y = y.type(torch.LongTensor)
 				(x, y) = (x.to(device), y.to(device))
 				# make the predictions and calculate the validation loss
-				start_compute = time.time()
+				start_compute = time.perf_counter()
 				pred = model(x)
-				end_compute = time.time()
+				end_compute = time.perf_counter()
 				avg_compute_time = (end_compute - start_compute)/(len(x))
 				totalValLoss += lossFn(pred, y)
 				# calculate the number of correct predictions
@@ -223,7 +215,7 @@ print("Size of testing dataset:", len(test_data))
 
 learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50]
-num_epochs = [30]
+num_epochs = [2]
 loss_functions = [nn.NLLLoss()]
 num_optm = 2
 layers = 3

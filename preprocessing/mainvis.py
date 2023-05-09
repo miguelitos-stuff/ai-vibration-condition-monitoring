@@ -10,7 +10,7 @@ labels = data_dict["label"]
 
 # pp.visualize(images[6])
 
-N_compare = 10
+N_compare = 3
 n = 0
 healthy_image_list = torch.Tensor([])
 # find N random healthy labels and put in list
