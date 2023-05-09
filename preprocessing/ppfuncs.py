@@ -4,6 +4,24 @@ import matplotlib.pyplot as plt
 import scipy.io
 import math
 import torch
+from torch.utils.data import Dataset
+from torch.utils.data import random_split
+from torch.utils.data import DataLoader
+
+
+class CreateDataset(Dataset):
+    def __init__(self, label_tens, img_tens):
+        self.img_labels = label_tens
+        self.img_tens = img_tens.float()
+
+    def __len__(self):
+        return len(self.img_labels)
+
+    def __getitem__(self, idx):
+        img_idx = int(self.img_labels[idx][0])
+        image = self.img_tens[img_idx]
+        label = self.img_labels[idx][1]
+        return image, label
 
 
 def extract_data_2(path, n, s, device):
@@ -11,6 +29,14 @@ def extract_data_2(path, n, s, device):
     data_np = mat_file[f'AN{s}']
     data_np = data_np.flatten()
     data_tensor = torch.tensor(data_np).to(device)
+    return data_tensor
+
+
+def extract_data_3(path, n, s):
+    mat_file = scipy.io.loadmat(path+f'{n}.mat')
+    data_np = mat_file[f'AN{s}']
+    data_np = data_np.flatten()
+    data_tensor = torch.tensor(data_np)
     return data_tensor
 
 
@@ -36,9 +62,9 @@ def create_matrix(vec):
     return matrix
 
 
-def generate_samples(sensor_data, n_samples, sample_size, device, spacing=False):
+def generate_samples(sensor_data, n_samples, sample_size, spacing=False):
     # input is one minute of datapoints of one sensor [tensor]
-    samples_ = torch.Tensor([]).to(device)
+    samples_ = torch.Tensor([])
     if spacing:
         rest = sensor_data.shape[0] - n_samples * sample_size ** 2
         space = rest // n_samples
@@ -53,7 +79,7 @@ def generate_samples(sensor_data, n_samples, sample_size, device, spacing=False)
             sample_ = sensor_data[(i * sample_size ** 2):((i + 1) * sample_size ** 2)]
             sample_ = sample_[None, :]
             samples_ = torch.cat((samples_, sample_), 0)
-    samples_2 = torch.Tensor([]).to(device)
+    samples_2 = torch.Tensor([])
     for j in range(n_samples):
         sample_ = create_matrix(samples_[j])
         samples_2 = torch.cat((samples_2, sample_), 0)
@@ -81,14 +107,37 @@ def visualize_compare(data_healthy, data_damaged, n):
     return
 
 
-def save(zeros_list, ones_list, device):
-    labels_0 = torch.zeros(len(zeros_list)).to(device)
-    labels_1 = torch.ones(len(ones_list)).to(device)
-    labels = torch.cat((labels_1, labels_0), 0)
+def create_data_dict(zeros_list, ones_list):
+    labels_0 = torch.zeros(len(zeros_list))
+    labels_1 = torch.ones(len(ones_list))
+    labels_list = torch.cat((labels_1, labels_0), 0)
+    labels_ind = torch.arange(0, len(labels_list))
+    labels = torch.stack((labels_ind, labels_list), -1)
     images = torch.cat((zeros_list, ones_list), 0)
-    data_dict = {"data": images, "label": labels}
-    torch.save(data_dict, "data_dict.pt")
-    return
+    data_dict_ = {"data": images[:, None, :, :], "label": labels}
+    return data_dict_
+
+
+def set_to_dict(data_, num_, ):
+    dataloader = DataLoader(data_, batch_size=num_, shuffle=True)
+    features, labels = next(iter(dataloader))
+    ind = torch.arange(0, len(features))
+    labels = torch.stack((ind, labels), -1)
+    data_dict_ = {"data": features, "label": labels}
+    return data_dict_
+
+
+def split_data_dict(data_dict_, train_split_, val_split_, test_split_):
+    all_data = CreateDataset(data_dict_["label"], data_dict_["data"])
+    num_train = int(round(len(all_data) * train_split_, 0))
+    num_val = int(round(len(all_data) * val_split_, 0))
+    num_test = int(round(len(all_data) * test_split_, 0))
+    (train_data_, val_data_, test_data_) = random_split(all_data, [num_train, num_val, num_test],
+                                                        generator=torch.Generator().manual_seed(42))
+    train_data_dict_ = set_to_dict(train_data_, num_train)
+    val_data_dict_ = set_to_dict(val_data_, num_val)
+    test_data_dict_ = set_to_dict(test_data_, num_test)
+    return train_data_dict_, val_data_dict_, test_data_dict_
 
 
 if __name__ == '__main__':
