@@ -37,19 +37,19 @@ class CreateDataset(Dataset):
 		return all_images, all_labels
 
 
-class newCNN(Module):
+class newCNN4(Module):
 	def __init__(self, numChannels, classes):
 		# call the parent constructor
-		super(newCNN, self).__init__()
+		super(newCNN4, self).__init__()
 		# initialize first set of CONV => RELU => POOL layers
 		self.conv1 = Conv2d(in_channels=numChannels, out_channels=60,
 			kernel_size=(6, 6), stride=(2, 2), padding=10)
 		self.relu = ReLU()
-		self.maxpool1 = MaxPool2d(kernel_size=(2), stride=(2, 2))
+		self.maxpool1 = MaxPool2d(kernel_size=(4), stride=(4, 4))
 		# initialize second set of CONV => RELU => POOL layers
 		self.conv2 = Conv2d(in_channels=60, out_channels=50,
 			kernel_size=(3, 3), padding=1)
-		self.maxpool2 = MaxPool2d(kernel_size=(2), stride=(2, 2))
+		self.maxpool2 = MaxPool2d(kernel_size=(4), stride=(4, 4))
 		self.conv3 = Conv2d(in_channels=50, out_channels=20,
 			kernel_size=(3, 3), padding=1)
 		self.maxpool3 = MaxPool2d(kernel_size=(4), stride=(4, 4))
@@ -57,9 +57,8 @@ class newCNN(Module):
 		#	kernel_size=(3, 3), padding=1)
 		#self.maxpool4 = MaxPool2d(kernel_size=(2), stride=(2, 2))
 
-		self.fc1 = Linear(in_features=980, out_features=400)
-		self.fc2 = Linear(in_features=400, out_features=200)
-		self.fc3 = Linear(in_features=200, out_features=classes)
+		self.fc1 = Linear(in_features=20, out_features=10)
+		self.fc3 = Linear(in_features=10, out_features=classes)
 		self.logSoftmax = LogSoftmax(dim=1)
 
 	def forward(self, x):
@@ -73,9 +72,9 @@ class newCNN(Module):
 		# print(f"test 3{x.shape}")
 		x = self.relu(x)
 		x = self.maxpool2(x)
-		# print(f"test 4{x.shape}")
+		#print(f"test 4{x.shape}")
 		x = self.conv3(x)
-		# print(f"test 5{x.shape}")
+		#print(f"test 5{x.shape}")
 		x = self.relu(x)
 		x = self.maxpool3(x)
 		#print(f"test 6{x.shape}")
@@ -89,7 +88,6 @@ class newCNN(Module):
 		x = self.fc1(x)
 		#print(f"test 9{x.shape}")
 		# x = self.relu(x)
-		x = self.fc2(x)
 		#print(f"test 10{x.shape}")
 		# x = self.relu(x)
 		x = self.fc3(x)
@@ -106,7 +104,7 @@ if __name__ == "__main__":
 	print(f"shape of matrix {reduce((lambda x, y: x * y), ones_matrices.shape)}")
 	random_matrices = np.random.randint(0,255, (num_matrices,) + matrix_shape)
 	# initialize class
-	cnn = newCNN(numChannels=1, classes=2)
+	cnn = newCNN4(numChannels=1, classes=2)
 	x = torch.from_numpy(ones_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
 	x2 = torch.from_numpy(random_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
 	output = cnn.forward(x)

@@ -203,11 +203,11 @@ def transform_lr(num):
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Loading in the training and validation dataset
-train_data = torch.load('train_data_dict.pt')
+train_data = torch.load('../train_data_dict.pt')
 train_data = arc.CreateDataset(train_data["label"], train_data["data"])
 print("Size of test dataset:", len(train_data))
 
-val_data = torch.load('val_data_dict.pt')
+val_data = torch.load('../val_data_dict.pt')
 val_data = arc.CreateDataset(val_data["label"], val_data["data"])
 print("Size of validation dataset:", len(val_data))
 
