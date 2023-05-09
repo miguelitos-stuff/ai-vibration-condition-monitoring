@@ -12,6 +12,7 @@ def extract_data_2(path, n, s, device):
     data_np = mat_file[f'AN{s}']
     data_np = data_np.flatten()
     data_tensor = torch.tensor(data_np).to(device)
+    print(data_tensor.size())
     return data_tensor
 
 def create_samples(sensor_data, n_samples, sample_size, device, spacing=False):
@@ -24,7 +25,9 @@ def create_samples(sensor_data, n_samples, sample_size, device, spacing=False):
             sample_ = sensor_data[(i * sample_size):((i + 1) * sample_size)]
             sample_ = sample_[None, :]
             samples_ = torch.cat((samples_, sample_), 0)
-    return samples_
+    return samples_ #amplitude vs time, with time 1 minute and delta t = 1/40000
+
+
 
 def amplitude_frequency_plotting(samples_):
     sample_ = samples_.detach().cpu().numpy()
@@ -46,7 +49,7 @@ def amplitude_frequency_plotting(samples_):
     #Make images with pixels representing the magnitude at a certain frequency
 
     amplitude_norm = normalize(data_amp)
-    images = np.reshape(amplitude_norm, (240,10000))
+    images = np.reshape(amplitude_norm, (200,200))
 
     return images
 
@@ -67,12 +70,13 @@ if __name__ == '__main__':
     sensor_data_damaged = extract_data_2("data/Damaged/D", '2', 4, device=device)
     sensor_data_healthy = extract_data_2("data/Healthy/H", '2', 4, device=device)
 
-    sensor_samples_damaged = create_samples(sensor_data_damaged, 10, 40000, device=device)
-    sensor_samples_healthy = create_samples(sensor_data_healthy, 10, 40000, device=device)
+    sensor_samples_damaged = create_samples(sensor_data_damaged, 1, 40000, device=device)
+    sensor_samples_healthy = create_samples(sensor_data_healthy, 1, 40000, device=device)
 
+    #print(sensor_samples_healthy.size())
     #Create amplitude_frequency_images
-    Damaged_images = amplitude_frequency_plotting(sensor_data_damaged)
-    Healthy_images = amplitude_frequency_plotting(sensor_data_healthy)
+    Damaged_images = amplitude_frequency_plotting(sensor_samples_damaged)
+    Healthy_images = amplitude_frequency_plotting(sensor_samples_healthy)
 
     #Visualize
     visualize(Damaged_images)
