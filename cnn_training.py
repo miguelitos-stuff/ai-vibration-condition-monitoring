@@ -116,9 +116,9 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 				y = y.type(torch.LongTensor)
 				(x, y) = (x.to(device), y.to(device))
 				# make the predictions and calculate the validation loss
-				start_compute = time.time()
+				start_compute = time.perf_counter()
 				pred = model(x)
-				end_compute = time.time()
+				end_compute = time.perf_counter()
 				avg_compute_time = (end_compute - start_compute)/(len(x))
 				totalValLoss += lossFn(pred, y)
 				# calculate the number of correct predictions
@@ -223,7 +223,7 @@ print("Size of testing dataset:", len(test_data))
 
 learning_rates = [0.00001,0.0001,0.001,0.01]
 batch_sizes = [50]
-num_epochs = [30]
+num_epochs = [2]
 loss_functions = [nn.NLLLoss()]
 num_optm = 2
 layers = 3
