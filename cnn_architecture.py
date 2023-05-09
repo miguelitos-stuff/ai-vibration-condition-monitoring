@@ -86,6 +86,248 @@ class CNN(Module):
 		output = self.logSoftmax(x)
 		return output
 
+class newCNN(Module):
+	def __init__(self, numChannels, classes):
+		# call the parent constructor
+		super(newCNN, self).__init__()
+		# initialize first set of CONV => RELU => POOL layers
+		self.conv1 = Conv2d(in_channels=numChannels, out_channels=60,
+			kernel_size=(6, 6), stride=(2, 2), padding=10)
+		self.relu = ReLU()
+		self.maxpool1 = MaxPool2d(kernel_size=(2), stride=(2, 2))
+		# initialize second set of CONV => RELU => POOL layers
+		self.conv2 = Conv2d(in_channels=60, out_channels=50,
+			kernel_size=(3, 3), padding=1)
+		self.maxpool2 = MaxPool2d(kernel_size=(2), stride=(2, 2))
+		self.conv3 = Conv2d(in_channels=50, out_channels=20,
+			kernel_size=(3, 3), padding=1)
+		self.maxpool3 = MaxPool2d(kernel_size=(4), stride=(4, 4))
+		#self.conv4 = Conv2d(in_channels=40, out_channels=20,
+		#	kernel_size=(3, 3), padding=1)
+		#self.maxpool4 = MaxPool2d(kernel_size=(2), stride=(2, 2))
+
+		self.fc1 = Linear(in_features=980, out_features=400)
+		self.fc2 = Linear(in_features=400, out_features=200)
+		self.fc3 = Linear(in_features=200, out_features=classes)
+		self.logSoftmax = LogSoftmax(dim=1)
+
+	def forward(self, x):
+		# print("Forward running")
+		x = self.conv1(x)
+		# print(f"test 1{x.shape}")
+		x = self.relu(x)
+		x = self.maxpool1(x)
+		# print(f"test 2{x.shape}")
+		x = self.conv2(x)
+		# print(f"test 3{x.shape}")
+		x = self.relu(x)
+		x = self.maxpool2(x)
+		# print(f"test 4{x.shape}")
+		x = self.conv3(x)
+		# print(f"test 5{x.shape}")
+		x = self.relu(x)
+		x = self.maxpool3(x)
+		#print(f"test 6{x.shape}")
+		#x = self.conv4(x)
+		# print(f"test 7{x.shape}")
+		#x = self.relu(x)
+		#x = self.maxpool4(x)
+		# print(f"test 8{x.shape}")
+
+		x = flatten(x, 1)
+		x = self.fc1(x)
+		#print(f"test 9{x.shape}")
+		# x = self.relu(x)
+		x = self.fc2(x)
+		#print(f"test 10{x.shape}")
+		# x = self.relu(x)
+		x = self.fc3(x)
+		# x = self.relu(x)
+		#print(f"test 11{x.shape}")
+		output = self.logSoftmax(x)
+		return output
+
+class newCNN2(Module):
+	def __init__(self, numChannels, classes):
+		# call the parent constructor
+		super(newCNN2, self).__init__()
+		# initialize first set of CONV => RELU => POOL layers
+		self.conv1 = Conv2d(in_channels=numChannels, out_channels=60,
+			kernel_size=(6, 6), stride=(2, 2), padding=10)
+		self.relu = ReLU()
+		self.maxpool1 = MaxPool2d(kernel_size=(2), stride=(2, 2))
+		# initialize second set of CONV => RELU => POOL layers
+		self.conv2 = Conv2d(in_channels=60, out_channels=50,
+			kernel_size=(3, 3), padding=1)
+		self.maxpool2 = MaxPool2d(kernel_size=(4), stride=(4, 4))
+		self.conv3 = Conv2d(in_channels=50, out_channels=20,
+			kernel_size=(3, 3), padding=1)
+		self.maxpool3 = MaxPool2d(kernel_size=(4), stride=(4, 4))
+		#self.conv4 = Conv2d(in_channels=40, out_channels=20,
+		#	kernel_size=(3, 3), padding=1)
+		#self.maxpool4 = MaxPool2d(kernel_size=(2), stride=(2, 2))
+
+		self.fc1 = Linear(in_features=180, out_features=100)
+		self.fc2 = Linear(in_features=100, out_features=50)
+		self.fc3 = Linear(in_features=50, out_features=classes)
+		self.logSoftmax = LogSoftmax(dim=1)
+
+	def forward(self, x):
+		# print("Forward running")
+		x = self.conv1(x)
+		# print(f"test 1{x.shape}")
+		x = self.relu(x)
+		x = self.maxpool1(x)
+		# print(f"test 2{x.shape}")
+		x = self.conv2(x)
+		# print(f"test 3{x.shape}")
+		x = self.relu(x)
+		x = self.maxpool2(x)
+		#print(f"test 4{x.shape}")
+		x = self.conv3(x)
+		#print(f"test 5{x.shape}")
+		x = self.relu(x)
+		x = self.maxpool3(x)
+		#print(f"test 6{x.shape}")
+		#x = self.conv4(x)
+		# print(f"test 7{x.shape}")
+		#x = self.relu(x)
+		#x = self.maxpool4(x)
+		# print(f"test 8{x.shape}")
+
+		x = flatten(x, 1)
+		x = self.fc1(x)
+		#print(f"test 9{x.shape}")
+		# x = self.relu(x)
+		x = self.fc2(x)
+		#print(f"test 10{x.shape}")
+		# x = self.relu(x)
+		x = self.fc3(x)
+		# x = self.relu(x)
+		#print(f"test 11{x.shape}")
+		output = self.logSoftmax(x)
+		return output
+
+class newCNN3(Module):
+	def __init__(self, numChannels, classes):
+		# call the parent constructor
+		super(newCNN3, self).__init__()
+		# initialize first set of CONV => RELU => POOL layers
+		self.conv1 = Conv2d(in_channels=numChannels, out_channels=60,
+			kernel_size=(6, 6), stride=(2, 2), padding=10)
+		self.relu = ReLU()
+		self.maxpool1 = MaxPool2d(kernel_size=(4), stride=(4, 4))
+		# initialize second set of CONV => RELU => POOL layers
+		self.conv2 = Conv2d(in_channels=60, out_channels=50,
+			kernel_size=(3, 3), padding=1)
+		self.maxpool2 = MaxPool2d(kernel_size=(4), stride=(4, 4))
+		self.conv3 = Conv2d(in_channels=50, out_channels=20,
+			kernel_size=(3, 3), padding=1)
+		self.maxpool3 = MaxPool2d(kernel_size=(4), stride=(4, 4))
+		#self.conv4 = Conv2d(in_channels=40, out_channels=20,
+		#	kernel_size=(3, 3), padding=1)
+		#self.maxpool4 = MaxPool2d(kernel_size=(2), stride=(2, 2))
+
+		self.fc1 = Linear(in_features=20, out_features=10)
+		self.fc2 = Linear(in_features=10, out_features=4)
+		self.fc3 = Linear(in_features=4, out_features=classes)
+		self.logSoftmax = LogSoftmax(dim=1)
+
+	def forward(self, x):
+		# print("Forward running")
+		x = self.conv1(x)
+		# print(f"test 1{x.shape}")
+		x = self.relu(x)
+		x = self.maxpool1(x)
+		# print(f"test 2{x.shape}")
+		x = self.conv2(x)
+		# print(f"test 3{x.shape}")
+		x = self.relu(x)
+		x = self.maxpool2(x)
+		#print(f"test 4{x.shape}")
+		x = self.conv3(x)
+		#print(f"test 5{x.shape}")
+		x = self.relu(x)
+		x = self.maxpool3(x)
+		#print(f"test 6{x.shape}")
+		#x = self.conv4(x)
+		# print(f"test 7{x.shape}")
+		#x = self.relu(x)
+		#x = self.maxpool4(x)
+		# print(f"test 8{x.shape}")
+
+		x = flatten(x, 1)
+		x = self.fc1(x)
+		#print(f"test 9{x.shape}")
+		# x = self.relu(x)
+		x = self.fc2(x)
+		#print(f"test 10{x.shape}")
+		# x = self.relu(x)
+		x = self.fc3(x)
+		# x = self.relu(x)
+		#print(f"test 11{x.shape}")
+		output = self.logSoftmax(x)
+		return output
+
+class newCNN4(Module):
+	def __init__(self, numChannels, classes):
+		# call the parent constructor
+		super(newCNN4, self).__init__()
+		# initialize first set of CONV => RELU => POOL layers
+		self.conv1 = Conv2d(in_channels=numChannels, out_channels=60,
+			kernel_size=(6, 6), stride=(2, 2), padding=10)
+		self.relu = ReLU()
+		self.maxpool1 = MaxPool2d(kernel_size=(4), stride=(4, 4))
+		# initialize second set of CONV => RELU => POOL layers
+		self.conv2 = Conv2d(in_channels=60, out_channels=50,
+			kernel_size=(3, 3), padding=1)
+		self.maxpool2 = MaxPool2d(kernel_size=(4), stride=(4, 4))
+		self.conv3 = Conv2d(in_channels=50, out_channels=20,
+			kernel_size=(3, 3), padding=1)
+		self.maxpool3 = MaxPool2d(kernel_size=(4), stride=(4, 4))
+		#self.conv4 = Conv2d(in_channels=40, out_channels=20,
+		#	kernel_size=(3, 3), padding=1)
+		#self.maxpool4 = MaxPool2d(kernel_size=(2), stride=(2, 2))
+
+		self.fc1 = Linear(in_features=20, out_features=10)
+		self.fc3 = Linear(in_features=10, out_features=classes)
+		self.logSoftmax = LogSoftmax(dim=1)
+
+	def forward(self, x):
+		# print("Forward running")
+		x = self.conv1(x)
+		# print(f"test 1{x.shape}")
+		x = self.relu(x)
+		x = self.maxpool1(x)
+		# print(f"test 2{x.shape}")
+		x = self.conv2(x)
+		# print(f"test 3{x.shape}")
+		x = self.relu(x)
+		x = self.maxpool2(x)
+		#print(f"test 4{x.shape}")
+		x = self.conv3(x)
+		#print(f"test 5{x.shape}")
+		x = self.relu(x)
+		x = self.maxpool3(x)
+		#print(f"test 6{x.shape}")
+		#x = self.conv4(x)
+		# print(f"test 7{x.shape}")
+		#x = self.relu(x)
+		#x = self.maxpool4(x)
+		# print(f"test 8{x.shape}")
+
+		x = flatten(x, 1)
+		x = self.fc1(x)
+		#print(f"test 9{x.shape}")
+		# x = self.relu(x)
+		#print(f"test 10{x.shape}")
+		# x = self.relu(x)
+		x = self.fc3(x)
+		# x = self.relu(x)
+		#print(f"test 11{x.shape}")
+		output = self.logSoftmax(x)
+		return output
+
 if __name__ == "__main__":
 	# 	Create matrix
 	num_matrices = 1

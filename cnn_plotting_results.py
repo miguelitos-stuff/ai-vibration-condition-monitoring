@@ -4,7 +4,6 @@ import re
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
 def graph_model_losses():
 	# assign directory
 	directory = 'CNNModels'
@@ -67,5 +66,3 @@ def ranking_system():
 ranking_system()
 
 # Make sure the plots have the same range and domain, do one model per plot
-
-# Create 15 models which are the best, have an execel file which assigns their number with their properties and their performance
