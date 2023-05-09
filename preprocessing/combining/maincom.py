@@ -13,18 +13,17 @@ def combining_function(list_0, list_1, i_count, i_round, i_max):
     for i in range(i_start, i_start+len(list_0)):
         f_ = function(i, i_max)
         data_ = (1 - f_) * list_0[i] + f_ * list_1[i]
-        data_list = torch.cat((data_list, data_), 0)
+        data_list = torch.cat((data_list, torch.Tensor([data_])), 0)
     return data_list
 
 
 if __name__ == '__main__':
-    # Define import variables for both Healthy and Damaged
+    print_ = True
+
     sen_start = 3
     sen_end = 10
 
-    # Define image variables for both Healthy and Damaged
     max_images = True
-
     images_size = 224
     if max_images:
         count_datapoints = 60 * 40 * 1000
@@ -58,3 +57,5 @@ if __name__ == '__main__':
             images = pp.generate_samples(data, n_images_sensor, images_size)
             image_list = torch.cat((image_list, images), 0)
         torch.save(image_list, f"combined_sensor{sen}.pt")
+    if print_:
+        print(f"sensor {sen}: Completed")
