@@ -1,27 +1,30 @@
 import math
+import numpy as np
 import torch
 import preprocessing.ppfuncs as pp
+import matplotlib.pyplot as plt
 
 
-def function(i_, i_max_):
-    return math.exp(math.log(2) * i_ / i_max_) - 1
+def function(i_max_):
+    exp = math.exp(1)
+    i_ = torch.arange(0, i_max_)
+    return exp**(math.log(2) * i_ / i_max_) - 1
 
 
-def combining_function(list_0, list_1, i_count, i_round, i_max):
-    i_start = i_count * i_round
-    data_list = torch.Tensor([])
-    for i in range(i_start, i_start+len(list_0)):
-        f_ = function(i, i_max)
-        data_ = (1 - f_) * list_0[i] + f_ * list_1[i]
-        data_list = torch.cat((data_list, torch.Tensor([data_])), 0)
-    return data_list
+def combining_function(list_0, list_1, f_):
+    return torch.mul((1 - f_), list_0) + torch.mul(f_, list_1)
 
 
 if __name__ == '__main__':
     print_ = True
 
     sen_start = 3
-    sen_end = 10
+    sen_end = 3
+
+    time_0 = 1
+    time_1 = 3
+    time_2 = 7
+    time_3 = 10
 
     max_images = True
     images_size = 224
@@ -38,24 +41,27 @@ if __name__ == '__main__':
 
     ind_count = -1
     ind_round = 40 * 1000 * 60
-    ind_max = ind_round * 3
+    ind_max = ind_round * (time_2-time_1)
+
+    fun = torch.split(function(ind_max), ind_round)
 
     for sen in range(sen_start, sen_end+1):
-        for time in range(1, 3+1):
+        for time in range(time_0, time_1+1):
             data = pp.extract_data(path_list[0], time, sen)
             images = pp.generate_samples(data, n_images_sensor, images_size)
             image_list = torch.cat((image_list, images), 0)
-        for time in range(4, 6+1):
+        for time in range(time_1+1, time_2+1):
             ind_count += 1
             data_0 = pp.extract_data(path_list[0], time, sen)
             data_1 = pp.extract_data(path_list[1], time, sen)
-            data = combining_function(data_0, data_1, ind_count, ind_round, ind_max)
+            data = combining_function(data_0, data_1, fun[ind_count])
             images = pp.generate_samples(data, n_images_sensor, images_size)
             image_list = torch.cat((image_list, images), 0)
-        for time in range(7, 9+1):
+        for time in range(time_2+1, time_3+1):
             data = pp.extract_data(path_list[1], time, sen)
             images = pp.generate_samples(data, n_images_sensor, images_size)
             image_list = torch.cat((image_list, images), 0)
         torch.save(image_list, f"combined_sensor{sen}.pt")
-    if print_:
-        print(f"sensor {sen}: Completed")
+        if print_:
+            print(f"sensor {sen}: Completed")
+
