@@ -6,6 +6,8 @@ from torch.nn import ReLU
 from torch.nn import LogSoftmax
 from torch.utils.data import Dataset
 from torch import flatten
+from torch.utils.data import DataLoader
+import time
 import torch
 import numpy as np
 
@@ -329,17 +331,42 @@ class newCNN4(Module):
 		return output
 
 if __name__ == "__main__":
-	# 	Create matrix
-	num_matrices = 1
-	matrix_shape = (224, 224)
-	ones_matrices = np.ones((num_matrices,) + matrix_shape)
-	print(ones_matrices.shape)
-	random_matrices = np.random.randint(0,255, (num_matrices,) + matrix_shape)
-	# initialize class
-	cnn = CNN(numChannels=1, classes=2)
-	x = torch.from_numpy(ones_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
-	x2 = torch.from_numpy(random_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
-	output = cnn.forward(x)
-	output2 = cnn.forward(x2)
-	print(output)
-	print(output2)
+	## 	Create matrix
+	#num_matrices = 1
+	#matrix_shape = (224, 224)
+	#ones_matrices = np.ones((num_matrices,) + matrix_shape)
+	#print(ones_matrices.shape)
+	#random_matrices = np.random.randint(0,255, (num_matrices,) + matrix_shape)
+	## initialize class
+	#cnn = CNN(numChannels=1, classes=2)
+	#x = torch.from_numpy(ones_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
+	#x2 = torch.from_numpy(random_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
+	#output = cnn.forward(x)
+	#output2 = cnn.forward(x2)
+	#print(output)
+	#print(output2)
+
+	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+	val_data = torch.load('val_data_dict.pt')
+	val_data = CreateDataset(val_data["label"], val_data["data"])
+
+	valDataLoader = DataLoader(val_data, shuffle=True,
+			batch_size=1)
+
+	model = newCNN(
+		numChannels=1,
+		classes=2).to(device)
+	computation_time = 0
+
+	for (x, y) in valDataLoader:
+		# send the input to the device
+		y = y.type(torch.LongTensor)
+		(x, y) = (x.to(device), y.to(device))
+		# make the predictions and calculate the validation loss
+		start_compute = time.perf_counter()
+		pred = model(x)
+		end_compute = time.perf_counter()
+		computation_time += (end_compute - start_compute) / (len(x))
+	avg_compute_time = computation_time/len(valDataLoader)
+
+	print(avg_compute_time)
