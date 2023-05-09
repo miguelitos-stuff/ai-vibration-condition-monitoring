@@ -56,7 +56,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 
 	# initialize the CNN model
 	print("[INFO] initializing the CNN model...")
-	model = CNN(
+	model = newCNN(
 		numChannels=1,
 		classes=2).to(device)
 	# initialize a dictionary to store training history
@@ -227,7 +227,7 @@ loss_functions = [nn.NLLLoss()]
 num_optm = 1
 
 # Just so no error accurs
-layers = 12
+layers = 3
 
 performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
 count = 0

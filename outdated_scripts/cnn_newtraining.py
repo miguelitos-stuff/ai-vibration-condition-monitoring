@@ -88,6 +88,8 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, testData
 	}
 	if optm == 0:
 		opt = Adam(model.parameters(), lr=learning_rate)
+	#elif optm == 1:
+		#opt = SGD(model.parameters(), lr=learning_rate)
 	elif optm == 1:
 		opt = SGD(model.parameters(), lr=learning_rate)
 	elif optm == 2:
@@ -223,7 +225,7 @@ def transform_lr(num):
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-allData = torch.load('preprocessing\data_dict.pt')
+allData = torch.load('../preprocessing/data_dict.pt')
 all_images = allData["data"].float()[:,None,:,:]
 all_labels = allData["label"][:, None]
 all_idx = torch.arange(len(all_images)).to("cuda")[:, None]
