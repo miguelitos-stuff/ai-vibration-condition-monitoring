@@ -28,14 +28,14 @@ class CreateDataset(Dataset):
 
 
 class CNN(Module):
-	def __init__(self, numChannels, classes):
+	def __init__(self, num_channels, classes):
 		# call the parent constructor
 		super(CNN, self).__init__()
 		# initialize first set of CONV => RELU => POOL layers
-		self.conv1 = Conv2d(in_channels=numChannels, out_channels=60,
-			kernel_size=(5, 5), stride=(2, 2), padding=10)
+		self.conv1 = Conv2d(in_channels=num_channels, out_channels=60,
+							kernel_size=(5, 5), stride=(2, 2), padding=10)
 		self.relu = ReLU()
-		self.maxpool1 = MaxPool2d(kernel_size=(2), stride=(2, 2))
+		self.maxpool1 = MaxPool2d(kernel_size=(2), stride=(2, 2))  #TODO - make only one maxpool layer to later call on
 		# initialize second set of CONV => RELU => POOL layers
 		self.conv2 = Conv2d(in_channels=60, out_channels=50,
 			kernel_size=(3, 3), padding=1)
@@ -57,7 +57,7 @@ class CNN(Module):
 		x = self.conv1(x)
 		# print(f"test 1{x.shape}")
 		x = self.relu(x)
-		x = self.maxpool1(x)
+		x = self.maxpool1(x) #TODO again, just have a maxpool and not maxpool1, 2, etc
 		# print(f"test 2{x.shape}")
 		x = self.conv2(x)
 		# print(f"test 3{x.shape}")
@@ -330,6 +330,20 @@ class newCNN4(Module):
 		output = self.logSoftmax(x)
 		return output
 
+# 	Create matrix
+num_matrices = 1
+matrix_shape = (224, 224)
+ones_matrices = np.ones((num_matrices,) + matrix_shape)
+print(ones_matrices.shape)
+random_matrices = np.random.randint(0,255, (num_matrices,) + matrix_shape)
+# initialize class
+cnn = CNN(1,2)
+x = torch.from_numpy(ones_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
+x2 = torch.from_numpy(random_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
+output = cnn.forward(x)
+output2 = cnn.forward(x2)
+print(output)
+print(output2)
 if __name__ == "__main__":
 	## 	Create matrix
 	#num_matrices = 1

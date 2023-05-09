@@ -24,15 +24,7 @@ class CreateDataset(Dataset):
         return image, label
 
 
-def extract_data_2(path, n, s, device):
-    mat_file = scipy.io.loadmat(path+f'{n}.mat')
-    data_np = mat_file[f'AN{s}']
-    data_np = data_np.flatten()
-    data_tensor = torch.tensor(data_np).to(device)
-    return data_tensor
-
-
-def extract_data_3(path, n, s):
+def extract_data(path, n, s):
     mat_file = scipy.io.loadmat(path+f'{n}.mat')
     data_np = mat_file[f'AN{s}']
     data_np = data_np.flatten()

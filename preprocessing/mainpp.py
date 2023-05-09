@@ -38,7 +38,7 @@ if __name__ == '__main__':
             print("Start on healthy data")
         for i in range(time_start, time_end+1):
             for j in range(sen_start, sen_end+1):
-                data = pp.extract_data_3(path, i, j)
+                data = pp.extract_data(path, i, j)
                 images = pp.generate_samples(data, n_images_sensor, images_size)
                 healthy_image_list = torch.cat((healthy_image_list, images), 0)
             if print_:
@@ -51,7 +51,7 @@ if __name__ == '__main__':
         path = "data/Damaged/D"
         for i in range(time_start, time_end+1):
             for j in range(sen_start, sen_end+1):
-                data = pp.extract_data_3(path, i, j)
+                data = pp.extract_data(path, i, j)
                 images = pp.generate_samples(data, n_images_sensor, images_size)
                 damaged_image_list = torch.cat((damaged_image_list, images), 0)
             if print_:
