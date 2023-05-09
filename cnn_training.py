@@ -6,28 +6,20 @@ matplotlib.use("Agg")
 from cnn_architecture import CNN
 import cnn_architecture as arc
 #from preprocessing import 'data_dict.pt'
-from sklearn.metrics import classification_report
 from sklearn.metrics import precision_recall_fscore_support
-from torch.utils.data import random_split
 from torch.utils.data import DataLoader
 #from torchvision.transforms import ToTensor
 #from torchvision.datasets import KMNIST
 from torch.optim import Adam
 from torch.optim import SGD
-from torch.optim import LBFGS
 from torch.optim import Adamax
 from torch import nn
 import pandas as pd
-import matplotlib.pyplot as plt
 import itertools
 import numpy as np
-import json
 import pickle
 import torch
 import time
-import os
-import datasetfuncs as dsf
-
 
 
 def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData, testData, device):

@@ -27,33 +27,35 @@ class CreateDataset(Dataset):
 
 
 if __name__ == '__main__':
-	SPLIT_BY_SENSORS = False
+	version = "test9"
+	path = f"data_dict/"+version+"/"
+	SPLIT_BY_SENSORS = True
 	print("Split by sensor is", SPLIT_BY_SENSORS)
 	if SPLIT_BY_SENSORS:
-		TRAIN_SENSORS = [3, 4, 5, 6, 7]
-		TRAIN_SPLIT = 0.65
+		TRAIN_SENSORS = [3, 4, 5, 6, 7, 8, 10]
+		TRAIN_SPLIT = 0.90
 		VAL_SPLIT = 1 - TRAIN_SPLIT
-		TEST_SENSORS = [8, 9, 10]
+		TEST_SENSORS = [10]
 	else:
 		TRAIN_SPLIT = 0.65
 		VAL_SPLIT = 0.20
 		TEST_SPLIT = 0.15
 
 	print("[INFO] Read image list")
-	all_img_label_list = pd.read_csv("preprocessing/images/img_labels.cvs")
+	all_img_label_list = pd.read_csv("../preprocessing/images/img_labels.cvs")
 
 	print("[INFO] Split list")
 	if SPLIT_BY_SENSORS:
 		train_img_label_list = all_img_label_list[all_img_label_list['sensors'].isin(TRAIN_SENSORS)]
 		test_img_label_list = all_img_label_list[all_img_label_list['sensors'].isin(TEST_SENSORS)]
-		train_data = CreateDataset("preprocessing", train_img_label_list)
-		test_data = CreateDataset("preprocessing", test_img_label_list)
+		train_data = CreateDataset("../preprocessing", train_img_label_list)
+		test_data = CreateDataset("../preprocessing", test_img_label_list)
 		num_train = int(round(len(train_data) * TRAIN_SPLIT, 0))
 		num_test = len(test_data)
 		num_val = int(round(len(train_data) * VAL_SPLIT, 0))
 		(train_data, val_data) = random_split(train_data, [num_train, num_val], generator=torch.Generator().manual_seed(42))
 	else:
-		all_data = CreateDataset("preprocessing", all_img_label_list)
+		all_data = CreateDataset("../preprocessing", all_img_label_list)
 		num_train = int(round(len(all_data) * TRAIN_SPLIT, 0))
 		num_val = int(round(len(all_data) * VAL_SPLIT, 0))
 		num_test = int(round(len(all_data) * TEST_SPLIT, 0))
@@ -71,21 +73,21 @@ if __name__ == '__main__':
 	train_ind = torch.arange(0, len(train_features))
 	train_labels = torch.stack((train_ind, train_labels), -1)
 	train_data_dict = {"data": train_features, "label": train_labels}
-	torch.save(train_data_dict, "train_data_dict.pt")
+	torch.save(train_data_dict, f"{path}train_data_dict.pt")
 	print("[INFO] Saving training dataset complete")
 
 	val_features, val_labels = next(iter(val_dataloader))
 	val_ind = torch.arange(0, len(val_features))
 	val_labels = torch.stack((val_ind, val_labels), -1)
 	val_data_dict = {"data": val_features, "label": val_labels}
-	torch.save(val_data_dict, "val_data_dict.pt")
+	torch.save(val_data_dict, f"{path}val_data_dict.pt")
 	print("[INFO] Saving validating dataset complete")
 
 	test_features, test_labels = next(iter(test_dataloader))
 	test_ind = torch.arange(0, len(test_features))
 	test_labels = torch.stack((test_ind, test_labels), -1)
 	test_data_dict = {"data": test_features, "label": test_labels}
-	torch.save(test_data_dict, "test_data_dict.pt")
+	torch.save(test_data_dict, f"{path}test_data_dict.pt")
 	print("[INFO] Saving testing dataset complete")
 
 

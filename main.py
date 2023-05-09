@@ -27,13 +27,4 @@ for i in range(8):
 plt.legend()
 plt.show()
 
-sensor_mat = scipy.io.loadmat('preprocessing/data/Damaged/D1.mat')
-plt.figure()
-for i in range(8):
-    a = 7
-    if i == 6 or i == 5: a = 15
-    y = sensor_mat[sensor[i]] + i*a
-    y = y.flatten()
-    plt.plot(x[tb:te], y[tb:te], label=sensor[i])
-plt.legend()
-plt.show()
+
