@@ -1,8 +1,6 @@
 import math
-import numpy as np
 import torch
 import preprocessing.ppfuncs as pp
-import matplotlib.pyplot as plt
 
 
 def function(i_max_):
@@ -64,4 +62,3 @@ if __name__ == '__main__':
         torch.save(image_list, f"combined_sensor{sen}.pt")
         if print_:
             print(f"sensor {sen}: Completed")
-
