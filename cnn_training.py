@@ -105,11 +105,11 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 			totalTrainLoss += loss
 			trainCorrect += (pred.argmax(1) == y).type(
 				torch.float).sum().item()
-
 		# switch off autograd for evaluation
 		with torch.no_grad():
 			# set the model in evaluation mode
 			model.eval()
+			lengths = 0
 			# loop over the validation set
 			for (x, y) in valDataLoader:
 				# send the input to the device
@@ -119,7 +119,8 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 				start_compute = time.perf_counter()
 				pred = model(x)
 				end_compute = time.perf_counter()
-				avg_compute_time = (end_compute - start_compute)/(len(x))
+				lengths += len(x)
+				computation_time += (end_compute - start_compute)
 				totalValLoss += lossFn(pred, y)
 				# calculate the number of correct predictions
 				valCorrect += (pred.argmax(1) == y).type(
@@ -181,6 +182,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 	precision, recall, fscore, _ = precision_recall_fscore_support(np.array(targets), np.array(preds), average = 'binary')
 	int_res = [precision, recall, fscore]
 	#int_res = [[round(num, 4) for num in sublist] for sublist in int_res]
+	avg_compute_time = computation_time / lengths
 	H["time_taken"] = [(endTime - startTime), avg_compute_time]
 	val_results = [val_acc, int_res[0], int_res[1], int_res[2]]
 	print(val_results)
