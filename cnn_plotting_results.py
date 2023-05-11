@@ -19,10 +19,13 @@ def graph_model_losses():
             plt.figure()
             with open(f, 'rb') as data:
                 history = pickle.load(data)
+                ne = re.search(r'ne(\d+)', filename[:-7]).group(1)
+                acc = history["test_results"][0]
                 plt.plot(history["train_loss"], label="train_loss")
                 plt.plot(history["val_loss"], label="validation_loss")
                 plt.plot(history["train_acc"], label=f"train_accuracy")
                 plt.plot(history["val_acc"], label=f"validation_accuracy")
+                plt.plot(ne, acc)
             plt.ylabel("Accuracy/Loss")
             plt.xlabel("Epochs")
             plt.legend(loc="lower left")
@@ -42,10 +45,10 @@ def ranking_system():
         if "pickle" in str(f):
             with open(f, 'rb') as data:
                 loaded_data = pickle.load(data)
-                acc = loaded_data["val_results"][0]
-                precs = loaded_data["val_results"][1]
-                recs = loaded_data["val_results"][2]
-                f1s = loaded_data["val_results"][3]
+                acc = loaded_data["test_results"][0]
+                precs = loaded_data["test_results"][1]
+                recs = loaded_data["test_results"][2]
+                f1s = loaded_data["test_results"][3]
                 lr = re.search(r'lr(\d+\.\d+)', filename[:-7]).group(1)
                 bs = re.search(r'bs(\d+)', filename[:-7]).group(1)
                 ne = re.search(r'ne(\d+)', filename[:-7]).group(1)
