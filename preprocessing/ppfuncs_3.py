@@ -60,7 +60,7 @@ def visualize(image):
     # Take the normalized data matrices and visualize
     plt.imshow(image, cmap='viridis')
     plt.colorbar()
-    plt.show()
+    plt.savefig("preprocessing")
     return
 
 

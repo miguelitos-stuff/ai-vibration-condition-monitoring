@@ -18,11 +18,12 @@ tb = int(t_begin * 40000)
 te = int(t_end * 40000) + int(100)
 
 plt.figure()
-for i in range(8):
+for i in range(1):
     a = 7
     if i == 6 or i == 5: a = 15
     y = sensor_mat[sensor[i]] + i*a
     y = y.flatten()
+    print(y.shape)
     plt.plot(x[tb:te], y[tb:te], label=sensor[i])
 plt.legend()
 plt.show()
