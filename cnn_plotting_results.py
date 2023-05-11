@@ -3,7 +3,7 @@ import pickle
 import re
 import pandas as pd
 import matplotlib.pyplot as plt
-
+plt.rcParams.update({'figure.max_open_warning': 0})
 
 def graph_model_losses():
     # assign directory
@@ -26,7 +26,7 @@ def graph_model_losses():
             plt.ylabel("Accuracy/Loss")
             plt.xlabel("Epochs")
             plt.legend(loc="lower left")
-            plt.ylim([0, 1])
+            plt.ylim([0, 1.01])
             plt.title(f'plot_{num}')
             plt.savefig(f'plots/plot_{num}')
     return
@@ -69,7 +69,7 @@ def ranking_system():
     return
 
 
-# graph_model_losses()
+graph_model_losses()
 ranking_system()
 
 # Make sure the plots have the same range and domain, do one model per plot
