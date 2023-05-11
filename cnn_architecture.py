@@ -28,11 +28,11 @@ class CreateDataset(Dataset):
 
 
 class CNN(Module):
-	def __init__(self, num_channels, classes):
+	def __init__(self, numChannels=1, classes=2):
 		# call the parent constructor
 		super(CNN, self).__init__()
 		# initialize first set of CONV => RELU => POOL layers
-		self.conv1 = Conv2d(in_channels=num_channels, out_channels=60,
+		self.conv1 = Conv2d(in_channels=numChannels, out_channels=60,
 							kernel_size=(5, 5), stride=(2, 2), padding=10)
 		self.relu = ReLU()
 		self.maxpool1 = MaxPool2d(kernel_size=(2), stride=(2, 2))  #TODO - make only one maxpool layer to later call on
@@ -272,7 +272,7 @@ class newCNN3(Module):
 		return output
 
 class newCNN4(Module):
-	def __init__(self, numChannels, classes):
+	def __init__(self, numChannels=1, classes=2):
 		# call the parent constructor
 		super(newCNN4, self).__init__()
 		# initialize first set of CONV => RELU => POOL layers
@@ -422,18 +422,20 @@ if __name__ == "__main__":
 	#print(output2)
 
 	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-	val_data = torch.load('val_data_dict.pt')
-	val_data = CreateDataset(val_data["label"], val_data["data"])
+	test_data = torch.load('test_data_dict.pt')
+	test_data = CreateDataset(test_data["label"], test_data["data"])
 
-	valDataLoader = DataLoader(val_data, shuffle=True,
-			batch_size=1)
+	testDataLoader = DataLoader(test_data, shuffle=True,
+			batch_size=50)
 
-	model = newCNN(
+	model = CNN(
 		numChannels=1,
 		classes=2).to(device)
 	computation_time = 0
+	print(len(testDataLoader))
+	lengths = 0
 
-	for (x, y) in valDataLoader:
+	for (x, y) in testDataLoader:
 		# send the input to the device
 		y = y.type(torch.LongTensor)
 		(x, y) = (x.to(device), y.to(device))
@@ -441,7 +443,14 @@ if __name__ == "__main__":
 		start_compute = time.perf_counter()
 		pred = model(x)
 		end_compute = time.perf_counter()
-		computation_time += (end_compute - start_compute) / (len(x))
-	avg_compute_time = computation_time/len(valDataLoader)
+		computation_time += (end_compute - start_compute)
+		lengths += len(x)
+	avg_compute_time = computation_time/lengths
 
 	print(avg_compute_time)
+
+# 1 0.00095142194139895
+# 2 0.0012046955453115515
+
+# CNN :
+# newCNN :

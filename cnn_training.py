@@ -107,11 +107,11 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 			totalTrainLoss += loss
 			trainCorrect += (pred.argmax(1) == y).type(
 				torch.float).sum().item()
-
 		# switch off autograd for evaluation
 		with torch.no_grad():
 			# set the model in evaluation mode
 			model.eval()
+			lengths = 0
 			# loop over the validation set
 			lengths = 0
 			compute_time = 0
