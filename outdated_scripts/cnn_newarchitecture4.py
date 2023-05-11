@@ -48,17 +48,17 @@ class newCNN4(Module):
 		self.maxpool1 = MaxPool2d(kernel_size=(4), stride=(4, 4))
 		# initialize second set of CONV => RELU => POOL layers
 		self.conv2 = Conv2d(in_channels=60, out_channels=50,
-			kernel_size=(3, 3), padding=1)
+			kernel_size=(5, 5), padding=1)
 		self.maxpool2 = MaxPool2d(kernel_size=(4), stride=(4, 4))
-		self.conv3 = Conv2d(in_channels=50, out_channels=20,
+		self.conv3 = Conv2d(in_channels=50, out_channels=10,
 			kernel_size=(3, 3), padding=1)
 		self.maxpool3 = MaxPool2d(kernel_size=(4), stride=(4, 4))
 		#self.conv4 = Conv2d(in_channels=40, out_channels=20,
 		#	kernel_size=(3, 3), padding=1)
 		#self.maxpool4 = MaxPool2d(kernel_size=(2), stride=(2, 2))
 
-		self.fc1 = Linear(in_features=20, out_features=10)
-		self.fc3 = Linear(in_features=10, out_features=classes)
+		self.fc1 = Linear(in_features=10, out_features=4)
+		self.fc3 = Linear(in_features=4, out_features=classes)
 		self.logSoftmax = LogSoftmax(dim=1)
 
 	def forward(self, x):
