@@ -24,15 +24,7 @@ class CreateDataset(Dataset):
         return image, label
 
 
-def extract_data_2(path, n, s, device):
-    mat_file = scipy.io.loadmat(path+f'{n}.mat')
-    data_np = mat_file[f'AN{s}']
-    data_np = data_np.flatten()
-    data_tensor = torch.tensor(data_np).to(device)
-    return data_tensor
-
-
-def extract_data_3(path, n, s):
+def extract_data(path, n, s):
     mat_file = scipy.io.loadmat(path+f'{n}.mat')
     data_np = mat_file[f'AN{s}']
     data_np = data_np.flatten()
@@ -138,37 +130,3 @@ def split_data_dict(data_dict_, train_split_, val_split_, test_split_):
     val_data_dict_ = set_to_dict(val_data_, num_val)
     test_data_dict_ = set_to_dict(test_data_, num_test)
     return train_data_dict_, val_data_dict_, test_data_dict_
-
-
-if __name__ == '__main__':
-    # test your functions here
-
-    # Visualize the data matrix
-    test_matrix = np.random.randint(low=0, high=256, size=(224, 224))
-    test_matrix = torch.Tensor(test_matrix)
-    test_matrix = test_matrix.numpy()
-    print(test_matrix)
-
-    torch.Tensor.ndim = property(lambda self: len(self.shape))
-    visualize(test_matrix)
-
-    # test sample making
-    # a = torch.randint(0, 10, (2400000,))
-    # samples = generate_samples(a, 20, 244, device='cpu')
-    # print(samples)
-    # print(samples.shape)
-
-    # calculating average
-    # device = "cpu"
-    # path = "../data/Healthy/H"
-    # data = extract_data_2(path, 1, 3, device=device)
-    # images = generate_samples(data, 20, 244, device=device)
-    # test_matrix = images[1].numpy()
-    # print(np.average(test_matrix))
-    # visualize(test_matrix)
-    # test_matrix = test_matrix.flatten()
-    # new_matrix = np.array([])
-    # for i in range(len(test_matrix)):
-    #     if i / 2 == 0:
-    #         new_matrix = np.append(new_matrix, test_matrix[i])
-    # print(np.average(new_matrix))
