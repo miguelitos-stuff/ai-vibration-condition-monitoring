@@ -367,7 +367,7 @@ if __name__ == "__main__":
 	testDataLoader = DataLoader(test_data, shuffle=True,
 			batch_size=50)
 
-	model = newCNN4(
+	model = CNN(
 		numChannels=1,
 		classes=2).to(device)
 	computation_time = 0
@@ -390,3 +390,6 @@ if __name__ == "__main__":
 
 # 1 0.00095142194139895
 # 2 0.0012046955453115515
+
+# CNN :
+# newCNN :
