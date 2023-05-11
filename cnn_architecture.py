@@ -216,7 +216,7 @@ class newCNN3(Module):
 		super(newCNN3, self).__init__()
 		# initialize first set of CONV => RELU => POOL layers
 		self.conv1 = Conv2d(in_channels=numChannels, out_channels=60,
-			kernel_size=(6, 6), stride=(2, 2), padding=10)
+			kernel_size=(5, 5), stride=(2, 2), padding=10)#TODO: odd number
 		self.relu = ReLU()
 		self.maxpool1 = MaxPool2d(kernel_size=(4), stride=(4, 4))
 		# initialize second set of CONV => RELU => POOL layers
