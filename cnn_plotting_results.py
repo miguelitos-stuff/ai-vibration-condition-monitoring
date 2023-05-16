@@ -3,7 +3,9 @@ import pickle
 import re
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 plt.rcParams.update({'figure.max_open_warning': 0})
+import seaborn as sns
 
 def graph_model_losses():
     # assign directory
@@ -71,8 +73,24 @@ def ranking_system():
     ranking_df.to_csv('ranking_system.csv')
     return
 
+def confusion_matrix(cf_matrix):
+    group_names = ['True Positive', 'False Negative', 'False Positive', 'True Negative']
+    group_counts = ["{0:0.0f}".format(value) for value in cf_matrix.flatten()]
+    group_percentages = ["{0:.2%}".format(value) for value in (cf_matrix.flatten() / np.sum(cf_matrix))]
+    labels = [f"{v1}\n{v2}\n{v3}" for v1, v2, v3 in zip(group_names, group_counts, group_percentages)]
+    labels = np.asarray(labels).reshape(2, 2)
+    sns.heatmap(cf_matrix, annot=labels, fmt='', cmap='coolwarm')
+    plt.savefig('confusion_matrix.png')
 
-graph_model_losses()
-ranking_system()
+
+confusion_matrix(np.array([[602,0],[2,524]]))
+#graph_model_losses()
+#ranking_system()
 
 # Make sure the plots have the same range and domain, do one model per plot
+#TN FP FN TP
+#recall: 100%
+#precision: 99.668874%
+#F1 score: .998341625
+#Test size: 1128
+
