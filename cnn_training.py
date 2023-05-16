@@ -229,7 +229,7 @@ print("Size of testing dataset:", len(test_data))
 
 learning_rates = [0.001]
 batch_sizes = [50]
-num_epochs = [20]
+num_epochs = [25]
 loss_functions = [nn.NLLLoss()]
 num_optm = 2
 layers = 3

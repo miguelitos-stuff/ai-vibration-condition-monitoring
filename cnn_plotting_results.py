@@ -20,17 +20,19 @@ def graph_model_losses():
             with open(f, 'rb') as data:
                 history = pickle.load(data)
                 ne = re.search(r'ne(\d+)', filename[:-7]).group(1)
+                print(ne)
                 acc = history["test_results"][0]
                 plt.plot(history["train_loss"], label="train_loss")
                 plt.plot(history["val_loss"], label="validation_loss")
                 plt.plot(history["train_acc"], label=f"train_accuracy")
                 plt.plot(history["val_acc"], label=f"validation_accuracy")
-                plt.plot(ne, acc)
+                plt.plot(int(ne), acc, marker='X', markerfacecolor='black', ls='none', ms=10, label="test_accuracy")
+                print(len(history["val_loss"]))
             plt.ylabel("Accuracy/Loss")
             plt.xlabel("Epochs")
-            plt.legend(loc="lower left")
+            plt.legend(loc="center right")
             plt.ylim([0, 1.01])
-            plt.title(f'plot_{num}')
+            plt.title(f'Final model')
             plt.savefig(f'plots/plot_{num}')
     return
 
