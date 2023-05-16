@@ -23,19 +23,25 @@ def graph_model_losses():
                 history = pickle.load(data)
                 ne = re.search(r'ne(\d+)', filename[:-7]).group(1)
                 print(ne)
+                history["train_loss"] = [0] + history["train_loss"]
+                history["val_loss"] = [0] + history["val_loss"]
+                history["train_acc"] = [0] + history["train_acc"]
+                history["val_acc"] = [0] + history["val_acc"]
                 acc = history["test_results"][0]
                 plt.plot(history["train_loss"], label="train_loss")
                 plt.plot(history["val_loss"], label="validation_loss")
                 plt.plot(history["train_acc"], label=f"train_accuracy")
                 plt.plot(history["val_acc"], label=f"validation_accuracy")
                 plt.plot(int(ne), acc, marker='X', markerfacecolor='black', ls='none', ms=10, label="test_accuracy")
-                print(len(history["val_loss"]))
+                plt.xticks(np.array([1,5,10,15,20,25,30]))
+                plt.xlim(1, None)
             plt.ylabel("Accuracy/Loss")
             plt.xlabel("Epochs")
             plt.legend(loc="center right")
             plt.ylim([0, 1.01])
             plt.title(f'Final model')
             plt.savefig(f'plots/plot_{num}')
+
     return
 
 
@@ -85,8 +91,8 @@ def confusion_matrix(cf_matrix):
     plt.savefig('confusion_matrix.png')
 
 
-confusion_matrix(np.array([[602,0],[2,524]]))
-#graph_model_losses()
+#confusion_matrix(np.array([[602,0],[2,524]]))
+graph_model_losses()
 #ranking_system()
 
 # Make sure the plots have the same range and domain, do one model per plot
