@@ -39,7 +39,6 @@ def graph_model_losses():
             plt.xlabel("Epochs")
             plt.legend(loc="center right")
             plt.ylim([0, 1.01])
-            plt.title(f'Final model')
             plt.savefig(f'plots/plot_{num}')
 
     return
