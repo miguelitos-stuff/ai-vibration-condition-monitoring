@@ -1,5 +1,5 @@
 from captum.attr import Occlusion
-
+from cnn_architecture import newCNN4
 occlusion = Occlusion(model)
 
 strides = (3, 9, 9)               # smaller = more fine-grained attribution but slower
