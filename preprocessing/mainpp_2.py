@@ -11,6 +11,7 @@ import ppfuncs_2 as pp2
 
 # set the device we will be using to train the model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
 print("Code will be executed on:", device)
 
 if __name__ == '__main__':
@@ -64,6 +65,20 @@ if __name__ == '__main__':
 
     print(healthy_spectrogram_tensor.device)
 
-    # pp2.save2(healthy_spectrogram_tensor, damaged_spectrogram_tensor, device=device)
+    spectrogram_dict = pp2.create_data_dict(healthy_spectrogram_tensor, damaged_spectrogram_tensor)
+    # torch.save(spectrogram_dict, "data_dict_2.pt")
+    if print_:
+        print("Saving data: Completed")
+
+    tp = 0.65
+    vp = 0.20
+    testp = 0.15
+    train_data_dict, val_data_dict, test_data_dict = pp2.split_data_dict(spectrogram_dict, tp, vp, testp)
+    if print_:
+        print("Splitting datasets: Completed")
+    torch.save(train_data_dict, "../train_data_dict.pt")
+    torch.save(val_data_dict, "../val_data_dict.pt")
+    torch.save(test_data_dict, "../test_data_dict.pt")
+
     if print_:
         print("Saving data: Completed")

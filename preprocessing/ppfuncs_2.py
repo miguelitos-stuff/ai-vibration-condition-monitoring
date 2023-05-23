@@ -3,6 +3,24 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 import scipy.io
+from torch.utils.data import Dataset
+from torch.utils.data import random_split
+from torch.utils.data import DataLoader
+
+
+class CreateDataset(Dataset):
+    def __init__(self, label_tens, img_tens):
+        self.img_labels = label_tens
+        self.img_tens = img_tens.float()
+
+    def __len__(self):
+        return len(self.img_labels)
+
+    def __getitem__(self, idx):
+        img_idx = int(self.img_labels[idx][0])
+        image = self.img_tens[img_idx]
+        label = self.img_labels[idx][1]
+        return image, label
 
 
 def extract_data_2(path, n, s, device):
@@ -80,6 +98,39 @@ def save2(zeros_list, ones_list, device):
     data_dict = {"data": images, "label": labels}
     torch.save(data_dict, "data_dict_2.pt")
     return
+
+
+def create_data_dict(zeros_list, ones_list):
+    labels_0 = torch.zeros(len(zeros_list))
+    labels_1 = torch.ones(len(ones_list))
+    labels_list = torch.cat((labels_1, labels_0), 0)
+    labels_ind = torch.arange(0, len(labels_list))
+    labels = torch.stack((labels_ind, labels_list), -1)
+    images = torch.cat((zeros_list, ones_list), 0)
+    data_dict_ = {"data": images[:, None, :, :], "label": labels}
+    return data_dict_
+
+
+def set_to_dict(data_, num_, ):
+    dataloader = DataLoader(data_, batch_size=num_, shuffle=True)
+    features, labels = next(iter(dataloader))
+    ind = torch.arange(0, len(features))
+    labels = torch.stack((ind, labels), -1)
+    data_dict_ = {"data": features, "label": labels}
+    return data_dict_
+
+
+def split_data_dict(data_dict_, train_split_, val_split_, test_split_):
+    all_data = CreateDataset(data_dict_["label"], data_dict_["data"])
+    num_train = int(round(len(all_data) * train_split_, 0))
+    num_val = int(round(len(all_data) * val_split_, 0))
+    num_test = int(round(len(all_data) * test_split_, 0))
+    (train_data_, val_data_, test_data_) = random_split(all_data, [num_train, num_val, num_test],
+                                                        generator=torch.Generator().manual_seed(42))
+    train_data_dict_ = set_to_dict(train_data_, num_train)
+    val_data_dict_ = set_to_dict(val_data_, num_val)
+    test_data_dict_ = set_to_dict(test_data_, num_test)
+    return train_data_dict_, val_data_dict_, test_data_dict_
 
 
 if __name__ == '__main__':
