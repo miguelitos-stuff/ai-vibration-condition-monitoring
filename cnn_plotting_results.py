@@ -3,7 +3,9 @@ import pickle
 import re
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import numpy as np
+plt.rcParams.update({'figure.max_open_warning': 0})
+import seaborn as sns
 
 def graph_model_losses():
     # assign directory
@@ -19,16 +21,26 @@ def graph_model_losses():
             plt.figure()
             with open(f, 'rb') as data:
                 history = pickle.load(data)
+                ne = re.search(r'ne(\d+)', filename[:-7]).group(1)
+                print(ne)
+                history["train_loss"] = [0] + history["train_loss"]
+                history["val_loss"] = [0] + history["val_loss"]
+                history["train_acc"] = [0] + history["train_acc"]
+                history["val_acc"] = [0] + history["val_acc"]
+                acc = history["test_results"][0]
                 plt.plot(history["train_loss"], label="train_loss")
                 plt.plot(history["val_loss"], label="validation_loss")
                 plt.plot(history["train_acc"], label=f"train_accuracy")
                 plt.plot(history["val_acc"], label=f"validation_accuracy")
+                plt.plot(int(ne), acc, marker='X', markerfacecolor='black', ls='none', ms=10, label="test_accuracy")
+                plt.xticks(np.array([1,5,10,15,20,25,30]))
+                plt.xlim(1, None)
             plt.ylabel("Accuracy/Loss")
             plt.xlabel("Epochs")
-            plt.legend(loc="lower left")
-            plt.ylim([0, 1])
-            plt.title(f'plot_{num}')
+            plt.legend(loc="center right")
+            plt.ylim([0, 1.01])
             plt.savefig(f'plots/plot_{num}')
+
     return
 
 
@@ -42,10 +54,10 @@ def ranking_system():
         if "pickle" in str(f):
             with open(f, 'rb') as data:
                 loaded_data = pickle.load(data)
-                acc = loaded_data["val_results"][0]
-                precs = loaded_data["val_results"][1]
-                recs = loaded_data["val_results"][2]
-                f1s = loaded_data["val_results"][3]
+                acc = loaded_data["test_results"][0]
+                precs = loaded_data["test_results"][1]
+                recs = loaded_data["test_results"][2]
+                f1s = loaded_data["test_results"][3]
                 lr = re.search(r'lr(\d+\.\d+)', filename[:-7]).group(1)
                 bs = re.search(r'bs(\d+)', filename[:-7]).group(1)
                 ne = re.search(r'ne(\d+)', filename[:-7]).group(1)
@@ -68,8 +80,24 @@ def ranking_system():
     ranking_df.to_csv('ranking_system.csv')
     return
 
+def confusion_matrix(cf_matrix):
+    group_names = ['True Positive', 'False Negative', 'False Positive', 'True Negative']
+    group_counts = ["{0:0.0f}".format(value) for value in cf_matrix.flatten()]
+    group_percentages = ["{0:.2%}".format(value) for value in (cf_matrix.flatten() / np.sum(cf_matrix))]
+    labels = [f"{v1}\n{v2}\n{v3}" for v1, v2, v3 in zip(group_names, group_counts, group_percentages)]
+    labels = np.asarray(labels).reshape(2, 2)
+    sns.heatmap(cf_matrix, annot=labels, fmt='', cmap='coolwarm')
+    plt.savefig('confusion_matrix.png')
 
-# graph_model_losses()
-ranking_system()
+
+#confusion_matrix(np.array([[602,0],[2,524]]))
+graph_model_losses()
+#ranking_system()
 
 # Make sure the plots have the same range and domain, do one model per plot
+#TN FP FN TP
+#recall: 100%
+#precision: 99.668874%
+#F1 score: .998341625
+#Test size: 1128
+
