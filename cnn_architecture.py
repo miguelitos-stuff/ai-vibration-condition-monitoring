@@ -171,7 +171,7 @@ class newCNN2(Module):
 
 		self.fc1 = Linear(in_features=180, out_features=100)
 		self.fc2 = Linear(in_features=100, out_features=50)
-		self.fc3 = Linear(in_features=50, out_features=classes)
+		self.fc3 = Linear(in_features=50, out_features=1)
 		self.logSoftmax = LogSoftmax(dim=1)
 
 	def forward(self, x):

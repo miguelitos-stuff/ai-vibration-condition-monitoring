@@ -56,7 +56,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 
 	# initialize the CNN model
 	print("[INFO] initializing the CNN model...")
-	model = newCNN(
+	model = newCNN3(
 		numChannels=1,
 		classes=2).to(device)
 	# initialize a dictionary to store training history
@@ -94,6 +94,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 			(x, y) = (x.to(device), y.to(device))
 			# perform a forward pass and calculate the training loss
 			pred = model(x)
+
 			loss = lossFn(pred, y)
 			# zero out the gradients, perform the backpropagation step,
 			# and update the weights
@@ -167,7 +168,6 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 			y = y.to(device)
 			# make the predictions and add them to the list
 			pred = model(x)
-			print(pred)
 			preds.extend(pred.argmax(axis=1).cpu().numpy())
 			totalValLoss += lossFn(pred, y)
 			valCorrect += (pred.argmax(1) == y).type(
@@ -222,17 +222,17 @@ test_data = torch.load('test_data_dict.pt')
 test_data = arc.CreateDataset(test_data["label"], test_data["data"])
 print("Size of testing dataset:", len(test_data))
 
-learning_rates = [0.00001,0.0001,0.001,0.01]
+learning_rates = [0.0001]
 batch_sizes = [50]
-num_epochs = [2]
+num_epochs = [20]
 loss_functions = [nn.NLLLoss()]
-num_optm = 2
+num_optm = 1
 layers = 3
 
 performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
 count = 0
 for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
-	for optm in range(num_optm):
+	for optm in range(num_optm, num_optm+1):
 		print(f"Learning rate: {learning_rate}, Batch size: {batch_size}, Number epochs: {num_epoch}, Loss function{loss_function}, Optimizer: {optm}")
 		count +=1
 		model, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, val_data, device)
