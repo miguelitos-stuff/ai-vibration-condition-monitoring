@@ -1,8 +1,30 @@
 from captum.attr import Occlusion
+import torch
+import cnn_architecture as arc
 from cnn_architecture import newCNN4
 occlusion = Occlusion(newCNN4(numChannels=1, classes=2))
 import numpy as np
 from captum.attr import visualization as viz
+from torch.utils.data import DataLoader
+
+
+train_data = torch.load('train_data_dict.pt')
+train_data = arc.CreateDataset(train_data["label"], train_data["data"])
+print("Size of test dataset:", len(train_data))
+
+val_data = torch.load('val_data_dict.pt')
+val_data = arc.CreateDataset(val_data["label"], val_data["data"])
+print("Size of validation dataset:", len(val_data))
+
+test_data = torch.load('test_data_dict.pt')
+test_data = arc.CreateDataset(test_data["label"], test_data["data"])
+print("Size of testing dataset:", len(test_data))
+
+
+BATCH_SIZE = 50
+trainDataLoader = DataLoader(train_data, shuffle=True,batch_size=BATCH_SIZE)
+valDataLoader = DataLoader(val_data, batch_size=BATCH_SIZE)
+testDataLoader = DataLoader(test_data, batch_size=BATCH_SIZE)
 
 strides = (3, 9, 9)               # smaller = more fine-grained attribution but slower                      # Labrador index in ImageNet
 sliding_window_shapes = (3, 45, 45)  # choose size enough to change object appearance
