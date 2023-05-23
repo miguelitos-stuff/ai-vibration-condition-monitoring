@@ -6,7 +6,7 @@ occlusion = Occlusion(newCNN4(numChannels=1, classes=2))
 import numpy as np
 from captum.attr import visualization as viz
 from torch.utils.data import DataLoader
-
+from preprocessing import ppfuncs_2 as pp
 
 # train_data = torch.load('train_data_dict.pt')
 # train_data = arc.CreateDataset(train_data["label"], train_data["data"])
@@ -26,6 +26,14 @@ from torch.utils.data import DataLoader
 # valDataLoader = DataLoader(val_data, batch_size=BATCH_SIZE)
 # testDataLoader = DataLoader(test_data, batch_size=BATCH_SIZE)
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+sensor_data_damaged = pp.extract_data_2("preprocessing/data/Damaged/D", '2', 9, device=device)
+sensor_data_healthy = pp.extract_data_2("preprocessing/data/Healthy/H", '2', 9, device=device)
+sensor_samples_damaged = pp.create_samples(sensor_data_damaged, 10, 16700, device=device)
+sensor_samples_healthy = pp.create_samples(sensor_data_healthy, 10, 4000, device=device)
+spectrogram = pp.spectrogram_2(sensor_samples_healthy[0])
+pp.visualize_compare(sensor_samples_healthy, sensor_samples_damaged, 2)
+input_img = 1
 strides = (3, 9, 9)               # smaller = more fine-grained attribution but slower                      # Labrador index in ImageNet
 sliding_window_shapes = (3, 45, 45)  # choose size enough to change object appearance
 target = 0

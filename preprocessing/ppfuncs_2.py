@@ -143,4 +143,4 @@ if __name__ == '__main__':
     sensor_samples_healthy = create_samples(sensor_data_healthy, 10, 4000, device=device)
     spectrogram = spectrogram_2(sensor_samples_healthy[0])
     print(spectrogram.shape)
-    # visualize_compare(sensor_samples_healthy, sensor_samples_damaged, 5)
+    visualize_compare(sensor_samples_healthy, sensor_samples_damaged, 2)
