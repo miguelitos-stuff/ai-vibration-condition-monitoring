@@ -31,7 +31,7 @@ if __name__ == '__main__':
         count_datapoints = 60 * 40 * 1000
         n_samples = int(count_datapoints / sample_size)
     else:
-        n_samples = 30
+        n_samples = 60
 
     print(n_samples)
 
