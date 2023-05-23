@@ -33,7 +33,7 @@ sensor_samples_damaged = pp.create_samples(sensor_data_damaged, 10, 16700, devic
 sensor_samples_healthy = pp.create_samples(sensor_data_healthy, 10, 4000, device=device)
 spectrogram = pp.spectrogram_2(sensor_samples_healthy[0])
 pp.visualize_compare(sensor_samples_healthy, sensor_samples_damaged, 2)
-input_img = 1
+# input_img =
 strides = (3, 9, 9)               # smaller = more fine-grained attribution but slower                      # Labrador index in ImageNet
 sliding_window_shapes = (3, 45, 45)  # choose size enough to change object appearance
 target = 0
