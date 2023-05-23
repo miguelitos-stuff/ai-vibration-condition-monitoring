@@ -1,6 +1,6 @@
 from captum.attr import Occlusion
 from cnn_architecture import newCNN4
-occlusion = Occlusion(newCNN4())
+occlusion = Occlusion(newCNN4(numChannels=1, classes=2))
 import numpy as np
 from captum.attr import visualization as viz
 
@@ -30,19 +30,19 @@ vis_signs = ["all", "all"] # "positive", "negative", or "all" to show both
 # positive attribution indicates that the presence of the area increases the prediction score
 # negative attribution indicates distractor areas whose absence increases the score
 
-_ = viz.visualize_image_attr_multiple(attribution_dog,
+_ = viz.visualize_image_attr_multiple(damaged_box,
                                       np.array(img),
                                       vis_types,
                                       vis_signs,
-                                      ["attribution for dog", "image"],
+                                      ["attribution for damaged", "image"],
                                       show_colorbar=True
                                      )
 
 
 attribution_cat = np.transpose(healthy_box.squeeze().cpu().detach().numpy(), (1,2,0))
 
-_ = viz.visualize_image_attr_multiple(attribution_cat,
-                                      np.array(center_crop(img)),
+_ = viz.visualize_image_attr_multiple(healthy_box,
+                                      np.array(img),
                                       ["heat_map", "original_image"],
                                       ["all", "all"], # positive/negative attribution or all
                                       ["attribution for cat", "image"],
