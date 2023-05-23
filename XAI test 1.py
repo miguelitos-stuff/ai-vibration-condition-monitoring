@@ -5,10 +5,9 @@ import numpy as np
 from captum.attr import visualization as viz
 
 strides = (3, 9, 9)               # smaller = more fine-grained attribution but slower                      # Labrador index in ImageNet
-sliding_window_shapes=(3,45, 45)  # choose size enough to change object appearance
+sliding_window_shapes = (3, 45, 45)  # choose size enough to change object appearance
 target = 0
-baselines = 0                     # values to occlude the image with. 0 corresponds to gray
-
+baselines = 0
 damaged_box = occlusion.attribute(input_img,
                                        strides = strides,
                                        target=target,
@@ -21,7 +20,7 @@ healthy_box = occlusion.attribute(input_img,
                                        strides = strides,
                                        target=target,
                                        sliding_window_shapes=sliding_window_shapes,
-                                       baselines=0)
+                                       baselines=baselines)
 
 # Convert the compute attribution tensor into an image-like numpy array
 attribution_dog = np.transpose(damaged_box.squeeze().cpu().detach().numpy(), (1,2,0))
@@ -32,11 +31,11 @@ vis_signs = ["all", "all"] # "positive", "negative", or "all" to show both
 # negative attribution indicates distractor areas whose absence increases the score
 
 _ = viz.visualize_image_attr_multiple(attribution_dog,
-                                      np.array(center_crop(img)),
+                                      np.array(img),
                                       vis_types,
                                       vis_signs,
                                       ["attribution for dog", "image"],
-                                      show_colorbar = True
+                                      show_colorbar=True
                                      )
 
 
