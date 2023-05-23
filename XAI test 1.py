@@ -23,7 +23,7 @@ healthy_box = occlusion.attribute(input_img,
                                        baselines=baselines)
 
 # Convert the compute attribution tensor into an image-like numpy array
-attribution_dog = np.transpose(damaged_box.squeeze().cpu().detach().numpy(), (1,2,0))
+damaged_box = np.transpose(damaged_box.squeeze().cpu().detach().numpy(), (1,2,0))
 
 vis_types = ["heat_map", "original_image"]
 vis_signs = ["all", "all"] # "positive", "negative", or "all" to show both
@@ -31,7 +31,7 @@ vis_signs = ["all", "all"] # "positive", "negative", or "all" to show both
 # negative attribution indicates distractor areas whose absence increases the score
 
 _ = viz.visualize_image_attr_multiple(damaged_box,
-                                      np.array(img),
+                                      np.array(input_img),
                                       vis_types,
                                       vis_signs,
                                       ["attribution for damaged", "image"],
@@ -39,12 +39,12 @@ _ = viz.visualize_image_attr_multiple(damaged_box,
                                      )
 
 
-attribution_cat = np.transpose(healthy_box.squeeze().cpu().detach().numpy(), (1,2,0))
+healthy_box = np.transpose(healthy_box.squeeze().cpu().detach().numpy(), (1,2,0))
 
 _ = viz.visualize_image_attr_multiple(healthy_box,
-                                      np.array(img),
+                                      np.array(input_img),
                                       ["heat_map", "original_image"],
-                                      ["all", "all"], # positive/negative attribution or all
-                                      ["attribution for cat", "image"],
-                                      show_colorbar = True
+                                      ["all", "all"],       # positive/negative attribution or all
+                                      ["attribution for healthy", "image"],
+                                      show_colorbar=True
                                      )
