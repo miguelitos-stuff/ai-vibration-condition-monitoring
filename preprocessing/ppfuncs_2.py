@@ -140,7 +140,7 @@ if __name__ == '__main__':
     sensor_data_damaged = extract_data_2("data/Damaged/D", '2', 9, device=device)
     sensor_data_healthy = extract_data_2("data/Healthy/H", '2', 9, device=device)
     sensor_samples_damaged = create_samples(sensor_data_damaged, 10, 16700, device=device)
-    sensor_samples_healthy = create_samples(sensor_data_healthy, 10, 4000, device=device)
+    sensor_samples_healthy = create_samples(sensor_data_healthy, 10, 256, device=device)
     spectrogram = spectrogram_2(sensor_samples_healthy[0])
     print(spectrogram.shape)
     # visualize_compare(sensor_samples_healthy, sensor_samples_damaged, 5)

@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     # Define image variables for both Healthy and Damaged
     max_images = False
-    sample_size = 4000
+    sample_size = 256
     if max_images:
         count_datapoints = 60 * 40 * 1000
         n_samples = int(count_datapoints / sample_size)
@@ -76,9 +76,9 @@ if __name__ == '__main__':
     train_data_dict, val_data_dict, test_data_dict = pp2.split_data_dict(spectrogram_dict, tp, vp, testp)
     if print_:
         print("Splitting datasets: Completed")
-    torch.save(train_data_dict, "../train_data_dict_30.pt")
-    torch.save(val_data_dict, "../val_data_dict_30.pt")
-    torch.save(test_data_dict, "../test_data_dict_30.pt")
+    torch.save(train_data_dict, "../train_data_dict_ONE.pt")
+    torch.save(val_data_dict, "../val_data_dict_ONE.pt")
+    torch.save(test_data_dict, "../test_data_dict_ONE.pt")
 
     if print_:
         print("Saving data: Completed")
