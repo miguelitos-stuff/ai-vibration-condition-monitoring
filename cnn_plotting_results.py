@@ -83,15 +83,22 @@ def ranking_system():
 def confusion_matrix(cf_matrix):
     group_names = ['True Positive', 'False Negative', 'False Positive', 'True Negative']
     group_counts = ["{0:0.0f}".format(value) for value in cf_matrix.flatten()]
-    group_percentages = ["{0:.2%}".format(value) for value in (cf_matrix.flatten() / np.sum(cf_matrix))]
+    group_percentages = []
+    for i in cf_matrix:
+        for j in i:
+            group_percentages.append("{0:.2%}".format(j / sum(i)))
+    #for i in range(len(cf_matrix)):
+    #    for j in range(len(cf_matrix[i])):
+    #        group_percentages.append("{0:.2%}".format(cf_matrix[i][j] / (cf_matrix[1][j]+cf_matrix[0][j])))
+    print(group_percentages)
     labels = [f"{v1}\n{v2}\n{v3}" for v1, v2, v3 in zip(group_names, group_counts, group_percentages)]
     labels = np.asarray(labels).reshape(2, 2)
     sns.heatmap(cf_matrix, annot=labels, fmt='', cmap='coolwarm')
     plt.savefig('confusion_matrix.png')
 
 
-#confusion_matrix(np.array([[602,0],[2,524]]))
-graph_model_losses()
+confusion_matrix(np.array([[710,0],[0,730]]))
+#graph_model_losses()
 #ranking_system()
 
 # Make sure the plots have the same range and domain, do one model per plot
