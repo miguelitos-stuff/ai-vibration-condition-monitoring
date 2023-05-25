@@ -2,11 +2,11 @@ import math
 import torch
 import numpy as np
 import preprocessing.ppfuncs as pp
-from cnn_training import one_iteration as data_train
+from cnn_training import one_iteration as ampl_train
 from cnn_freqtraining import one_iteration as freq_train
 import cnn_architecture as arc
 from torch import nn
-
+import matplotlib.pyplot as plt
 
 
 def function(i_max_):
@@ -44,30 +44,57 @@ def generate_data(list_data, list_labels):
     return list_new_data
 
 
-def train_data_model(train_dict, val_dict):
+def train_ampl_model(train_dict, val_dict, test_dict):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     train_data = arc.CreateDataset(train_dict["label"], train_dict["data"])
     val_data = arc.CreateDataset(val_dict["label"], val_dict["data"])
+    test_data = arc.CreateDataset(test_dict["label"], test_dict["data"])
 
     lr = 0.001
     batch = 50
     epoch = 20
     lf = nn.NLLLoss()
-    num_optm = 2
+    optm = 1
 
-    model, history = data_train(lr, batch, epoch, lf, num_optm, train_data, val_data, device)
-
+    model, history = ampl_train(lr, batch, epoch, lf, optm, train_data, val_data, test_data, device)
     return model
 
-def train_freq_model():
-    model, history = freq_train()
 
+def train_freq_model(train_dict, val_dict, test_dict):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    train_data = arc.CreateDataset(train_dict["label"], train_dict["data"])
+    val_data = arc.CreateDataset(val_dict["label"], val_dict["data"])
+    test_data = arc.CreateDataset(test_dict["label"], test_dict["data"])
+
+    lr = 0.001
+    batch = 50
+    epoch = 20
+    lf = nn.NLLLoss()
+    optm = 1
+
+    model, history = freq_train(lr, batch, epoch, lf, optm, train_data, val_data, test_data, device)
+    return model
+
+
+def run_save_graph(model, data_, name):
+    result = model.forward(data_)
+    print(result)
+    result_ = torch.split(result, 1, 1)
+    result_0 = 10**result_[0].detach().numpy()
+    result_1 = 10**result_[1].detach().numpy()
+
+    comb = (np.add(result_1, -1 * result_0) + 1)/2
+    plt.figure(figsize=(5, 10))
+    plt.xlim((0, len(comb)))
+    plt.grid(color='0.8', linestyle='-', linewidth=0.5)
+    plt.plot(np.arange(len(comb)), comb)
+    plt.ylabel("Probability [-]")
+    plt.xlabel("Images [-]")
+    plt.savefig("graphs\decreasing_"+name+".png")
+    return comb
 
 
 if __name__ == "__main__":
-    data = torch.load("preprocessing/data_dict.pt")
-    print(data["label"][:,1])
-    list = generate_data(data["data"], data["label"][:, 1])
-    print(list.shape)
-
+    print("hello")
