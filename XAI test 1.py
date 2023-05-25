@@ -8,7 +8,9 @@ from captum.attr import visualization as viz
 from torch.utils.data import DataLoader
 from preprocessing import ppfuncs_2 as pp
 
-model = newCNN4(numChannels=1, classes=2)
+
+model = torch.load('TestModel.4fclayers2')
+model.eval()
 occlusion = Occlusion(model)
 path = 'preprocessing/data_dict.pt'
 
@@ -22,10 +24,12 @@ def normalize(x):
     return norm
 
 img = dictionary['data'][dictionary["label"][:,1] == 1][0][0]
-input_img = normalize(img)
+input_img = normalize(img).float()
+input_img = input_img.unsqueeze(0)
 
 strides = None             # smaller = more fine-grained attribution but slower                      # Labrador index in ImageNet
-sliding_window_shapes = tuple([len(input_img)-1] )
+sliding_window_shapes = tuple([len(input_img)-1])
+
 
 
 target = 0
