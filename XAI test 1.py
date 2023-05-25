@@ -26,7 +26,9 @@ from preprocessing import ppfuncs_2 as pp
 # valDataLoader = DataLoader(val_data, batch_size=BATCH_SIZE)
 # testDataLoader = DataLoader(test_data, batch_size=BATCH_SIZE)
 
-dictionary = torch.load('preprocessing/data_dict.pt')
+path = 'preprocessing/data_dict.pt'
+
+dictionary = torch.load(path)
 print(dictionary['data'][dictionary["label"][:,1] == 1][0][0])
 
 def normalize(x):
@@ -35,8 +37,9 @@ def normalize(x):
     norm = (x-mean)/dev
     return norm
 
-input_img = normalize(dictionary['data'][dictionary["label"][:,1] == 1][0][0])
 img = dictionary['data'][dictionary["label"][:,1] == 1][0][0]
+input_img = normalize(img)
+
 strides = (3, 9, 9)               # smaller = more fine-grained attribution but slower                      # Labrador index in ImageNet
 sliding_window_shapes = (3, 45, 45)  # choose size enough to change object appearance
 target = 0
