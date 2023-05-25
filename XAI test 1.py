@@ -26,14 +26,17 @@ from preprocessing import ppfuncs_2 as pp
 # valDataLoader = DataLoader(val_data, batch_size=BATCH_SIZE)
 # testDataLoader = DataLoader(test_data, batch_size=BATCH_SIZE)
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-sensor_data_damaged = pp.extract_data_2("preprocessing/data/Damaged/D", '2', 9, device=device)
-sensor_data_healthy = pp.extract_data_2("preprocessing/data/Healthy/H", '2', 9, device=device)
-sensor_samples_damaged = pp.create_samples(sensor_data_damaged, 10, 16700, device=device)
-sensor_samples_healthy = pp.create_samples(sensor_data_healthy, 10, 4000, device=device)
-spectrogram = pp.spectrogram_2(sensor_samples_healthy[0])
-pp.visualize_compare(sensor_samples_healthy, sensor_samples_damaged, 2)
-# input_img =
+dictionary = torch.load('preprocessing/data_dict.pt')
+print(dictionary['data'][dictionary["label"][:,1] == 1][0][0])
+
+def normalize(x):
+    mean = torch.mean(x)
+    dev = torch.std(x)
+    norm = (x-mean)/dev
+    return norm
+
+input_img = normalize(dictionary['data'][dictionary["label"][:,1] == 1][0][0])
+img = dictionary['data'][dictionary["label"][:,1] == 1][0][0]
 strides = (3, 9, 9)               # smaller = more fine-grained attribution but slower                      # Labrador index in ImageNet
 sliding_window_shapes = (3, 45, 45)  # choose size enough to change object appearance
 target = 0
@@ -61,7 +64,7 @@ vis_signs = ["all", "all"] # "positive", "negative", or "all" to show both
 # negative attribution indicates distractor areas whose absence increases the score
 
 _ = viz.visualize_image_attr_multiple(damaged_box,
-                                      np.array(input_img),
+                                      np.array(img),
                                       vis_types,
                                       vis_signs,
                                       ["attribution for damaged", "image"],
@@ -72,7 +75,7 @@ _ = viz.visualize_image_attr_multiple(damaged_box,
 healthy_box = np.transpose(healthy_box.squeeze().cpu().detach().numpy(), (1,2,0))
 
 _ = viz.visualize_image_attr_multiple(healthy_box,
-                                      np.array(input_img),
+                                      np.array(img),
                                       ["heat_map", "original_image"],
                                       ["all", "all"],       # positive/negative attribution or all
                                       ["attribution for healthy", "image"],
