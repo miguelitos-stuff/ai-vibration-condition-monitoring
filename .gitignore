@@ -40,3 +40,4 @@ preprocessing/images/
 test_data_dict.pt
 train_data_dict.pt
 val_data_dict.pt
+TestModel.4fclayers2

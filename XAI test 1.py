@@ -2,34 +2,20 @@ from captum.attr import Occlusion
 import torch
 import cnn_architecture as arc
 from cnn_architecture import newCNN4
-occlusion = Occlusion(newCNN4(numChannels=1, classes=2))
+import torchvision
 import numpy as np
 from captum.attr import visualization as viz
 from torch.utils.data import DataLoader
 from preprocessing import ppfuncs_2 as pp
 
-# train_data = torch.load('train_data_dict.pt')
-# train_data = arc.CreateDataset(train_data["label"], train_data["data"])
-# print("Size of test dataset:", len(train_data))
-#
-# val_data = torch.load('val_data_dict.pt')
-# val_data = arc.CreateDataset(val_data["label"], val_data["data"])
-# print("Size of validation dataset:", len(val_data))
-#
-# test_data = torch.load('test_data_dict.pt')
-# test_data = arc.CreateDataset(test_data["label"], test_data["data"])
-# print("Size of testing dataset:", len(test_data))
-#
-#
-# BATCH_SIZE = 50
-# trainDataLoader = DataLoader(train_data, shuffle=True,batch_size=BATCH_SIZE)
-# valDataLoader = DataLoader(val_data, batch_size=BATCH_SIZE)
-# testDataLoader = DataLoader(test_data, batch_size=BATCH_SIZE)
 
+model = torch.load('TestModel.4fclayers2')
+model.eval()
+occlusion = Occlusion(model)
 path = 'preprocessing/data_dict.pt'
 
 dictionary = torch.load(path)
-print(dictionary['data'][dictionary["label"][:,1] == 1][0][0])
+# print(dictionary['data'][dictionary["label"][:,1] == 1][0][0])
 
 def normalize(x):
     mean = torch.mean(x)
@@ -38,10 +24,14 @@ def normalize(x):
     return norm
 
 img = dictionary['data'][dictionary["label"][:,1] == 1][0][0]
-input_img = normalize(img)
+input_img = normalize(img).float()
+input_img = input_img.unsqueeze(0)
 
-strides = (3, 9, 9)               # smaller = more fine-grained attribution but slower                      # Labrador index in ImageNet
-sliding_window_shapes = (3, 45, 45)  # choose size enough to change object appearance
+strides = None             # smaller = more fine-grained attribution but slower                      # Labrador index in ImageNet
+sliding_window_shapes = tuple([len(input_img)-1])
+
+
+
 target = 0
 baselines = 0
 damaged_box = occlusion.attribute(input_img,
