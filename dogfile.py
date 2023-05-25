@@ -11,6 +11,7 @@ model = torchvision.models.resnet18(pretrained=True).eval()
 
 response = requests.get("https://image.freepik.com/free-photo/two-beautiful-puppies-cat-dog_58409-6024.jpg")
 img = Image.open(BytesIO(response.content))
+test = True
 
 center_crop = transforms.Compose([
  transforms.Resize(256),
