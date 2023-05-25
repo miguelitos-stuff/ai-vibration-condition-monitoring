@@ -1,4 +1,5 @@
 /preprocessing/data/
+/preprocessing/__pycache__/
 /.idea/
 /.idea/ai-vibration-condition-monitoring.iml
 /preprocessing/local_data/Damaged/D1.mat
@@ -34,3 +35,8 @@ __pycache__/
 /Lib/
 /etc/
 /share/
+preprocessing/data_dict.pt
+preprocessing/images/
+test_data_dict.pt
+train_data_dict.pt
+val_data_dict.pt
