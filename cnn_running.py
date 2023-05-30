@@ -12,6 +12,7 @@ loss_function = "NLLLoss()"
 optm = "1"
 layers = "3"
 path = f"CNNModels\lr{learning_rate}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}"
+path = "CNNFREQModels/lr0.00100bs50ne20lfNLLLoss()opt1conv3maxpsize3.4fclayers2"
 model = torch.load(path).to(device)
 
 for i in range(3, 10+1):
@@ -36,16 +37,16 @@ for i in range(3, 10+1):
     plt.plot(np.arange(len(comb)), comb)
     plt.ylabel("Probability [-]")
     plt.xlabel("Time [min]")
-    # fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4)
-    # fig.suptitle(f"Sensor {i}")
-    # ax1.plot(np.arange(len(result_0)), result_0)
-    # ax1.set_title("Prop Damaged")
-    # ax2.plot(np.arange(len(result_1)), result_1)
-    # ax2.set_title("Prop Healthy")
-    # ax3.plot(np.arange(len(comb)), comb)
-    # ax3.set_title("Comb prop Healthy")
-    # ax4.plot(np.arange(len(output)), output)
-    # ax4.set_title("Output value")
+    fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4)
+    fig.suptitle(f"Sensor {i}")
+    ax1.plot(np.arange(len(result_0)), result_0)
+    ax1.set_title("Prop Damaged")
+    ax2.plot(np.arange(len(result_1)), result_1)
+    ax2.set_title("Prop Healthy")
+    ax3.plot(np.arange(len(comb)), comb)
+    ax3.set_title("Comb prop Healthy")
+    ax4.plot(np.arange(len(output)), output)
+    ax4.set_title("Output value")
     plt.savefig(f"preprocessing\combining\sensor{i}_gen.png")
 
 

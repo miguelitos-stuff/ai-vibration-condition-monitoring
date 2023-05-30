@@ -2,34 +2,35 @@
 import matplotlib
 matplotlib.use("Agg")
 # import the necessary packages
-#from outdated_scripts.cnn_architecture2 import LeNet
-from cnn_architecture import CNN
+# from outdated_scripts.cnn_architecture2 import LeNet
+# from cnn_architecture import CNN
 import cnn_architecture as arc
-#from cnn_newarchitecture import newCNN
-#from cnn_newarchitecture import newCNN2
+# from cnn_newarchitecture import newCNN
+# from cnn_newarchitecture import newCNN2
 from cnn_architecture import newCNN3
-#from cnn_newarchitecture import newCNN4
-#from preprocessing import 'data_dict.pt'
+# from cnn_newarchitecture import newCNN4
+# from preprocessing import 'data_dict.pt'
 from sklearn.metrics import precision_recall_fscore_support
-from torch.utils.data import random_split
+# from torch.utils.data import random_split
 from torch.utils.data import DataLoader
-#from torchvision.transforms import ToTensor
-#from torchvision.datasets import KMNIST
+# from torchvision.transforms import ToTensor
+# from torchvision.datasets import KMNIST
 from torch.optim import Adam
-#from torch.optim import SGD
-#from torch.optim import LBFGS
+# from torch.optim import SGD
+# from torch.optim import LBFGS
 from torch.optim import Adamax
 from torch import nn
 import pandas as pd
-#import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import itertools
 import numpy as np
-import json
+# import json
 import pickle
 import torch
 import time
-import os
-#import datasetfuncs as dsf
+# import os
+# import datasetfuncs as dsf
+
 
 
 def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData, testData, device):

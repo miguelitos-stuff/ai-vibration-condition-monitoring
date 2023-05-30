@@ -391,21 +391,25 @@ class freqCNN(Module):
 		output = self.logSoftmax(x)
 		return output
 
-# 	Create matrix
-num_matrices = 1
-matrix_shape = (129, 30)
-ones_matrices = np.ones((num_matrices,) + matrix_shape)
-print(ones_matrices.shape)
-random_matrices = np.random.randint(0,255, (num_matrices,) + matrix_shape)
-# initialize class
-cnn = freqCNN(1,2)
-x = torch.from_numpy(ones_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
-x2 = torch.from_numpy(random_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
-output = cnn.forward(x)
-#output2 = cnn.forward(x2)
-print(output)
-#print(output2)
+
+
 if __name__ == "__main__":
+
+	# 	Create matrix
+	num_matrices = 1
+	matrix_shape = (129, 30)
+	ones_matrices = np.ones((num_matrices,) + matrix_shape)
+	print(ones_matrices.shape)
+	random_matrices = np.random.randint(0, 255, (num_matrices,) + matrix_shape)
+	# initialize class
+	cnn = freqCNN(1, 2)
+	x = torch.from_numpy(ones_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
+	x2 = torch.from_numpy(random_matrices).float().unsqueeze(1).repeat(1, 1, 1, 1)
+	output = cnn.forward(x)
+	# output2 = cnn.forward(x2)
+	print(output)
+	# print(output2)
+
 	## 	Create matrix
 	#num_matrices = 1
 	#matrix_shape = (224, 224)
