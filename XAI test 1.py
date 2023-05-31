@@ -9,8 +9,10 @@ from torch.utils.data import DataLoader
 from preprocessing import ppfuncs_2 as pp
 
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = torch.load('TestModel.4fclayers2')
 model.eval()
+model = model.to(device)
 occlusion = Occlusion(model)
 path = 'preprocessing/data_dict.pt'
 
@@ -26,11 +28,10 @@ def normalize(x):
 img = dictionary['data'][dictionary["label"][:,1] == 1][0][0]
 input_img = normalize(img).float()
 input_img = input_img.unsqueeze(0)
+input_img = input_img.to(device)
 
-strides = None             # smaller = more fine-grained attribution but slower                      # Labrador index in ImageNet
-sliding_window_shapes = tuple([len(input_img)-1])
-
-
+strides = (9,9)           # smaller = more fine-grained attribution but slower                      # Labrador index in ImageNet
+sliding_window_shapes = (45,45)
 
 target = 0
 baselines = 0
