@@ -2,34 +2,34 @@
 import matplotlib
 matplotlib.use("Agg")
 # import the necessary packages
-#from outdated_scripts.cnn_architecture2 import LeNet
-from cnn_architecture import CNN
+# from outdated_scripts.cnn_architecture2 import LeNet
+# from cnn_architecture import CNN
 import cnn_architecture as arc
-#from cnn_newarchitecture import newCNN
-#from cnn_newarchitecture import newCNN2
+# from cnn_newarchitecture import newCNN
+# from cnn_newarchitecture import newCNN2
 from cnn_architecture import newCNN3
-#from cnn_newarchitecture import newCNN4
-#from preprocessing import 'data_dict.pt'
+# from cnn_newarchitecture import newCNN4
+# from preprocessing import 'data_dict.pt'
 from sklearn.metrics import precision_recall_fscore_support
-from torch.utils.data import random_split
+# from torch.utils.data import random_split
 from torch.utils.data import DataLoader
-#from torchvision.transforms import ToTensor
-#from torchvision.datasets import KMNIST
+# from torchvision.transforms import ToTensor
+# from torchvision.datasets import KMNIST
 from torch.optim import Adam
-#from torch.optim import SGD
-#from torch.optim import LBFGS
+# from torch.optim import SGD
+# from torch.optim import LBFGS
 from torch.optim import Adamax
 from torch import nn
 import pandas as pd
-#import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import itertools
 import numpy as np
-import json
+# import json
 import pickle
 import torch
 import time
-import os
-#import datasetfuncs as dsf
+# import os
+# import datasetfuncs as dsf
 
 
 
@@ -69,11 +69,11 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 		"val_acc": []
 	}
 	if optm == 0:
-		opt = Adam(model.parameters(), lr=learning_rate)
+		opt = Adam(model.parameters(), lr=INIT_LR)
 	#elif optm == 1:
 		#opt = SGD(model.parameters(), lr=learning_rate)
 	elif optm == 1:
-		opt = Adamax(model.parameters(), lr=learning_rate)
+		opt = Adamax(model.parameters(), lr=INIT_LR)
 	# measure how long training is going to take
 	print("[INFO] training the network...")
 	startTime = time.time()
@@ -193,6 +193,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 	H["test_results"] = test_results
 	return model, H
 
+
 def transform_lr(num):
 	# Find the exponent
 	exp = int(abs(num) // 1)
@@ -212,41 +213,43 @@ def transform_lr(num):
 		output_str = coeff_str + exp_str
 	return output_str
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Loading in the training and validation dataset
-train_data = torch.load('train_data_dict.pt')
-train_data = arc.CreateDataset(train_data["label"], train_data["data"])
-print("Size of test dataset:", len(train_data))
+if __name__ == "__main__":
+	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-val_data = torch.load('val_data_dict.pt')
-val_data = arc.CreateDataset(val_data["label"], val_data["data"])
-print("Size of validation dataset:", len(val_data))
+	# Loading in the training and validation dataset
+	train_data = torch.load('train_data_dict.pt')
+	train_data = arc.CreateDataset(train_data["label"], train_data["data"])
+	print("Size of test dataset:", len(train_data))
 
-test_data = torch.load('test_data_dict.pt')
-test_data = arc.CreateDataset(test_data["label"], test_data["data"])
-print("Size of testing dataset:", len(test_data))
+	val_data = torch.load('val_data_dict.pt')
+	val_data = arc.CreateDataset(val_data["label"], val_data["data"])
+	print("Size of validation dataset:", len(val_data))
 
-learning_rates = [0.001]
-batch_sizes = [50]
-num_epochs = [20]
-loss_functions = [nn.NLLLoss()]
-num_optm = 2
-layers = 3
-maxpoolsize = 4
-fclayers = 2
+	test_data = torch.load('test_data_dict.pt')
+	test_data = arc.CreateDataset(test_data["label"], test_data["data"])
+	print("Size of testing dataset:", len(test_data))
 
-performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
-count = 0
-for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
-	for optm in range(num_optm):
-		print(f"Learning rate: {learning_rate}, Batch size: {batch_size}, Number epochs: {num_epoch}, Loss function{loss_function}, Optimizer: {optm}, Maxpool size: {maxpoolsize}")
-		count +=1
-		model, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, val_data, test_data, device)
-		# What to store on each model: model itself(With parameters), training/validation history and testing result
-		torch.save(model, f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}maxpsize3.{maxpoolsize}fclayers{fclayers}")
-		with open(f"CNNModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}maxpsize3.{maxpoolsize}fclayers{fclayers}.pickle", 'wb') as f:
-			pickle.dump(history, f)
+	learning_rates = [0.001]
+	batch_sizes = [50]
+	num_epochs = [20]
+	loss_functions = [nn.NLLLoss()]
+	num_optm = 1
+	layers = 3
+	maxpoolsize = 4
+	fclayers = 2
+
+	performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
+	count = 0
+	for INIT_LR, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
+		for optm in range(1, 2):
+			print(f"Learning rate: {INIT_LR}, Batch size: {batch_size}, Number epochs: {num_epoch}, Loss function{loss_function}, Optimizer: {optm}, Maxpool size: {maxpoolsize}")
+			count +=1
+			model, history = one_iteration(INIT_LR, batch_size, num_epoch, loss_function, optm, train_data, val_data, test_data, device)
+			# What to store on each model: model itself(With parameters), training/validation history and testing result
+			torch.save(model, f"CNNModels/final_amplitude_model")
+			with open(f"CNNModels/lr{transform_lr(INIT_LR)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}maxpsize3.{maxpoolsize}fclayers{fclayers}.pickle", 'wb') as f:
+				pickle.dump(history, f)
 
 
 

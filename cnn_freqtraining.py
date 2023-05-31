@@ -33,7 +33,7 @@ import os
 
 
 
-def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData, device):
+def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData, testData, device):
 	# set the device we will be using to train the model
 	print("Pytorch CUDA Version is available:", torch.cuda.is_available())
 
@@ -50,7 +50,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 	trainDataLoader = DataLoader(trainData, shuffle=True,
 		batch_size=BATCH_SIZE)
 	valDataLoader = DataLoader(valData, batch_size=BATCH_SIZE)
-	#testDataLoader = DataLoader(testData, batch_size=BATCH_SIZE)
+	testDataLoader = DataLoader(testData, batch_size=BATCH_SIZE)
 
 	# calculate steps per epoch for training and validation set
 	trainSteps = len(trainDataLoader.dataset) // BATCH_SIZE
@@ -69,11 +69,11 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 		"val_acc": []
 	}
 	if optm == 0:
-		opt = Adam(model.parameters(), lr=learning_rate)
+		opt = Adam(model.parameters(), lr=INIT_LR)
 	#elif optm == 1:
 		#opt = SGD(model.parameters(), lr=learning_rate)
 	elif optm == 1:
-		opt = Adamax(model.parameters(), lr=learning_rate)
+		opt = Adamax(model.parameters(), lr=INIT_LR)
 	# measure how long training is going to take
 	print("[INFO] training the network...")
 	startTime = time.time()
@@ -155,8 +155,8 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 	# we can now evaluate the network on the test set
 	print("[INFO] evaluating network...")
 	# turn off autograd for testing evaluation
-	valCorrect = 0
-	totalValLoss = 0
+	testCorrect = 0
+	totalTestLoss = 0
 	with torch.no_grad():
 		# set the model in evaluation mode
 		model.eval()
@@ -165,7 +165,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 		preds = []
 		targets = []
 		# loop over the test set
-		for (x, y) in valDataLoader:
+		for (x, y) in testDataLoader:
 			# send the input to the device
 			x = x.to(device)
 			y = y.type(torch.LongTensor)
@@ -173,24 +173,24 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 			# make the predictions and add them to the list
 			pred = model(x)
 			preds.extend(pred.argmax(axis=1).cpu().numpy())
-			totalValLoss += lossFn(pred, y)
-			valCorrect += (pred.argmax(1) == y).type(
+			totalTestLoss += lossFn(pred, y)
+			testCorrect += (pred.argmax(1) == y).type(
 				torch.float).sum().item()
 			targets.extend(y.cpu().numpy())
-		val_acc = valCorrect / len(valDataLoader.dataset)
-		valSteps = len(valDataLoader.dataset)
-		avgValLoss = totalValLoss / valSteps
+		test_acc = testCorrect / len(testDataLoader.dataset)
+		testSteps = len(testDataLoader.dataset)
+		avgTestLoss = totalTestLoss / valSteps
 	# generate a classification report
-	print(f"Val loss: {avgValLoss}, Val accuracy: {val_acc}")
+	print(f"Test loss: {avgTestLoss}, Test accuracy: {test_acc}")
 	# val_results = classification_report(targets,np.array(preds), target_names=[str(i) for i in range(2)])
 	precision, recall, fscore, _ = precision_recall_fscore_support(np.array(targets), np.array(preds), average = 'binary')
 	int_res = [precision, recall, fscore]
 	#int_res = [[round(num, 4) for num in sublist] for sublist in int_res]
 	avg_compute_time = compute_time/ lengths
 	H["time_taken"] = [(endTime - startTime), avg_compute_time]
-	val_results = [val_acc, int_res[0], int_res[1], int_res[2]]
-	print(val_results)
-	H["val_results"] = val_results
+	test_results = [test_acc, int_res[0], int_res[1], int_res[2]]
+	print(test_results)
+	H["test_results"] = test_results
 	return model, H
 
 def transform_lr(num):
@@ -212,41 +212,43 @@ def transform_lr(num):
 		output_str = coeff_str + exp_str
 	return output_str
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Loading in the training and validation dataset
-train_data = torch.load('train_data_dict.pt')
-train_data = arc.CreateDataset(train_data["label"], train_data["data"])
-print("Size of test dataset:", len(train_data))
+if __name__ == "__main__":
+	device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-val_data = torch.load('val_data_dict.pt')
-val_data = arc.CreateDataset(val_data["label"], val_data["data"])
-print("Size of validation dataset:", len(val_data))
+	# Loading in the training and validation dataset
+	train_data = torch.load('train_data_dict_30.pt')
+	train_data = arc.CreateDataset(train_data["label"], train_data["data"])
+	print("Size of test dataset:", len(train_data))
 
-test_data = torch.load('test_data_dict.pt')
-test_data = arc.CreateDataset(test_data["label"], test_data["data"])
-print("Size of testing dataset:", len(test_data))
+	val_data = torch.load('val_data_dict_30.pt')
+	val_data = arc.CreateDataset(val_data["label"], val_data["data"])
+	print("Size of validation dataset:", len(val_data))
 
-learning_rates = [0.0001,0.001]
-batch_sizes = [50]
-num_epochs = [20]
-loss_functions = [nn.NLLLoss()]
-num_optm = 2
-layers = 3
-maxpoolsize = 4
-fclayers = 2
+	test_data = torch.load('test_data_dict_30.pt')
+	test_data = arc.CreateDataset(test_data["label"], test_data["data"])
+	print("Size of testing dataset:", len(test_data))
 
-performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
-count = 0
-for learning_rate, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
-	for optm in range(num_optm):
-		print(f"FREQUENCYPLOTS:Learning rate: {learning_rate}, Batch size: {batch_size}, Number epochs: {num_epoch}, Loss function{loss_function}, Optimizer: {optm}, Maxpool size: {maxpoolsize}")
-		count +=1
-		model, history = one_iteration(learning_rate, batch_size, num_epoch, loss_function, optm, train_data, val_data, device)
-		# What to store on each model: model itself(With parameters), training/validation history and testing result
-		torch.save(model, f"CNNFREQModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}maxpsize3.{maxpoolsize}fclayers{fclayers}")
-		with open(f"CNNFREQModels/lr{transform_lr(learning_rate)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}maxpsize3.{maxpoolsize}fclayers{fclayers}.pickle", 'wb') as f:
-			pickle.dump(history, f)
+	learning_rates = [0.0001,0.001]
+	batch_sizes = [50]
+	num_epochs = [20]
+	loss_functions = [nn.NLLLoss()]
+	num_optm = 2
+	layers = 3
+	maxpoolsize = 4
+	fclayers = 2
+
+	performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
+	count = 0
+	for INIT_LR, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
+		for optm in range(num_optm):
+			print(f"FREQUENCYPLOTS:Learning rate: {INIT_LR}, Batch size: {batch_size}, Number epochs: {num_epoch}, Loss function{loss_function}, Optimizer: {optm}, Maxpool size: {maxpoolsize}")
+			count +=1
+			model, history = one_iteration(INIT_LR, batch_size, num_epoch, loss_function, optm, train_data, val_data, test_data, device)
+			# What to store on each model: model itself(With parameters), training/validation history and testing result
+			torch.save(model, f"CNNFREQModels/lr{transform_lr(INIT_LR)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}maxpsize3.{maxpoolsize}fclayers{fclayers}")
+			with open(f"CNNFREQModels/lr{transform_lr(INIT_LR)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}maxpsize3.{maxpoolsize}fclayers{fclayers}.pickle", 'wb') as f:
+				pickle.dump(history, f)
 
 
 

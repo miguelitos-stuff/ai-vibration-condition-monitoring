@@ -17,7 +17,7 @@ if __name__ == '__main__':
     print_ = True
 
     sen_start = 3
-    sen_end = 3
+    sen_end = 10
 
     time_0 = 1
     time_1 = 3
@@ -42,8 +42,11 @@ if __name__ == '__main__':
     ind_max = ind_round * (time_2-time_1)
 
     fun = torch.split(function(ind_max), ind_round)
+    print(fun)
 
     for sen in range(sen_start, sen_end+1):
+        ind_count = -1
+        image_list = torch.Tensor([])
         for time in range(time_0, time_1+1):
             data = pp.extract_data(path_list[0], time, sen)
             images = pp.generate_samples(data, n_images_sensor, images_size)

@@ -1,0 +1,62 @@
+# Main file loop for preprocessing
+
+# # Import libraries
+# import matplotlib.pyplot as plt
+# import numpy as np
+# import scipy.io
+# from pathlib import Path
+
+import torch
+import ppfuncs_2 as pp2
+
+# set the device we will be using to train the model
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
+print("Code will be executed on:", device)
+
+if __name__ == '__main__':
+    # Set to False if you don't want to print the proces
+    print_ = True
+
+    # Define import variables for both Healthy and Damaged
+    time_start = 1
+    time_end = 10
+    sen_start = 3
+    sen_end = 10
+
+    # Define image variables for both Healthy and Damaged
+    max_images = False
+    sample_size = 4000
+    if max_images:
+        count_datapoints = 60 * 40 * 1000
+        n_samples = int(count_datapoints / sample_size)
+    else:
+        n_samples = 60
+
+    print(n_samples)
+
+    # Create list of healthy images, by extracting data and creating images with above defined variables
+
+    path_h = "data/Healthy/H"
+    path_d = "data/Damaged/D"
+    if print_:
+        print("Start on data")
+    for j in range(sen_start, sen_end+1):
+        healthy_spectrogram_tensor = torch.Tensor([]).to(device)
+        damaged_spectrogram_tensor = torch.Tensor([]).to(device)
+        for i in range(time_start, time_end+1):
+            data = pp2.extract_data_2(path_h, i, j, device=device)
+            spectrograms = pp2.generate_spectrogram_samples(data, n_samples, sample_size, device=device)
+            healthy_spectrogram_tensor = torch.cat((healthy_spectrogram_tensor, spectrograms), 0)
+            data = pp2.extract_data_2(path_d, i, j, device=device)
+            spectrograms = pp2.generate_spectrogram_samples(data, n_samples, sample_size, device=device)
+            damaged_spectrogram_tensor = torch.cat((damaged_spectrogram_tensor, spectrograms), 0)
+        if print_:
+            print(f"\tData at sensor {j}: Completed")
+        spectrogram_dict = pp2.create_data_dict(healthy_spectrogram_tensor, damaged_spectrogram_tensor)
+        torch.save(spectrogram_dict, f"../data_dict/FRED_30_sensor_{j}.pt")
+    if print_:
+        print("Data: Completed")
+
+
+
