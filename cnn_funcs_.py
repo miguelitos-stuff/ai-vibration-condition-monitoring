@@ -35,18 +35,26 @@ def generate_data(list_data, list_labels, noise=0):
     len_start = len_1 - len_com
     len_end = len_0 - len_com
     list_new_data = torch.Tensor([])
-    fun = function(len_com)[:, None, None, None]
+    list_f = torch.Tensor([])
+    function_ = function(len_com)
+    plt.figure()
+    plt.plot(np.arange(len_com), function_)
+    plt.savefig("test.png")
+    fun = function_[:, None, None, None]
     list_new_data = torch.cat((list_new_data, list_1_data[0:len_start]), 0)
+    list_f = torch.cat((list_f, torch.ones(len_start)), 0)
     data_com = combining_function(list_1_data[len_start:len_start+len_com], list_0_data[0:len_com], fun)
     list_new_data = torch.cat((list_new_data, data_com), 0)
+    list_f = torch.cat((list_f, 1 - function_), 0)
     list_new_data = torch.cat((list_new_data, list_0_data[len_com:len_com+len_end]), 0)
+    list_f = torch.cat((list_f, torch.zeros(len_end)), 0)
     if noise != 0:
         std = torch.std(list_new_data)
         print(std)
         list_noise = np.random.normal(0, std/noise, size=tuple(list_new_data.size()))
         print(list_noise[0])
         list_new_data = list_new_data + list_noise
-    return list_new_data
+    return list_new_data, list_f
 
 
 def train_ampl_model(train_dict, val_dict, test_dict):
@@ -83,7 +91,7 @@ def train_freq_model(train_dict, val_dict, test_dict):
     return model
 
 
-def run_save_graph(model, data_, name):
+def run_save_graph(model, data_, name, f_):
     result = model.forward(data_)
     # print(result)
     result_ = torch.split(result, 1, 1)
@@ -95,6 +103,7 @@ def run_save_graph(model, data_, name):
     plt.xlim((0, len(comb)))
     plt.grid(color='0.8', linestyle='-', linewidth=0.5)
     plt.plot(np.arange(len(comb)), comb)
+    plt.plot(np.arange(len(comb)), f_)
     plt.ylabel("Probability [-]")
     plt.xlabel("Images [-]")
     plt.savefig("graphs\\"+name+".png")
