@@ -28,7 +28,14 @@
 /.idea/vcs.xml
 /preprocessing/local_data/Vibration Condition Monitoring Benchmarking Datasets.pdf
 /preprocessing/local_data/WindTurbineConditionMonitoringLicenseInfo.txt
-__pycache__/
+/preprocessing/data_dict.pt
+/test_data_dict.pt
+/train_data_dict.pt
+/val_data_dict.pt
+/test_data_dict_30.pt
+/train_data_dict_30.pt
+/val_data_dict_30.pt
+/__pycache__/
 /CNNModels/
 /data/
 preprocessing/images/

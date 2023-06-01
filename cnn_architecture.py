@@ -36,6 +36,7 @@ class CNN(Module):
 							kernel_size=(5, 5), stride=(2, 2), padding=10)
 		self.relu = ReLU()
 		self.maxpool1 = MaxPool2d(kernel_size=(2), stride=(2, 2))  #TODO - make only one maxpool layer to later call on
+		# 129x129
 		# initialize second set of CONV => RELU => POOL layers
 		self.conv2 = Conv2d(in_channels=60, out_channels=50,
 			kernel_size=(3, 3), padding=1)
