@@ -2,6 +2,7 @@
 
 import torch
 import ppfuncs as pp
+import numpy as np
 
 
 if __name__ == '__main__':
@@ -9,6 +10,8 @@ if __name__ == '__main__':
     create_data_set_ = True
     # Set to False if you don't want to print the proces
     print_ = True
+    noise = 0.5
+    np.random.seed(42)
 
     # Define import variables for both Healthy and Damaged
     time_start = 1
@@ -39,6 +42,9 @@ if __name__ == '__main__':
         for i in range(time_start, time_end+1):
             for j in range(sen_start, sen_end+1):
                 data = pp.extract_data(path, i, j)
+                if noise != 0:
+                    list_noise = np.random.normal(0, noise, size=tuple(data.size()))
+                    data = data + list_noise
                 images = pp.generate_samples(data, n_images_sensor, images_size)
                 healthy_image_list = torch.cat((healthy_image_list, images), 0)
             if print_:
@@ -52,6 +58,9 @@ if __name__ == '__main__':
         for i in range(time_start, time_end+1):
             for j in range(sen_start, sen_end+1):
                 data = pp.extract_data(path, i, j)
+                if noise != 0:
+                    list_noise = np.random.normal(0, noise, size=tuple(data.size()))
+                    data = data + list_noise
                 images = pp.generate_samples(data, n_images_sensor, images_size)
                 damaged_image_list = torch.cat((damaged_image_list, images), 0)
             if print_:
@@ -75,8 +84,8 @@ if __name__ == '__main__':
                                                                             TEST_SPLIT)
         if print_:
             print("Splitting datasets: Completed")
-        torch.save(train_data_dict, "../train_data_dict.pt")
-        torch.save(val_data_dict, "../val_data_dict.pt")
-        torch.save(test_data_dict, "../test_data_dict.pt")
+        # torch.save(train_data_dict, "../train_data_dict.pt")
+        # torch.save(val_data_dict, "../val_data_dict.pt")
+        torch.save(test_data_dict, "../test_data_dict_noise_005.pt")
         if print_:
             print("Saving datasets: Completed")

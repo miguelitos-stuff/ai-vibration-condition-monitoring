@@ -8,15 +8,21 @@
 
 import torch
 import ppfuncs_2 as pp2
+import numpy as np
 
 # set the device we will be using to train the model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 device = torch.device("cpu")
 print("Code will be executed on:", device)
 
+
 if __name__ == '__main__':
     # Set to False if you don't want to print the proces
     print_ = True
+
+    # Set to 0 for 0 noise
+    noise = 0.5
+    np.random.seed(42)
 
     # Define import variables for both Healthy and Damaged
     time_start = 1
@@ -35,20 +41,23 @@ if __name__ == '__main__':
 
     print(n_samples)
 
-    # Create list of healthy images, by extracting data and creating images with above defined variables
-    healthy_spectrogram_tensor = torch.Tensor([]).to(device)
-    path = "data/Healthy/H"
-    if print_:
-        print("Start on healthy data")
-    for i in range(time_start, time_end+1):
-        for j in range(sen_start, sen_end+1):
-            data = pp2.extract_data_2(path, i, j, device=device)
-            spectrograms = pp2.generate_spectrogram_samples(data, n_samples, sample_size, device=device)
-            healthy_spectrogram_tensor = torch.cat((healthy_spectrogram_tensor, spectrograms), 0)
-        if print_:
-            print(f"\tHealthy data at time {i}: Completed")
-    if print_:
-        print("Healthy data: Completed \n\nStart on Damaged data")
+    # # Create list of healthy images, by extracting data and creating images with above defined variables
+    # healthy_spectrogram_tensor = torch.Tensor([]).to(device)
+    # path = "data/Healthy/H"
+    # if print_:
+    #     print("Start on healthy data")
+    # for i in range(time_start, time_end+1):
+    #     for j in range(sen_start, sen_end+1):
+    #         data = pp2.extract_data_2(path, i, j, device=device)
+    #         if noise != 0:
+    #             list_noise = np.random.normal(0, noise, size=tuple(data.size()))
+    #             data = data + list_noise
+    #         spectrograms = pp2.generate_spectrogram_samples(data, n_samples, sample_size, device=device)
+    #         healthy_spectrogram_tensor = torch.cat((healthy_spectrogram_tensor, spectrograms), 0)
+    #     if print_:
+    #         print(f"\tHealthy data at time {i}: Completed")
+    # if print_:
+    #     print("Healthy data: Completed \n\nStart on Damaged data")
 
     # Create list of damaged images, by extracting data and creating images with above defined variables
     damaged_spectrogram_tensor = torch.Tensor([]).to(device)
@@ -56,6 +65,9 @@ if __name__ == '__main__':
     for i in range(time_start, time_end+1):
         for j in range(sen_start, sen_end+1):
             data = pp2.extract_data_2(path, i, j, device=device)
+            if noise != 0:
+                list_noise = np.random.normal(0, noise, size=tuple(data.size()))
+                data = data + list_noise
             spectrograms = pp2.generate_spectrogram_samples(data, n_samples, sample_size, device=device)
             damaged_spectrogram_tensor = torch.cat((damaged_spectrogram_tensor, spectrograms), 0)
         if print_:
@@ -76,9 +88,9 @@ if __name__ == '__main__':
     train_data_dict, val_data_dict, test_data_dict = pp2.split_data_dict(spectrogram_dict, tp, vp, testp)
     if print_:
         print("Splitting datasets: Completed")
-    torch.save(train_data_dict, "../train_data_dict_30.pt")
-    torch.save(val_data_dict, "../val_data_dict_30.pt")
-    torch.save(test_data_dict, "../test_data_dict_30.pt")
+    # torch.save(train_data_dict, "../train_data_dict_30.pt")
+    # torch.save(val_data_dict, "../val_data_dict_30.pt")
+    torch.save(test_data_dict, "../test_data_dict_30_noise_005.pt")
 
     if print_:
         print("Saving data: Completed")

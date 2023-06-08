@@ -91,19 +91,20 @@ def train_freq_model(train_dict, val_dict, test_dict):
     return model
 
 
-def run_save_graph(model, data_, name, f_):
+def run_save_graph(model, data_, name, f_, title):
     result = model.forward(data_)
     # print(result)
     result_ = torch.split(result, 1, 1)
     result_0 = 10**result_[0].detach().numpy()
     result_1 = 10**result_[1].detach().numpy()
-
     comb = (np.add(result_1, -1 * result_0) + 1)/2
     plt.figure(figsize=(5, 10))
     plt.xlim((0, len(comb)))
+    plt.yticks([0.0, 0.25, 0.50, 0.75, 1.0], ["0.00", "0.25", "0.50", "0.75", "1.00"])
     plt.grid(color='0.8', linestyle='-', linewidth=0.5)
     plt.plot(np.arange(len(comb)), comb)
     plt.plot(np.arange(len(comb)), f_)
+    plt.title(title)
     plt.ylabel("Probability [-]")
     plt.xlabel("Images [-]")
     plt.savefig("graphs\\"+name+".png")

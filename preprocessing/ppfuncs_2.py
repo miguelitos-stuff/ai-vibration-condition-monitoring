@@ -66,13 +66,13 @@ def spectrogram_2(sample_val_array):
     sampling_frequency = 40000
     spectrum, freq, time, fig = plt.specgram(sample_, Fs=sampling_frequency)
     spectrum = np.log10(spectrum)
-    # plot = plt.imshow(spectrum)
-    # clb = plt.colorbar()
-    # plt.title('Damaged')
-    # plt.xlabel('Time')
-    # plt.ylabel('Frequency')
-    # clb.ax.set_title('[dB]')
-    # plt.show()
+    plot = plt.imshow(spectrum)
+    clb = plt.colorbar()
+    plt.title('Damaged')
+    plt.xlabel('Time')
+    plt.ylabel('Frequency')
+    clb.ax.set_title('[dB]')
+    plt.show()
     return spectrum
 
 
