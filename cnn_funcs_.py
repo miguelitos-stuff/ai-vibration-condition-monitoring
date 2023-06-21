@@ -107,7 +107,7 @@ def run_save_graph(model, data_, name, f_, title):
     plt.title(title)
     plt.ylabel("Probability [-]")
     plt.xlabel("Images [-]")
-    plt.savefig("graphs\\"+name+".png")
+    plt.savefig("graphs2\\"+name+".png")
     # comb = (np.add(result_1, -1 * result_0) + 1) / 2
     # # result = 10 ** result.abs().detach().numpy()
     # # output = np.argmax(result, axis=1)
@@ -127,6 +127,8 @@ def run_save_graph(model, data_, name, f_, title):
     # ax3.plot(np.arange(len(comb)), comb)
     # ax3.set_title("Comb prop Healthy")
     # plt.savefig("graphs\graphs_" + name + ".png")
+    with open(f'npy\{name}.npy', 'wb') as file:
+        np.save(file, comb)
     return comb
 
 def set_to_dict(data_, num_, ):
