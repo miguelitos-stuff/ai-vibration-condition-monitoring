@@ -3,7 +3,7 @@ import cnn_funcs_ as fn
 
 device = "cpu"
 
-SENSOR = True
+SENSOR = False
 MODEL_AMED = False
 
 
@@ -49,7 +49,7 @@ else:
     sen_start = 3
     sen_end = 10
     val_split = 0.15
-    for sen_test in range(sen_start, sen_end+1):
+    for sen_test in range(sen_start, 3+1):
         test_dict = {"data": torch.Tensor([]).to(device), "label": torch.Tensor([]).to(device)}
         train_val_dict = {"data": torch.Tensor([]).to(device), "label": torch.Tensor([]).to(device)}
         for j in range(sen_start, sen_end+1):

@@ -93,7 +93,6 @@ def train_freq_model(train_dict, val_dict, test_dict):
 
 def run_save_graph(model, data_, name, f_, title):
     result = model.forward(data_)
-    # print(result)
     result_ = torch.split(result, 1, 1)
     result_0 = 10**result_[0].detach().numpy()
     result_1 = 10**result_[1].detach().numpy()
@@ -104,31 +103,14 @@ def run_save_graph(model, data_, name, f_, title):
     plt.grid(color='0.8', linestyle='-', linewidth=0.5)
     plt.plot(np.arange(len(comb)), comb)
     plt.plot(np.arange(len(comb)), f_)
+    with open(f'npy\\FRED_f_.npy', 'wb') as file:
+        np.save(file, f_)
     plt.title(title)
     plt.ylabel("Probability [-]")
     plt.xlabel("Images [-]")
-    plt.savefig("graphs2\\"+name+".png")
-    # comb = (np.add(result_1, -1 * result_0) + 1) / 2
-    # # result = 10 ** result.abs().detach().numpy()
-    # # output = np.argmax(result, axis=1)
-    # plt.figure(figsize=(5, 10))
-    # plt.xlim((0, len(comb)))
-    # plt.xticks([0, len(comb) * 3 / 10, len(comb) * 5 / 10, len(comb) * 7 / 10, len(comb)], [0, 3, 5, 7, 10])
-    # # plt.yticks([0.0, 0.25, 0.50, 0.75, 1.0], ["0.00", "0.25", "0.50", "0.75", "1.00"])
-    # plt.grid(color='0.8', linestyle='-', linewidth=0.5)
-    # plt.plot(np.arange(len(comb)), comb)
-    # plt.ylabel("Probability [-]")
-    # plt.xlabel("Time [min]")
-    # fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
-    # ax1.plot(np.arange(len(result_0)), result_0)
-    # ax1.set_title("Prop Damaged")
-    # ax2.plot(np.arange(len(result_1)), result_1)
-    # ax2.set_title("Prop Healthy")
-    # ax3.plot(np.arange(len(comb)), comb)
-    # ax3.set_title("Comb prop Healthy")
-    # plt.savefig("graphs\graphs_" + name + ".png")
-    with open(f'npy\{name}.npy', 'wb') as file:
-        np.save(file, comb)
+    # plt.savefig("graphs2\\"+name+".png")
+    # with open(f'npy\{name}.npy', 'wb') as file:
+    #     np.save(file, comb)
     return comb
 
 def set_to_dict(data_, num_, ):
