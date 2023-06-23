@@ -7,6 +7,7 @@ import numpy as np
 plt.rcParams.update({'figure.max_open_warning': 0})
 import seaborn as sns
 
+
 def graph_model_losses():
     # assign directory
     directory = 'CNNModels'
@@ -33,14 +34,13 @@ def graph_model_losses():
                 plt.plot(history["train_acc"], label=f"train_accuracy")
                 plt.plot(history["val_acc"], label=f"validation_accuracy")
                 plt.plot(int(ne), acc, marker='X', markerfacecolor='black', ls='none', ms=10, label="test_accuracy")
-                plt.xticks(np.array([1,5,10,15,20,25,30]))
+                plt.xticks(np.array([1, 5, 10, 15, 20, 25, 30]))
                 plt.xlim(1, None)
             plt.ylabel("Accuracy/Loss")
             plt.xlabel("Epochs")
             plt.legend(loc="center right")
             plt.ylim([0, 1.01])
             plt.savefig(f'plots/plot_{num}')
-
     return
 
 
@@ -80,6 +80,7 @@ def ranking_system():
     ranking_df.to_csv('ranking_system.csv')
     return
 
+
 def confusion_matrix(cf_matrix):
     group_names = ['True Positive', 'False Negative', 'False Positive', 'True Negative']
     group_counts = ["{0:0.0f}".format(value) for value in cf_matrix.flatten()]
@@ -87,7 +88,7 @@ def confusion_matrix(cf_matrix):
     for i in cf_matrix:
         for j in i:
             group_percentages.append("{0:.2%}".format(j / sum(i)))
-    #for i in range(len(cf_matrix)):
+    # for i in range(len(cf_matrix)):
     #    for j in range(len(cf_matrix[i])):
     #        group_percentages.append("{0:.2%}".format(cf_matrix[i][j] / (cf_matrix[1][j]+cf_matrix[0][j])))
     print(group_percentages)
@@ -97,14 +98,13 @@ def confusion_matrix(cf_matrix):
     plt.savefig('confusion_matrix.png')
 
 
-confusion_matrix(np.array([[710,0],[0,730]]))
-#graph_model_losses()
-#ranking_system()
+confusion_matrix(np.array([[710, 0], [0, 730]]))
+# graph_model_losses()
+# ranking_system()
 
 # Make sure the plots have the same range and domain, do one model per plot
-#TN FP FN TP
-#recall: 100%
-#precision: 99.668874%
-#F1 score: .998341625
-#Test size: 1128
-
+# TN FP FN TP
+# recall: 100%
+# precision: 99.668874%
+# F1 score: .998341625
+# Test size: 1128

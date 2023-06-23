@@ -1,11 +1,5 @@
 # Main file loop for preprocessing
 
-# # Import libraries
-# import matplotlib.pyplot as plt
-# import numpy as np
-# import scipy.io
-# from pathlib import Path
-
 import torch
 import ppfuncs_2 as pp2
 import numpy as np
@@ -41,23 +35,23 @@ if __name__ == '__main__':
 
     print(n_samples)
 
-    # # Create list of healthy images, by extracting data and creating images with above defined variables
-    # healthy_spectrogram_tensor = torch.Tensor([]).to(device)
-    # path = "data/Healthy/H"
-    # if print_:
-    #     print("Start on healthy data")
-    # for i in range(time_start, time_end+1):
-    #     for j in range(sen_start, sen_end+1):
-    #         data = pp2.extract_data_2(path, i, j, device=device)
-    #         if noise != 0:
-    #             list_noise = np.random.normal(0, noise, size=tuple(data.size()))
-    #             data = data + list_noise
-    #         spectrograms = pp2.generate_spectrogram_samples(data, n_samples, sample_size, device=device)
-    #         healthy_spectrogram_tensor = torch.cat((healthy_spectrogram_tensor, spectrograms), 0)
-    #     if print_:
-    #         print(f"\tHealthy data at time {i}: Completed")
-    # if print_:
-    #     print("Healthy data: Completed \n\nStart on Damaged data")
+    # Create list of healthy images, by extracting data and creating images with above defined variables
+    healthy_spectrogram_tensor = torch.Tensor([]).to(device)
+    path = "data/Healthy/H"
+    if print_:
+        print("Start on healthy data")
+    for i in range(time_start, time_end+1):
+        for j in range(sen_start, sen_end+1):
+            data = pp2.extract_data_2(path, i, j, device=device)
+            if noise != 0:
+                list_noise = np.random.normal(0, noise, size=tuple(data.size()))
+                data = data + list_noise
+            spectrograms = pp2.generate_spectrogram_samples(data, n_samples, sample_size, device=device)
+            healthy_spectrogram_tensor = torch.cat((healthy_spectrogram_tensor, spectrograms), 0)
+        if print_:
+            print(f"\tHealthy data at time {i}: Completed")
+    if print_:
+        print("Healthy data: Completed \n\nStart on Damaged data")
 
     # Create list of damaged images, by extracting data and creating images with above defined variables
     damaged_spectrogram_tensor = torch.Tensor([]).to(device)

@@ -1,11 +1,16 @@
 import torch
 import cnn_funcs_ as fn
 
-device = "cpu"
+# set the device we will be using to train the model
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
+print("Code will be executed on:", device)
 
+# determine which code will be running
+# True --> AMED
+# False --> FRED
 SENSOR = False
 MODEL_AMED = False
-
 
 if MODEL_AMED:
     name = "AMED"
@@ -13,7 +18,6 @@ if MODEL_AMED:
 else:
     name = "FRED_30"
     title = "FRED Augmented Data Sensor "
-
 
 if not SENSOR:
     TRAINING = False

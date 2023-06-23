@@ -59,20 +59,21 @@ def generate_spectrogram_samples(sensor_data, n_samples, sample_size, device):
     return spectrograms_tensor
 
 
-def spectrogram_2(sample_val_array):
-    # converts a sample into a spectrogram of 129 by 129
-    # note the second 129 is actually dependent on the sample size
+def spectrogram_2(sample_val_array, plot=False):
+    # converts a sample into a spectrogram of 129 by x
+    # x is dependent on the sample size
     sample_ = sample_val_array.detach().cpu().numpy()
     sampling_frequency = 40000
     spectrum, freq, time, fig = plt.specgram(sample_, Fs=sampling_frequency)
     spectrum = np.log10(spectrum)
-    plot = plt.imshow(spectrum)
-    clb = plt.colorbar()
-    plt.title('Damaged')
-    plt.xlabel('Time')
-    plt.ylabel('Frequency')
-    clb.ax.set_title('[dB]')
-    plt.show()
+    if plot:
+        spec_plot = plt.imshow(spectrum)
+        clb = plt.colorbar()
+        plt.title('Damaged')
+        plt.xlabel('Time')
+        plt.ylabel('Frequency')
+        clb.ax.set_title('[dB]')
+        plt.show()
     return spectrum
 
 
@@ -132,17 +133,4 @@ def split_data_dict(data_dict_, train_split_, val_split_, test_split_):
     train_data_dict_ = set_to_dict(train_data_, num_train)
     val_data_dict_ = set_to_dict(val_data_, num_val)
     test_data_dict_ = set_to_dict(test_data_, num_test)
-    return train_data_dict_, val_data_dict_, test_data_dict_
-
-
-if __name__ == '__main__':
-    pass
-    # test your functions here
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    sensor_data_damaged = extract_data_2("data/Damaged/D", '2', 9, device=device)
-    sensor_data_healthy = extract_data_2("data/Healthy/H", '2', 9, device=device)
-    sensor_samples_damaged = create_samples(sensor_data_damaged, 10, 4096, device=device)
-    sensor_samples_healthy = create_samples(sensor_data_healthy, 10, 4096, device=device)
-    spectrogram = spectrogram_2(sensor_samples_damaged[0])
-    print(spectrogram.shape)
-    # visualize_compare(sensor_samples_healthy, sensor_samples_damaged, 5)
+    return [train_data_dict_, val_data_dict_, test_data_dict_]

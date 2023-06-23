@@ -1,36 +1,33 @@
-# set the matplotlib backend so figures can be saved in the background
+# import statements
 import matplotlib
-matplotlib.use("Agg")
-# import the necessary packages
-#from outdated_scripts.cnn_architecture2 import LeNet
 from cnn_architecture import CNN
+from cnn_architecture import NewCNN3, FreqCNN
 import cnn_architecture as arc
-#from cnn_newarchitecture import newCNN
-#from cnn_newarchitecture import newCNN2
-from cnn_architecture import newCNN3, freqCNN
-#from cnn_newarchitecture import newCNN4
-#from preprocessing import 'data_dict.pt'
 from sklearn.metrics import precision_recall_fscore_support
-from torch.utils.data import random_split
 from torch.utils.data import DataLoader
-#from torchvision.transforms import ToTensor
-#from torchvision.datasets import KMNIST
 from torch.optim import Adam
-#from torch.optim import SGD
-#from torch.optim import LBFGS
 from torch.optim import Adamax
 from torch import nn
 import pandas as pd
-#import matplotlib.pyplot as plt
 import itertools
 import numpy as np
-import json
 import pickle
 import torch
 import time
-import os
-#import datasetfuncs as dsf
+# set the matplotlib backend so figures can be saved in the background
+matplotlib.use("Agg")
 
+# unused import statements
+# from preprocessing import 'data_dict.pt'
+# from torch.utils.data import random_split
+# from torchvision.transforms import ToTensor
+# from torchvision.datasets import KMNIST
+# from torch.optim import SGD
+# from torch.optim import LBFGS
+# import matplotlib.pyplot as plt
+# import json
+# import os
+# import datasetfuncs as dsf
 
 
 def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData, testData, device):
@@ -47,8 +44,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 	# Change this to load the tensors
 
 	# initialize the train, validation, and test data loaders
-	trainDataLoader = DataLoader(trainData, shuffle=True,
-		batch_size=BATCH_SIZE)
+	trainDataLoader = DataLoader(trainData, shuffle=True, batch_size=BATCH_SIZE)
 	valDataLoader = DataLoader(valData, batch_size=BATCH_SIZE)
 	testDataLoader = DataLoader(testData, batch_size=BATCH_SIZE)
 
@@ -58,9 +54,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 
 	# initialize the CNN model
 	print("[INFO] initializing the CNN model...")
-	model = freqCNN(
-		numChannels=1,
-		classes=2).to(device)
+	model = FreqCNN(num_channels=1, classes=2).to(device)
 	# initialize a dictionary to store training history
 	H = {
 		"train_loss": [],
@@ -68,6 +62,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 		"val_loss": [],
 		"val_acc": []
 	}
+
 	if optm == 0:
 		opt = Adam(model.parameters(), lr=INIT_LR)
 	#elif optm == 1:
@@ -92,7 +87,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 		# loop over the training set
 		for (x, y) in trainDataLoader:
 			# send the input to the device
-			y=y.type(torch.LongTensor)
+			y = y.type(torch.LongTensor)
 			(x, y) = (x.to(device), y.to(device))
 			# perform a forward pass and calculate the training loss
 			pred = model(x)
@@ -105,8 +100,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 			# add the loss to the total training loss so far and
 			# calculate the number of correct predictions
 			totalTrainLoss += loss
-			trainCorrect += (pred.argmax(1) == y).type(
-				torch.float).sum().item()
+			trainCorrect += (pred.argmax(1) == y).type(torch.float).sum().item()
 
 		# switch off autograd for evaluation
 		with torch.no_grad():
@@ -127,8 +121,7 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 				totalValLoss += lossFn(pred, y)
 				lengths += len(x)
 				# calculate the number of correct predictions
-				valCorrect += (pred.argmax(1) == y).type(
-					torch.float).sum().item()
+				valCorrect += (pred.argmax(1) == y).type(torch.float).sum().item()
 
 		# calculate the average training and validation loss
 		avgTrainLoss = totalTrainLoss / trainSteps
@@ -183,15 +176,16 @@ def one_iteration(INIT_LR, BATCH_SIZE, EPOCHS, lossFn, optm, trainData, valData,
 	# generate a classification report
 	print(f"Test loss: {avgTestLoss}, Test accuracy: {test_acc}")
 	# val_results = classification_report(targets,np.array(preds), target_names=[str(i) for i in range(2)])
-	precision, recall, fscore, _ = precision_recall_fscore_support(np.array(targets), np.array(preds), average = 'binary')
+	precision, recall, fscore, _ = precision_recall_fscore_support(np.array(targets), np.array(preds), average='binary')
 	int_res = [precision, recall, fscore]
-	#int_res = [[round(num, 4) for num in sublist] for sublist in int_res]
-	avg_compute_time = compute_time/ lengths
+	# int_res = [[round(num, 4) for num in sublist] for sublist in int_res]
+	avg_compute_time = compute_time / lengths
 	H["time_taken"] = [(endTime - startTime), avg_compute_time]
 	test_results = [test_acc, int_res[0], int_res[1], int_res[2]]
 	print(test_results)
 	H["test_results"] = test_results
 	return model, H
+
 
 def transform_lr(num):
 	# Find the exponent
@@ -229,7 +223,7 @@ if __name__ == "__main__":
 	test_data = arc.CreateDataset(test_data["label"], test_data["data"])
 	print("Size of testing dataset:", len(test_data))
 
-	learning_rates = [0.0001,0.001]
+	learning_rates = [0.0001, 0.001]
 	batch_sizes = [50]
 	num_epochs = [20]
 	loss_functions = [nn.NLLLoss()]
@@ -238,28 +232,14 @@ if __name__ == "__main__":
 	maxpoolsize = 4
 	fclayers = 2
 
-	performance_history = pd.DataFrame(columns=[['model_num'],['batch_size'],['num_epoch'],['loss_function'],['accuracy'],['loss'],['training_time']])
+	performance_history = pd.DataFrame(columns=[['model_num'], ['batch_size'], ['num_epoch'], ['loss_function'], ['accuracy'], ['loss'], ['training_time']])
 	count = 0
 	for INIT_LR, batch_size, num_epoch, loss_function in itertools.product(learning_rates, batch_sizes, num_epochs, loss_functions):
 		for optm in range(num_optm):
 			print(f"FREQUENCYPLOTS:Learning rate: {INIT_LR}, Batch size: {batch_size}, Number epochs: {num_epoch}, Loss function{loss_function}, Optimizer: {optm}, Maxpool size: {maxpoolsize}")
-			count +=1
+			count += 1
 			model, history = one_iteration(INIT_LR, batch_size, num_epoch, loss_function, optm, train_data, val_data, test_data, device)
 			# What to store on each model: model itself(With parameters), training/validation history and testing result
 			torch.save(model, f"CNNFREQModels/lr{transform_lr(INIT_LR)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}maxpsize3.{maxpoolsize}fclayers{fclayers}")
 			with open(f"CNNFREQModels/lr{transform_lr(INIT_LR)}bs{batch_size}ne{num_epoch}lf{loss_function}opt{optm}conv{layers}maxpsize3.{maxpoolsize}fclayers{fclayers}.pickle", 'wb') as f:
 				pickle.dump(history, f)
-
-
-
-
-
-
-
-
-
-
-
-
-
-

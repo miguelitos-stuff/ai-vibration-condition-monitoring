@@ -2,8 +2,10 @@ import torch
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-device = "cpu"
+# set the device we will be using to train the model
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
+print("Code will be executed on:", device)
 
 learning_rate = "0.00100"
 batch_size = "50"
@@ -48,9 +50,3 @@ for i in range(3, 10+1):
     ax4.plot(np.arange(len(output)), output)
     ax4.set_title("Output value")
     plt.savefig(f"preprocessing\combining\sensor{i}_gen.png")
-
-
-
-
-
-

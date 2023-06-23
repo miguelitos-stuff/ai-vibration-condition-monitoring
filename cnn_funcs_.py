@@ -91,7 +91,7 @@ def train_freq_model(train_dict, val_dict, test_dict):
     return model
 
 
-def run_save_graph(model, data_, name, f_, title):
+def run_save_graph(model, data_, name, f_, title, save=False):
     result = model.forward(data_)
     result_ = torch.split(result, 1, 1)
     result_0 = 10**result_[0].detach().numpy()
@@ -108,12 +108,14 @@ def run_save_graph(model, data_, name, f_, title):
     plt.title(title)
     plt.ylabel("Probability [-]")
     plt.xlabel("Images [-]")
-    # plt.savefig("graphs2\\"+name+".png")
-    # with open(f'npy\{name}.npy', 'wb') as file:
-    #     np.save(file, comb)
+    if save:
+        plt.savefig("graphs2\\"+name+".png")
+        with open(f'npy\\{name}.npy', 'wb') as file:
+            np.save(file, comb)
     return comb
 
-def set_to_dict(data_, num_, ):
+
+def set_to_dict(data_, num_):
     dataloader = DataLoader(data_, batch_size=num_, shuffle=True)
     features, labels = next(iter(dataloader))
     ind = torch.arange(0, len(features))
@@ -126,12 +128,7 @@ def split_train_val_dict(data_dict_, split_):
     all_data = arc.CreateDataset(data_dict_["label"], data_dict_["data"])
     num_train = int(round(len(all_data) * (1-split_), 0))
     num_val = int(round(len(all_data) * split_, 0))
-    (train_data_, val_data_) = random_split(all_data, [num_train, num_val],
-                                                        generator=torch.Generator().manual_seed(42))
+    (train_data_, val_data_) = random_split(all_data, [num_train, num_val], generator=torch.Generator().manual_seed(42))
     train_data_dict_ = set_to_dict(train_data_, num_train)
     val_data_dict_ = set_to_dict(val_data_, num_val)
     return train_data_dict_, val_data_dict_
-
-
-if __name__ == "__main__":
-    print("hello")
