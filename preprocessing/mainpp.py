@@ -84,8 +84,8 @@ if __name__ == '__main__':
                                                                             TEST_SPLIT)
         if print_:
             print("Splitting datasets: Completed")
-        # torch.save(train_data_dict, "../train_data_dict.pt")
-        # torch.save(val_data_dict, "../val_data_dict.pt")
+        torch.save(train_data_dict, "../train_data_dict.pt")
+        torch.save(val_data_dict, "../val_data_dict.pt")
         torch.save(test_data_dict, "../test_data_dict_noise_005.pt")
         if print_:
             print("Saving datasets: Completed")

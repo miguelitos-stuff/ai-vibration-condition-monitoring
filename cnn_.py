@@ -9,24 +9,24 @@ print("Code will be executed on:", device)
 # determine which code will be running
 # True --> AMED
 # False --> FRED
-SENSOR = False
-MODEL_AMED = False
+sensor = False
+model_amed = False
 
-if MODEL_AMED:
+if model_amed:
     name = "AMED"
     title = "AMED Augmented Data Sensor "
 else:
     name = "FRED_30"
     title = "FRED Augmented Data Sensor "
 
-if not SENSOR:
-    TRAINING = False
+if not sensor:
+    training = False
     noise_name = ""
-    if MODEL_AMED:
+    if model_amed:
         train_dict = torch.load('train_data_dict.pt')
         val_dict = torch.load('val_data_dict.pt')
         test_dict = torch.load(f'test_data_dict{noise_name}.pt')
-        if TRAINING:
+        if training:
             model = fn.train_ampl_model(train_dict, val_dict, test_dict).to(device)
         else:
             path = "CNNModels/final_amplitude_model"
@@ -35,7 +35,7 @@ if not SENSOR:
         train_dict = torch.load('train_data_dict_30.pt')
         val_dict = torch.load('val_data_dict_30.pt')
         test_dict = torch.load(f'test_data_dict_30{noise_name}.pt')
-        if TRAINING:
+        if training:
             model = fn.train_freq_model(train_dict, val_dict, test_dict).to(device)
         else:
             path = "CNNFREQModels/lr0.00100bs50ne20lfNLLLoss()opt1conv3maxpsize3.4fclayers2"
@@ -66,7 +66,7 @@ else:
                 train_val_dict["label"] = torch.cat((train_val_dict["label"], sen_dict["label"]), 0)
 
         train_dict, val_dict = fn.split_train_val_dict(train_val_dict, val_split)
-        if MODEL_AMED:
+        if model_amed:
             model = fn.train_ampl_model(train_dict, val_dict, test_dict).to(device)
         else:
             model = fn.train_freq_model(train_dict, val_dict, test_dict).to(device)
